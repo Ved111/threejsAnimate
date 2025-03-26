@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Neue Haas Grotesk Display Pro', Arial, sans-serif;
   text-transform: uppercase
 }
 
@@ -13,7 +12,6 @@ html, body {
 
 img {
   height: 100%;
-  width: 100%;
   object-fit: cover;
 }
 
@@ -24,7 +22,6 @@ canvas {
 }
 
 h1 {
-  text-align: center;
   font-size: 10vw;
   font-weight: 300;
   line-height: 100%;
@@ -37,7 +34,7 @@ h2 {
 }
 
 p {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 500;
   line-height: 100%;
 }
@@ -61,6 +58,32 @@ section {
   z-index: 2;
 }
 
+.hero {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  z-index: 2;
+  text-align: center;
+  color: white; /* Ensure text is visible */
+}
+
+.hero-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 101%;
+  object-fit: cover; /* Ensure the video covers the entire section */
+  transform: translate(-50%, -50%);
+  z-index: -1; /* Send video to the background */
+  filter: brightness(50%); /* Optional: Adjust brightness for better text visibility */
+}
+
 .hero h1 {
   margin-bottom: 0.25em;
 }
@@ -73,7 +96,35 @@ section {
 
 .info {
   gap: 8em;
+  background: rgb(251, 222, 192);
+  background-image: url('https://drinkolipop.com/cdn/shop/files/HP-subscribe-and-save_1203x.webp?v=1732111349');
+  background-size: auto 100%;
+  --padding-top: 0px;
+  --padding-bottom: 78px;
+  --mobile-padding-top: 0px;
+  --mobile-padding-bottom: 0px;
+  background-position: right;
+  background-repeat: no-repeat;
+  text-align: left;
+  align-items: center;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(1, minmax(0, 1fr));
+  margin-left: auto;
+  padding: 64px;
+  padding-right: 30%;
 }
+
+
+
+.heading-info-container {
+  grid-column-start: 1;
+}
+
+.imgStyles {
+  width: 72px;
+}
+
+
 
 .info .tags {
   width: 60%;
@@ -87,9 +138,25 @@ section {
 }
 
 
-.info p {
-  width: 60%;
-  text-align: center;
+.heading-info-container p {
+  margin: 30px 0;
+}
+
+.flex {
+  display: flex;
+  gap: 16px;
+
+}
+
+.image-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+.image-text {
+  font-weight: 500;
+  margin: 12px 0 0 0 !important;
 }
 
 .scan-info {
@@ -142,4 +209,32 @@ section {
 
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+.scrolling-text-container {
+  position: relative;
+  width: 100vw;
+  height: 40vh; /* Adjust height as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 30;
+}
+
+.text {
+  font-size: 4rem;
+  font-weight: bold;
+  color: black;
+  position: absolute;
+  white-space: nowrap;
+  transition: transform 0.1s ease-out;
+}
+
+.top-text {
+  top: 49px;
+}
+
+.bottom-text {
+  top: 223px;
 }
