@@ -5,6 +5,17 @@
   text-transform: uppercase
 }
 
+@font-face {
+  font-family: 'ActiveOne'; /* Replace with your actual font name */
+  src: url('../fonts/active-one.woff2') format('woff2'),
+       url('../fonts/active-one.woff') format('woff'),
+       url('../fonts/active-one.otf') format('opentype'); /* Fallback */
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+
 html, body {
   width: 100vw;
   height: 500vh;
@@ -22,21 +33,24 @@ canvas {
 }
 
 h1 {
-  font-size: 10vw;
+  font-size: 5vw;
   font-weight: 300;
   line-height: 100%;
+  font-family: 'Roboto', sans-serif; /* Google Font */
 }
 
 h2 {
   font-size: 2.5vw;
   font-weight: 500;
   line-height: 100%;
+  font-family: 'Roboto', sans-serif; /* Google Font */
 }
 
 p {
   font-size: 16px;
   font-weight: 500;
   line-height: 100%;
+  font-family: 'ActiveOne', serif; /* Custom OTF Font */
 }
 
 .model {
@@ -49,13 +63,18 @@ p {
 section {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 110vh;
   display: flex;
   flex-direction: column;
   justify-content: center; 
   align-items: center;
+  padding: 0 10vw 0 10vw;
   gap: 1em;
   z-index: 2;
+}
+
+.donchico-image {
+
 }
 
 .hero {
@@ -120,6 +139,8 @@ section {
   grid-column-start: 1;
 }
 
+
+
 .imgStyles {
   width: 72px;
 }
@@ -166,10 +187,6 @@ align-items: center;
 }
 
 .scan-container {
-  width: 280px;
-  height: 480px;
-  border: 1px solid #000;
-  border-radius: 0.5em;
 }
 
 .barcode {
@@ -188,6 +205,10 @@ align-items: center;
   color: red;
   border: 1px solid red;
   border-radius: 2em;
+}
+
+.p-styles {
+  padding: 14px 0;
 }
 
 .outro h2 {
@@ -211,10 +232,10 @@ align-items: center;
   pointer-events: none;
 }
 
-.scrolling-text-container {
+.scrolling-text-container  {
   position: relative;
   width: 100vw;
-  height: 40vh; /* Adjust height as needed */
+  height: 22vh; /* Adjust height as needed */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -222,8 +243,22 @@ align-items: center;
   z-index: 30;
 }
 
+
+.scrolling-text-container-2  {
+  position: relative;
+  width: 100vw;
+  height: 22vh; /* Adjust height as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 30;
+}
+
+
+
 .text {
-  font-size: 4rem;
+  font-size: 2rem;
   font-weight: bold;
   color: black;
   position: absolute;
@@ -232,9 +267,172 @@ align-items: center;
 }
 
 .top-text {
-  top: 49px;
+  top: 5vh;
 }
 
 .bottom-text {
-  top: 223px;
+  top: 14vh;
+}
+
+.image-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cta-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: red;
+  overflow: hidden;
+  max-height: 550px;
+  height: unset;
+}
+
+
+
+.cta-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-height: 550px;
+}
+
+
+.cta-image {
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+  margin-left:  -10vw;
+  max-width: calc(50% + 10vw);
+}
+
+.cta-image img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: transform 0.5s ease-in-out;
+}
+
+.cta-image:hover img {
+  transform: scale(1.2); /* Zoom effect */
+}
+
+.cta-content {
+  flex: 1;
+  color: #fff;
+  text-align: left;
+}
+
+.cta-button {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  border-radius: 10px;
+}
+
+.cta-h2 {
+  margin-bottom: 20px;
+}
+
+
+.donchico-image {
+  width: 30vw;
+  height: auto;
+  padding-bottom: 40px;
+}
+
+
+@media (max-width: 768px) {
+  .info {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 32px;
+    background-size: cover; /* Ensure background scales properly */
+    background-position: center;
+  }
+
+  .heading-info-container {
+    width: 100%;
+  }
+
+  .info h1 {
+    font-size: 6vw; /* Make heading responsive */
+  }
+
+  .cta-button {
+    color: red;
+  }
+
+  .info p {
+    font-size: 14px;
+    width: 90%; /* Ensure proper text wrapping */
+    margin: 20px auto;
+  }
+
+  .flex {
+    flex-direction: column; /* Stack items vertically */
+    gap: 24px;
+  }
+
+  .image-container {
+    width: 100%; /* Full width */
+  }
+
+  .imgStyles {
+    width: 50px; /* Adjust image size */
+  }
+
+  .scrolling-text-container {
+    height: 14vh; /* Reduce height for better spacing */
+  }
+
+  .scrolling-text-container-2 {
+    height: 14vh; /* Reduce height for better spacing */
+  }
+
+  .text {
+    font-size: 1.5rem; /* Reduce font size on mobile */
+  }
+
+  .top-text {
+    top: 20px; /* Adjust positioning */
+  }
+
+  .bottom-text {
+    top: 70px;
+  }
+
+  .cta-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 0;
+  }
+
+  .cta-image {
+    margin: 0 -10vw;
+    max-width: unset;
+  }
+
+
+  .cta-content {
+    text-align: center;
+    padding-bottom: 40px; 
+  }
+
+  .donchico-image {
+    width: 60vw;
+    height: auto;
+  }
+
+
+
+
+
 }
