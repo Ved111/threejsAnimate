@@ -59,7 +59,7 @@ function initThreeJS() {
   // Load GLTF Model
   const loader = new GLTFLoader();
   loader.load(
-    "./assets/josta.glb", // ✅ Ensure this path is correct
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1743670510/josta_bctj0k.glb", // ✅ Ensure this path is correct
     (gltf) => {
       model = gltf.scene;
       scene.add(model);
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <video class="hero-video" autoplay loop muted playsinline>
       <source src="https://www.drinkdonchico.com/cdn/shop/videos/c/vp/4e2ad30bc0f841e18e6d59d00e01d1d3/4e2ad30bc0f841e18e6d59d00e01d1d3.HD-720p-1.6Mbps-43398782.mp4?v=0" type="video/mp4">
     </video>
-    <img src='./assets/donchico.png' class="donchico-image" />
+    <img src='https://res.cloudinary.com/do7dxrdey/image/upload/v1743670509/donchico_sy2naw.png' class="donchico-image" />
     <h1>Stay thirsty... The Don is on his way!</h1>
     <p>The fizzy world of soda had surrendered to the ordinary—until Don Chico stepped in. A legend. A rebel. A mastermind of flavour.</p>
   </section>

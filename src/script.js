@@ -64,33 +64,36 @@ basicAnimate();
 // Model Loading
 let model;
 const loader = new THREE.GLTFLoader();
-loader.load("../../assets/josta.glb", function (gltf) {
-  model = gltf.scene;
-  console.log("I got loaded");
+loader.load(
+  "https://res.cloudinary.com/do7dxrdey/image/upload/v1743670510/josta_bctj0k.glb",
+  function (gltf) {
+    model = gltf.scene;
+    console.log("I got loaded");
 
-  // Compute bounding box for centering
-  const box = new THREE.Box3().setFromObject(model);
-  const center = box.getCenter(new THREE.Vector3());
-  model.position.sub(center);
+    // Compute bounding box for centering
+    const box = new THREE.Box3().setFromObject(model);
+    const center = box.getCenter(new THREE.Vector3());
+    model.position.sub(center);
 
-  // Apply material properties and enable shadows
-  model.traverse((node) => {
-    if (node.isMesh) {
-      if (node.material) {
-        node.material.metalness = 0.3;
-        node.material.roughness = 0.4;
-        node.material.envMapIntensity = 1.5;
+    // Apply material properties and enable shadows
+    model.traverse((node) => {
+      if (node.isMesh) {
+        if (node.material) {
+          node.material.metalness = 0.3;
+          node.material.roughness = 0.4;
+          node.material.envMapIntensity = 1.5;
+        }
+        node.castShadow = true;
       }
-      node.castShadow = true;
-    }
-  });
+    });
 
-  scene.add(model);
+    scene.add(model);
 
-  // Adjust camera based on model size
-  const size = box.getSize(new THREE.Vector3());
-  const maxDim = Math.max(size.x, size.y, size.z);
-  camera.position.z = maxDim * 1.5;
+    // Adjust camera based on model size
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    camera.position.z = maxDim * 1.5;
 
-  playInitialAnimation();
-});
+    playInitialAnimation();
+  }
+);
