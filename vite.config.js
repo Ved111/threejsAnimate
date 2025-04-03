@@ -12,4 +12,8 @@ export default defineConfig({
       "Content-Security-Policy": "frame-ancestors *;", // Allow all websites to embed
     },
   },
+  build: {
+    outDir: "dist",
+  },
+  publicDir: "assets", // Ensures assets are included in the final build
 });
