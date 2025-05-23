@@ -58,6 +58,7 @@ p {
   width: 100%;
   height: 100vh;
   background: #fefdfd;
+  z-index: 3;
 }
 
 section {
@@ -71,10 +72,11 @@ section {
   padding: 0 10vw 0 10vw;
   gap: 1em;
   z-index: 2;
+  background: transparent; /* make sure sections don't have opaque backgrounds */
 }
 
-.donchico-image {
-
+.can-center {
+padding: 0 80px;
 }
 
 .hero {
@@ -86,7 +88,7 @@ section {
   justify-content: center;
   align-items: center;
   gap: 1em;
-  z-index: 2;
+  z-index: 10;
   text-align: center;
   color: white; /* Ensure text is visible */
 }
@@ -131,6 +133,7 @@ section {
   margin-left: auto;
   padding: 64px;
   padding-right: 30%;
+  z-index: 10;
 }
 
 
@@ -232,47 +235,414 @@ align-items: center;
   pointer-events: none;
 }
 
-.scrolling-text-container  {
-  position: relative;
+.custom-border-section {
+  height: unset;
   width: 100vw;
-  height: 22vh; /* Adjust height as needed */
+  position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   overflow: hidden;
-  z-index: 30;
+  z-index: 8;
 }
 
-
-.scrolling-text-container-2  {
-  position: relative;
-  width: 100vw;
-  height: 22vh; /* Adjust height as needed */
+.border-strip {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 54px; /* Total width of the border strip */
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: row;
+  pointer-events: none;
   overflow: hidden;
-  z-index: 30;
+  z-index: 4;
 }
 
+.gradient-img {
+  height: 400px
+}
 
+.gradient-div {
+}
 
-.text {
-  font-size: 2rem;
+.circle-column {
+  width: 50%;
+  background-image: radial-gradient(circle, red 6px, transparent 7px);
+  background-repeat: repeat-y;
+  background-size: 100% 40px;
+  background-position: center;
+}
+
+.text-column {
+  width: 50%;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 1rem;
   font-weight: bold;
   color: black;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+.scrolling-text {
   position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+.border-strip.left {
+  left: 0;
+}
+
+.border-strip.right {
+  right: 0;
+  width: 48px;
+}
+
+
+
+.text-scroll-section {
+  height: 300vh;
+  padding-top: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5rem;
+}
+
+.text-line {
+  font-size: 6rem;
+  font-weight: bold;
   white-space: nowrap;
-  transition: transform 0.1s ease-out;
+  transform: translateX(0);
+  margin: 10vh 0;
+  padding-bottom: 45px;
 }
 
-.top-text {
-  top: 5vh;
+.last-section {
+  padding-bottom: 80px;
 }
 
-.bottom-text {
-  top: 14vh;
+.left {
+  align-self: flex-start;
+  text-align: right;
+
 }
+
+
+.threejs-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none; /* So it doesn't block clicks */
+}
+
+.right {
+  align-self: flex-end;
+  text-align: right;
+  text-align: left;
+
+}
+
+
+
+
+
+
+/* Keep this as-is or with minimal changes */
+.poppy-section {
+  position: relative;
+  padding: 4rem 2rem;
+  color: white;
+  overflow: hidden;
+  background-color: transparent;
+  height: 100vh;
+  display: block;
+  z-index: 1;
+  
+}
+
+.poppy-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center 40%;
+  background-repeat: no-repeat;
+  z-index: 0;
+  pointer-events: none;
+  
+  inset: 0;
+}
+
+.podium-class {
+  display: flex;
+  margin-top: auto;
+  gap: 120px;
+}
+
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: left;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column; /* 👈 Stack items vertically */
+  gap: 2rem; /* Add spacing between text and image */
+  align-items: flex-start;   /* 👈 Align items to the left */
+  height: 60vh;
+}
+
+.text-block h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: black;
+  text-align: left;         /* 👈 Ensure text is left-aligned */
+}
+
+.text-block p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  color: black;
+  text-align: left;         /* 👈 Ensure text is left-aligned */
+}
+
+.table-top {
+  height: 210px;
+  margin-left: -32px;
+  width: 100vw;
+}
+
+/* 👇 Add this for horizontal, custom image */
+.poppy-image {
+  transform: rotate(90deg);
+  width: 350px;
+  height: 400px; /* adjust as needed */
+  object-fit: contain;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+/* Transition and bouquet-style rotation */
+.can {
+  transition: transform 0.4s ease;
+  transform-origin: center;
+  cursor: pointer;
+  position: relative;
+  z-index: 4;
+}
+
+.can-left:hover {
+  transform: scale(1.15) rotate(-8deg);
+  z-index: 2;
+}
+
+.can-center:hover {
+  transform: scale(1.15) rotate(0deg) translateY(-5px);
+  z-index: 2;
+}
+
+.can-right:hover {
+  transform: scale(1.15) rotate(8deg);
+  z-index: 2;
+}
+
+.can:hover {
+  transform: scale(1.1) rotateY(0deg);
+  z-index: 2;
+}
+
+#can-title,
+#can-description,
+#btn-row {
+  transition: opacity 0.3s ease;
+}
+
+
+.can-hero-section {
+  padding: 100px 20px 80px;
+  text-align: center;
+  background-color: white;
+  z-index: 10;
+
+  background-size: cover;
+  background-repeat: repeat-y;
+  background-position: center;
+}
+
+.can-group {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 30px;
+  margin-bottom: 60px;
+  perspective: 1000px;
+}
+
+.can {
+  height: 500px;
+  transition: transform 0.4s ease;
+  transform-origin: bottom center;
+}
+
+.can.center {
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.can.left {
+  transform: rotateY(15deg); /* Slight outward angle */
+  z-index: 1;
+}
+
+.can.right {
+  transform: rotateY(-15deg); /* Slight outward angle */
+  z-index: 1;
+}
+
+.can-text h2 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.can-text p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  max-width: 500px;
+  margin-inline: auto;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  border: 1px solid black
+}
+
+.btn.strawberry {
+  background-color: #ec4899;
+}
+
+.btn.orange {
+  background-color: #f97316;
+}
+
+.btn.blueberry {
+  background-color: #3b82f6;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.review-section {
+  padding: 5rem 2rem;
+  background: linear-gradient(120deg, #fef3c7, #fde68a);
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+
+.review-heading {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #111827;
+  font-weight: bold;
+}
+
+.carousel {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 2rem;
+  animation: scroll 30s linear infinite;
+}
+
+.review-card {
+  flex: 0 0 260px;
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  color: white;
+  height: 400px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.review-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  z-index: 1;
+}
+
+.review-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+}
+
+.review-card-content {
+  position: relative;
+  z-index: 2;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.review-text {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  font-style: italic;
+}
+
+.reviewer-name {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
 
 .image-stats {
   display: flex;
@@ -288,6 +658,7 @@ align-items: center;
   overflow: hidden;
   max-height: 550px;
   height: unset;
+  z-index: 10;
 }
 
 
@@ -345,6 +716,61 @@ align-items: center;
   height: auto;
   padding-bottom: 40px;
 }
+
+.intro-screen {
+  position: fixed;
+  background-image: url('https://res.cloudinary.com/do7dxrdey/image/upload/v1744185796/5_1_j6hlak.png');
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #fff;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.logo-container {
+  text-align: center;
+}
+
+.main-logo {
+  width: 40vw;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.flavors-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.flavor-img {
+  width: 60px;
+  height: auto;
+  object-fit: contain;
+
+}
+
+.shimmer {
+  animation: shimmer 1s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.7);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
 
 
 @media (max-width: 768px) {
@@ -431,7 +857,69 @@ align-items: center;
     height: auto;
   }
 
+  .social-feed {
+    padding: 4rem 2rem;
+    background: #fafafa;
+    text-align: center;
+  }
+  
+  .posts-grid {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  
+  .social-post {
+    width: 300px;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .social-post img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .caption {
+    padding: 1rem;
+    font-size: 0.9rem;
+    color: #333;
+  }
+  
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 2rem;
+}
 
+.social-post {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+.social-post:hover {
+  transform: scale(1.05);
+}
+
+.social-post img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.caption {
+  padding: 0.8rem;
+  font-size: 0.9rem;
+  color: #333;
+}
 
 
 

@@ -65,7 +65,7 @@ basicAnimate();
 let model;
 const loader = new THREE.GLTFLoader();
 loader.load(
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1743670510/josta_bctj0k.glb",
+  "https://res.cloudinary.com/do7dxrdey/image/upload/v1745911017/Can_250_Red_gasg9y.glb",
   function (gltf) {
     model = gltf.scene;
     console.log("I got loaded");
