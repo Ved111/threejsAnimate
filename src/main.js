@@ -20,7 +20,7 @@ let shouldRepeat = false;
 const isMobile = window.innerWidth < 768;
 
 // Declare global model variable
-let centerCan, leftCan, rightCan, initialCan;
+let centerCan, leftCan, rightCan, initialCan, initialLeftCan, initialRightCan;
 let modelLoaded = false; // Track if the model has finished loading
 
 let swapCount = 0;
@@ -37,6 +37,87 @@ window.addEventListener("DOMContentLoaded", () => {
   initThreeJS();
 });
 
+function replaceInitialCanWithGLB(url, scene, hex) {
+  if (!modelLoaded) return;
+
+  const loader = new GLTFLoader();
+  loader.load(
+    url,
+    (gltf) => {
+      const newModel = gltf.scene;
+
+      // Center & scale
+      const box = new THREE.Box3().setFromObject(newModel);
+      const center = box.getCenter(new THREE.Vector3());
+
+      // Center it
+      newModel.position.sub(center);
+
+      // Shift it up so its base sits at y = 0
+      newModel.position.y = -1;
+      newModel.scale.set(0.6, 0.6, 0.6);
+
+      // Fix materials
+      newModel.traverse((child) => {
+        if (
+          child.isMesh &&
+          child.material &&
+          child.material.isMeshStandardMaterial
+        ) {
+          const oldMat = child.material;
+
+          const newMat = new THREE.MeshStandardMaterial({
+            map: oldMat.map || null,
+            color: hex
+              ? new THREE.Color(hex)
+              : oldMat.color || new THREE.Color(0xffffff),
+            metalness: 1,
+            roughness: 0.5,
+            envMapIntensity: 2,
+          });
+
+          newMat.transparent = false;
+          newMat.opacity = 1;
+          newMat.side = THREE.DoubleSide;
+          newMat.depthWrite = true;
+          newMat.needsUpdate = true;
+
+          child.material = newMat;
+
+          child.castShadow = true;
+          child.receiveShadow = true;
+          child.geometry.computeVertexNormals();
+        }
+      });
+
+      // Remove old
+      if (initialCan) {
+        scene.remove(initialCan);
+      }
+
+      initialCan = newModel;
+      scene.add(initialCan);
+    },
+    undefined,
+    (err) => {
+      console.error("🚨 Failed to load new model:", err);
+    }
+  );
+}
+
+function updateModelColor(model, colorHex) {
+  model.traverse((child) => {
+    if (child.isMesh && child.material) {
+      child.material = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(colorHex),
+        metalness: 1,
+        roughness: 0.5,
+      });
+      child.material.needsUpdate = true;
+    }
+  });
+}
+
 const backgroundImages = [
   "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png",
   "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067031/IMG_2126_1_tesfjm.png",
@@ -50,10 +131,12 @@ function updateBackgroundImage(index) {
   }
 }
 
+let scene = null;
+
 function initThreeJS() {
   console.log("✅ Initializing Three.js");
 
-  const scene = new THREE.Scene();
+  scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
     35,
@@ -64,8 +147,8 @@ function initThreeJS() {
   camera.position.set(0, 0, 10);
   camera.lookAt(0, 0, 0);
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setClearColor(0x000000, 0); // Fully transparent background
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setClearColor(0xffffff, 0); // Fully transparent background
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -120,12 +203,13 @@ function initThreeJS() {
   // GLB URLs for three cans
   const modelURLs = {
     initial:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1749915409/DCcanWithENGRAVEDlogo_2_ecjm5i.glb",
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1750236870/DCcanWithENGRAVEDlogo_2_ecjm5i_dobnwk.glb",
     center:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747923870/2.44_u6yamm.glb",
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747977846/appleCOT_tibxq0.glb",
+
     left: "https://res.cloudinary.com/do7dxrdey/image/upload/v1747987124/starberry_yeswvi.glb",
     right:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747977846/appleCOT_tibxq0.glb",
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747923870/2.44_u6yamm.glb",
   };
 
   // Load all cans
@@ -143,7 +227,8 @@ function initThreeJS() {
               const center = box.getCenter(new THREE.Vector3());
               const size = box.getSize(new THREE.Vector3());
               model.position.sub(center);
-              model.position.y = -center.y;
+              model.position.y = -1;
+              console.log("Initial center", -center.y);
               model.scale.set(0.6, 0.6, 0.6);
 
               model.traverse((child) => {
@@ -154,6 +239,16 @@ function initThreeJS() {
                 ) {
                   const oldMat = child.material;
 
+                  console.log(child.name, child.geometry?.uuid);
+
+                  if (
+                    oldMat.transparent ||
+                    oldMat.opacity < 1 ||
+                    oldMat.alphaTest > 0
+                  ) {
+                    console.log("Potential transparency issue in:", child.name);
+                  }
+
                   // Replace material with custom MeshStandardMaterial
                   const newMat = new THREE.MeshStandardMaterial({
                     color: oldMat.color || new THREE.Color(0xffffff),
@@ -163,13 +258,18 @@ function initThreeJS() {
                     map: oldMat.map || null,
                   });
 
-                  // Make sure it's fully opaque
-                  newMat.transparent = false;
-                  newMat.opacity = 1;
-                  newMat.side = THREE.DoubleSide;
+                  newMat.transparent = false; // Fully opaque
+                  newMat.opacity = 1; // Full visibility
+                  newMat.alphaTest = 0.0; // Disable alpha cutoff
+                  newMat.side = THREE.FrontSide; // Optional: use FrontSide for better performance
                   newMat.depthWrite = true;
                   newMat.needsUpdate = true;
-                  newMat.alphaTest = 0.5; // removes any low-alpha pixels
+
+                  if (newMat.map) {
+                    newMat.map.encoding = THREE.sRGBEncoding;
+                    newMat.map.needsUpdate = true;
+                    newMat.alphaMap = null; // Disable alpha influence from texture
+                  }
 
                   child.material = newMat;
 
@@ -198,7 +298,6 @@ function initThreeJS() {
 
       results.forEach(({ key, model, size }) => {
         // Position the cans
-        model.position.y = -1;
         if (key === "left") {
           model.rotation.set(0, 0, 0);
           model.position.x = -7;
@@ -216,10 +315,24 @@ function initThreeJS() {
           centerCan = model;
         }
         if (key === "initial") {
+          // ➤ original initialCan: #c78345
+          updateModelColor(model, "#c78345");
+          model.position.x = 0;
           model.rotation.set(0, 0, 0);
-          model.position.x = -2;
-
           initialCan = model;
+          scene.add(initialCan);
+
+          // ➤ Clone for initialLeftCan: #619b58
+          initialLeftCan = model.clone(true);
+          updateModelColor(initialLeftCan, "#619b58");
+          initialLeftCan.position.x = window.innerWidth < 768 ? -0.9 : -1;
+          scene.add(initialLeftCan);
+
+          // ➤ Clone for initialRightCan: #c67578
+          initialRightCan = model.clone(true);
+          updateModelColor(initialRightCan, "#c67578");
+          initialRightCan.position.x = window.innerWidth < 768 ? 0.9 : 1;
+          scene.add(initialRightCan);
         }
 
         scene.add(model);
@@ -282,52 +395,105 @@ function resetSwapState() {
 }
 
 function setupScrollAnimations(updateFruitCallback) {
-  function swapCans(reachedLeft, xPosition, responsiveScale) {
+  let currentRange = -1;
+
+  function updateInitialCanByProgress(
+    progress,
+    xMovement,
+    responsiveScale,
+    scene
+  ) {
     if (!modelLoaded) return;
 
-    // Save references
-    const oldCenter = centerCan;
-    const oldLeft = leftCan;
-    const oldRight = rightCan;
-    const oldInitial = initialCan;
+    // Define custom soft-swap progress midpoints
+    const swapPoints = [0.12, 0.37, 0.62]; // we now only need 3 points
 
-    // Rotate roles: center → left, left → right, right → center
-    centerCan = oldLeft;
-    leftCan = oldRight;
-    rightCan = oldInitial;
-    initialCan = oldCenter;
+    // Detect which range you're in
+    let newRange = 0;
+    if (progress >= swapPoints[0] && progress < swapPoints[1]) {
+      newRange = 1;
+    } else if (progress >= swapPoints[1] && progress < swapPoints[2]) {
+      newRange = 2;
+    } else if (progress >= swapPoints[2]) {
+      newRange = 3; // this now covers 0.62 to 1
+    }
 
-    // Update positions
-    console.log(xPosition, "insideSwap");
+    if (newRange === currentRange) return;
+    currentRange = newRange;
 
-    initialCan.position.x = xPosition * responsiveScale;
-    centerCan.position.x = 7;
-    leftCan.position.x = -7;
-    rightCan.position.x = 7;
+    // URLs for each can flavor
+    const glbURLs = [
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1750236870/DCcanWithENGRAVEDlogo_2_ecjm5i_dobnwk.glb",
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747923870/2.44_u6yamm.glb", // center
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747987124/starberry_yeswvi.glb", // left
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747977846/appleCOT_tibxq0.glb", // right
+    ];
+
+    const urlToLoad = glbURLs[newRange];
+
+    replaceInitialCanWithGLB(
+      urlToLoad,
+      scene,
+      newRange === 0 ? "#d09f5c" : null
+    );
+
+    // Update x position
+    if (initialCan) {
+      initialCan.position.x = xMovement * responsiveScale;
+    }
+
+    updateBackgroundImage(newRange % 3); // or use a mapping if image order differs
   }
 
-  function swapCansLeft(reachedLeft, xPosition, responsiveScale) {
-    if (!modelLoaded) return;
+  ScrollTrigger.create({
+    trigger: ".hero-section",
+    start: "top top",
+    end: "+=50%",
+    scrub: true,
+    onUpdate: (self) => {
+      if (!modelLoaded) return;
 
-    const oldInitial = initialCan;
-    const oldCenter = centerCan;
-    const oldLeft = leftCan;
-    const oldRight = rightCan;
+      const t = self.progress;
 
-    // Rotate: right → initial, left → right, center → left, initial → center
-    initialCan = oldRight;
-    rightCan = oldLeft;
-    leftCan = oldCenter;
-    centerCan = oldInitial;
+      const leftX = gsap.utils.interpolate(isMobile ? -0.9 : -1, -7, t);
+      const rightX = gsap.utils.interpolate(isMobile ? 0.9 : 1, 7, t);
+      const centerX = gsap.utils.interpolate(0, -2, t);
 
-    console.log(xPosition, "insideSwap");
+      // Animate X position
+      initialLeftCan.position.x = leftX;
+      initialRightCan.position.x = rightX;
+      initialCan.position.x = centerX;
 
-    // Update positions
-    initialCan.position.x = xPosition * responsiveScale;
-    centerCan.position.x = 7;
-    leftCan.position.x = -7;
-    rightCan.position.x = 7;
-  }
+      // Optional: fade out if needed
+      const fadeOutT = gsap.utils.clamp(0, 1, (t - 0.8) / 0.2);
+      initialLeftCan.visible = true;
+      initialRightCan.visible = true;
+
+      initialLeftCan.material.opacity = 1 - fadeOutT;
+      initialRightCan.material.opacity = 1 - fadeOutT;
+      initialLeftCan.material.transparent = true;
+      initialRightCan.material.transparent = true;
+    },
+    onLeave: () => {
+      // Offscreen
+      initialLeftCan.position.x = -7;
+      initialRightCan.position.x = 7;
+      initialCan.position.x = -2;
+    },
+    onEnterBack: () => {
+      // Restore positions
+      lastXMovement = 0;
+
+      initialLeftCan.visible = true;
+      initialRightCan.visible = true;
+
+      initialLeftCan.position.x = isMobile ? -0.9 : -1;
+      initialRightCan.position.x = isMobile ? 0.9 : 1;
+
+      initialCan.position.x = 0;
+      centerCan.visible = false;
+    },
+  });
 
   ScrollTrigger.create({
     trigger: ".custom-border-section",
@@ -337,11 +503,28 @@ function setupScrollAnimations(updateFruitCallback) {
     onEnterBack: () => {
       lastXMovement = 0;
       resetSwapState();
+      if (centerCan) {
+        centerCan.visible = false;
+        centerCan.position.set(7, -1, 0); // move it right
+      }
+      initialLeftCan.visible = false;
+      initialRightCan.visible = false;
+      // Make sure they're out of view
+      initialLeftCan.position.x = -7;
+      initialRightCan.position.x = 7;
+      initialCan.visible = true;
     },
 
     // 🧹 Optional: also reset when completely leaving the section forward
     onLeave: () => {
       lastXMovement = 0;
+      if (centerCan) {
+        centerCan.visible = true;
+        centerCan.position.set(0, -1, 0); // restore position
+      }
+      initialLeftCan.visible = true;
+      initialRightCan.visible = true;
+      initialCan.visible = true;
     },
     onUpdate: (self) => {
       console.log("swapCount", swapCount);
@@ -457,6 +640,8 @@ function setupScrollAnimations(updateFruitCallback) {
       //   playCanSpinInPlace(initialCan);
       // }
 
+      updateInitialCanByProgress(progress, xMovement, responsiveScale, scene);
+
       if ((reachedLeft || reachedRight) && !didSwapRecently) {
         didSwapRecently = true;
 
@@ -473,13 +658,9 @@ function setupScrollAnimations(updateFruitCallback) {
           (swapCount > 1 && direction === "down") ||
           (direction === "up" && swapCount > 0)
         ) {
-          updateFruitCallback(direction);
+          updateFruitCallback(direction, progress);
 
           actualSwapCount++;
-
-          direction === "up"
-            ? swapCansLeft(reachedLeft, xMovement, responsiveScale)
-            : swapCans(reachedLeft, xMovement, responsiveScale);
         }
       }
 
@@ -548,6 +729,13 @@ function setupScrollAnimations(updateFruitCallback) {
     onUpdate: (self) => {
       if (!modelLoaded) return;
 
+      // ⛔️ HIDE initialCan during this section
+      if (initialCan) {
+        initialCan.visible = false;
+        initialCan.position.x = -10; // or any offscreen value
+        centerCan.position.x = 0;
+      }
+
       const t = self.progress; // from 0 to 1
       const easedT = gsap.utils.interpolate(
         0,
@@ -567,10 +755,10 @@ function setupScrollAnimations(updateFruitCallback) {
         const rotateT = t / rotateEnd; // normalize 0–0.9 to 0–1
         const easedRotateT = gsap.parseEase("power3.inOut")(rotateT);
         rotationY = (Math.PI * 2 * totalSpins * easedRotateT) % (Math.PI * 2);
-        initialCan.rotation.set(0, rotationY, 0);
+        centerCan.rotation.set(0, rotationY, 0);
       } else {
         // ✴️ After rotateEnd, just reset to 0 rotation
-        initialCan.rotation.set(0, 0, 0);
+        centerCan.rotation.set(0, 0, 0);
       }
 
       if (t > dropStart) {
@@ -580,17 +768,17 @@ function setupScrollAnimations(updateFruitCallback) {
       }
 
       // Thrust down: Y = -0.05 → -1
-      initialCan.position.y = gsap.utils.interpolate(-1, -1.1, dropT);
+      centerCan.position.y = gsap.utils.interpolate(-1, -1.1, dropT);
 
       // Animate all rotations from (0, 0, 0) to (0, 2, 0)
       const targetRotationY = gsap.utils.interpolate(
-        initialCan.rotation.y,
+        centerCan.rotation.y,
         0,
         easedT
       );
 
       leftCan.rotation.set(0, targetRotationY, 0);
-      initialCan.rotation.set(0, targetRotationY, 0);
+      centerCan.rotation.set(0, targetRotationY, 0);
       rightCan.rotation.set(0, targetRotationY, 0);
 
       // Start moving side cans earlier
@@ -620,13 +808,17 @@ function setupScrollAnimations(updateFruitCallback) {
         leftCan.position.set(-7, -1, 0); // Reset X-position
         rightCan.position.set(7, -1, 0); // Reset X-position
         centerCan.position.set(7, -1, 0);
-        initialCan.position.set(0, -1, 0);
+        centerCan.position.set(0, -1, 0);
         leftCan.rotation.set(0, 0, 0);
-        initialCan.rotation.set(0, 0, 0);
+        centerCan.rotation.set(0, 0, 0);
         rightCan.rotation.set(0, 0, 0);
         centerCan.rotation.set(0, 0, 0);
         leftCan.visible = true;
         rightCan.visible = true;
+
+        // ✅ Restore initialCan position & visibility
+        initialCan.position.set(0, -1, 0);
+        initialCan.visible = true;
       }
     },
   });
@@ -646,20 +838,9 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 </div>
 <section class="hero">
-<video
-  class="hero-video"
-  muted
-  
-  preload="auto"
-  id="scrollVideo"
->
-  <source
-    src="https://res.cloudinary.com/do7dxrdey/video/upload/v1748825817/output_15fps_keyframe_zqjw3p.mp4"
-    type="video/mp4"
-  />
-</video>
+
+
 <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png" class="donchico-image" />
-<h1>Stay thirsty... The Don is on his way!</h1>
 <p>The fizzy world of soda had surrendered to the ordinary—until Don Chico stepped in. A legend. A rebel. A mastermind of flavour.</p>
 </section>
   
@@ -935,7 +1116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  function updateFruitIndex(direction) {
+  function updateFruitIndex(direction, progress) {
     // Handle initial scroll
     if (currentFruitIndex === -1) {
       currentFruitIndex = 0;
@@ -965,8 +1146,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (direction === "up" && currentFruitIndex > 0) {
       currentFruitIndex -= 1;
     }
-
-    updateBackgroundImage(currentFruitIndex);
 
     showFruit(currentFruitIndex);
     const fruitEl = fruits[currentFruitIndex];
@@ -1169,98 +1348,6 @@ document.addEventListener("DOMContentLoaded", () => {
     pin: true,
     pinSpacing: false,
     anticipatePin: 1,
-  });
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const video = document.getElementById("scrollVideo");
-  const heroSection = document.querySelector(".hero");
-  const videoMask = document.getElementById("videoMask");
-
-  if (!video || !heroSection || !videoMask) return;
-
-  // Pause and reset before playing
-  video.pause();
-  video.currentTime = 0;
-
-  // Try to play, but catch any autoplay errors
-  video.play().catch(() => {
-    // Autoplay might be blocked; mute video to allow autoplay on some browsers
-    video.muted = true;
-    video.play().catch(() => {});
-  });
-
-  video.addEventListener("loadedmetadata", () => {
-    // Make sure currentTime is at 0 once metadata is loaded
-    if (video.currentTime !== 0) {
-      video.currentTime = 0;
-    }
-  });
-
-  function updateMaskOpacityOnScroll() {
-    const rect = heroSection.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-
-    let scrollFraction = 0;
-    if (rect.top <= 0 && rect.bottom >= 0) {
-      scrollFraction = 1 - rect.bottom / rect.height;
-    } else if (rect.top > 0) {
-      scrollFraction = 0;
-    } else if (rect.bottom < 0) {
-      scrollFraction = 1;
-    }
-
-    scrollFraction = Math.min(Math.max(scrollFraction, 0), 1);
-
-    // Map scrollFraction 0->1 to mask opacity 0.8->0
-    const opacity = 0.8 * (1 - scrollFraction);
-
-    videoMask.style.opacity = opacity;
-
-    requestAnimationFrame(updateMaskOpacityOnScroll);
-  }
-
-  requestAnimationFrame(updateMaskOpacityOnScroll);
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const video = document.getElementById("scrollVideo");
-  const heroSection = document.querySelector(".hero");
-
-  if (!video || !heroSection) return;
-
-  video.addEventListener("loadedmetadata", () => {
-    const duration = video.duration;
-    let lastTime = 0;
-
-    function updateVideoOnScroll() {
-      const rect = heroSection.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      if (rect.top < windowHeight && rect.bottom > 0) {
-        const scrollPosition = windowHeight - rect.top;
-        const totalScrollable = windowHeight + rect.height;
-
-        let scrollFraction = scrollPosition / totalScrollable;
-        scrollFraction = Math.min(Math.max(scrollFraction, 0), 1);
-
-        const newTime = duration * scrollFraction;
-
-        // Only update currentTime if difference > 0.1 seconds to reduce spamming
-        if (Math.abs(newTime - lastTime) > 0.1 && video.readyState >= 2) {
-          try {
-            video.currentTime = newTime;
-            lastTime = newTime;
-          } catch (e) {
-            // Ignore errors like invalid seek times
-          }
-        }
-      }
-
-      requestAnimationFrame(updateVideoOnScroll);
-    }
-
-    requestAnimationFrame(updateVideoOnScroll);
   });
 });
 
