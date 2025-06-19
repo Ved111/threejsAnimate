@@ -135,6 +135,54 @@ function updateBackgroundImage(index) {
 let scene = null;
 
 function initThreeJS() {
+  const ASSET_URLS = [
+    // Images
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067031/IMG_2126_1_tesfjm.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067028/IMG_2125_1_ojbhu5.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6110_li3uxr.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6111_gpzjeq.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6109_z0i9vk.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.53.54_PM-removebg-preview_awbuwn.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750159941/de7b6738e9c3be8feb23abc4b1116b8d-removebg-preview_1_h5zpws.png",
+
+    // Videos
+    "https://res.cloudinary.com/do7dxrdey/video/upload/v1745594133/soda-can-opening-169337_aekjbs.mp3",
+  ];
+
+  function preloadAsset(url) {
+    return new Promise((resolve, reject) => {
+      const isImage = /\.(png|jpe?g|webp|gif)$/i.test(url);
+      const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
+      const isAudio = /\.(mp3|wav)$/i.test(url);
+
+      if (isImage) {
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;
+        img.onerror = reject;
+      } else if (isVideo || isAudio) {
+        const media = document.createElement(isVideo ? "video" : "audio");
+        media.src = url;
+        media.onloadeddata = resolve;
+        media.onerror = reject;
+      } else {
+        // fallback: just resolve
+        resolve();
+      }
+    });
+  }
+
+  // Start asset preloading
+  const preloadAssetsPromise = Promise.allSettled(
+    ASSET_URLS.map(preloadAsset)
+  ).then(() => {
+    console.log("✅ Asset preload completed (errors ignored)");
+  });
+
   scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
@@ -151,6 +199,10 @@ function initThreeJS() {
   renderer.setPixelRatio(
     window.devicePixelRatio < 2 ? window.devicePixelRatio : 2
   );
+
+  renderer.setClearColor(0xffffff, 0);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
   renderer.setClearColor(0xffffff, 0); // Fully transparent background
   renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -199,95 +251,76 @@ function initThreeJS() {
   const keyLight = new THREE.DirectionalLight(0xffffff, 2);
   keyLight.position.set(10, 10, 10);
   scene.add(keyLight);
-  const loader = new GLTFLoader();
 
-  // GLB URLs for three cans
+  const loader = new GLTFLoader();
   const modelURLs = {
     initial:
       "https://res.cloudinary.com/do7dxrdey/image/upload/v1750236870/DCcanWithENGRAVEDlogo_2_ecjm5i_dobnwk.glb",
     center:
       "https://res.cloudinary.com/do7dxrdey/image/upload/v1747977846/appleCOT_tibxq0.glb",
-
     left: "https://res.cloudinary.com/do7dxrdey/image/upload/v1747987124/starberry_yeswvi.glb",
     right:
       "https://res.cloudinary.com/do7dxrdey/image/upload/v1747923870/2.44_u6yamm.glb",
   };
 
-  // Load all cans
-  Promise.all(
-    Object.entries(modelURLs).map(
-      ([key, url]) =>
-        new Promise((resolve, reject) => {
-          loader.load(
-            url,
-            (gltf) => {
-              const model = gltf.scene;
+  const loadModelPromises = Object.entries(modelURLs).map(([key, url]) => {
+    return new Promise((resolve, reject) => {
+      loader.load(
+        url,
+        (gltf) => {
+          const model = gltf.scene;
+          const box = new THREE.Box3().setFromObject(model);
+          const center = box.getCenter(new THREE.Vector3());
+          const size = box.getSize(new THREE.Vector3());
+          model.position.sub(center);
+          model.position.y = window.innerWidth < 768 ? 0 : -1;
+          model.scale.set(0.6, 0.6, 0.6);
 
-              // Center and scale the model
-              const box = new THREE.Box3().setFromObject(model);
-              const center = box.getCenter(new THREE.Vector3());
-              const size = box.getSize(new THREE.Vector3());
-              model.position.sub(center);
-              model.position.y = isMobile ? 0 : -1;
-              model.scale.set(0.6, 0.6, 0.6);
-
-              model.traverse((child) => {
-                if (
-                  child.isMesh &&
-                  child.material &&
-                  child.material.isMeshStandardMaterial
-                ) {
-                  const oldMat = child.material;
-
-                  // Replace material with custom MeshStandardMaterial
-                  const newMat = new THREE.MeshStandardMaterial({
-                    color: oldMat.color || new THREE.Color(0xffffff),
-                    metalness: 1,
-                    roughness: 0.5,
-                    envMapIntensity: 2,
-                    map: oldMat.map || null,
-                  });
-
-                  newMat.transparent = false; // Fully opaque
-                  newMat.opacity = 1; // Full visibility
-                  newMat.alphaTest = 0.0; // Disable alpha cutoff
-                  newMat.side = THREE.FrontSide; // Optional: use FrontSide for better performance
-                  newMat.depthWrite = true;
-                  newMat.needsUpdate = true;
-
-                  if (newMat.map) {
-                    newMat.map.encoding = THREE.sRGBEncoding;
-                    newMat.map.needsUpdate = true;
-                    newMat.alphaMap = null; // Disable alpha influence from texture
-                  }
-
-                  child.material = newMat;
-
-                  // Enable shadows
-                  child.castShadow = true;
-                  child.receiveShadow = true;
-
-                  // Ensure good lighting
-                  child.geometry.computeVertexNormals();
-                }
+          model.traverse((child) => {
+            if (
+              child.isMesh &&
+              child.material &&
+              child.material.isMeshStandardMaterial
+            ) {
+              const oldMat = child.material;
+              const newMat = new THREE.MeshStandardMaterial({
+                color: oldMat.color || new THREE.Color(0xffffff),
+                metalness: 1,
+                roughness: 0.5,
+                envMapIntensity: 2,
+                map: oldMat.map || null,
               });
+              newMat.transparent = false; // Fully opaque
+              newMat.opacity = 1; // Full visibility
+              newMat.alphaTest = 0.0; // Disable alpha cutoff
+              newMat.side = THREE.FrontSide; // Optional: use FrontSide for better performance
+              newMat.depthWrite = true;
+              newMat.needsUpdate = true;
+              if (newMat.map) {
+                newMat.map.encoding = THREE.sRGBEncoding;
+                newMat.map.needsUpdate = true;
+                newMat.alphaMap = null;
+              }
 
-              resolve({ key, model, size });
-            },
-            undefined,
-            (error) => {
-              console.error(`❌ Error loading ${key} can:`, error);
-              reject(error);
+              child.material = newMat;
+              child.castShadow = true;
+              child.receiveShadow = true;
+              child.geometry.computeVertexNormals();
             }
-          );
-        })
-    )
-  )
-    .then((results) => {
-      let maxWidth = 0;
+          });
 
-      results.forEach(({ key, model, size }) => {
-        // Position the cans
+          resolve({ key, model, size });
+        },
+        undefined,
+        (err) => reject(err)
+      );
+    });
+  });
+
+  Promise.all([preloadAssetsPromise, Promise.all(loadModelPromises)])
+    .then(([_, models]) => {
+      let maxWidth = 0;
+      models.forEach(({ key, model, size }) => {
         if (key === "left") {
           model.rotation.set(0, 0, 0);
           model.position.x = -7;
@@ -296,33 +329,23 @@ function initThreeJS() {
           model.rotation.set(0, 0, 0);
           model.position.x = 7;
           rightCan = model;
-        }
-
-        if (key === "center") {
+        } else if (key === "center") {
           model.rotation.set(0, 0, 0);
           model.position.x = 7;
-
           centerCan = model;
-        }
-        if (key === "initial") {
-          // ➤ original initialCan: #c78345
+        } else if (key === "initial") {
           updateModelColor(model, "#619b58");
           model.position.x = 0;
           model.rotation.set(0, 0, 0);
           initialCan = model;
-          scene.add(initialCan);
-
-          // ➤ Clone for initialLeftCan: #619b58
           initialLeftCan = model.clone(true);
           updateModelColor(initialLeftCan, "#c78345");
           initialLeftCan.position.x = window.innerWidth < 768 ? -0.9 : -1;
-          scene.add(initialLeftCan);
-
-          // ➤ Clone for initialRightCan: #c67578
           initialRightCan = model.clone(true);
           updateModelColor(initialRightCan, "#c67578");
           initialRightCan.position.x = window.innerWidth < 768 ? 0.9 : 1;
-          scene.add(initialRightCan);
+
+          scene.add(initialCan, initialLeftCan, initialRightCan);
         }
 
         scene.add(model);
@@ -332,12 +355,10 @@ function initThreeJS() {
       initialCan.visible = false;
       initialLeftCan.visible = false;
       initialRightCan.visible = false;
-
       modelLoaded = true;
 
       document.body.classList.add("no-scroll");
 
-      // ✅ Hide intro screen now
       const intro = document.querySelector(".intro-screen");
       const audio = new Audio(
         "https://res.cloudinary.com/do7dxrdey/video/upload/v1745594133/soda-can-opening-169337_aekjbs.mp3"
@@ -347,26 +368,21 @@ function initThreeJS() {
         intro.style.opacity = "0";
         document.body.classList.remove("no-scroll");
         audio.play();
-
         setTimeout(() => {
           intro.style.display = "none";
-        }, 0);
-      }, 0); // Optional delay
+        }, 300);
+      }, 100);
 
-      // Adjust camera to fit the largest model
       camera.position.z = maxWidth * 2;
-
-      const isMobile = window.innerWidth < 768;
-      if (isMobile) {
-        camera.position.z *= 1.5; // Zoom out slightly for mobile
+      if (window.innerWidth < 768) {
+        camera.position.z *= 1.5;
       }
       camera.updateProjectionMatrix();
 
-      // Start rendering
       animate();
     })
     .catch((err) => {
-      console.error("🚨 Failed to load models:", err);
+      console.error("🚨 Failed to load models or assets:", err);
     });
 
   function animate() {
@@ -376,11 +392,8 @@ function initThreeJS() {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
     renderer.outputEncoding = THREE.sRGBEncoding;
-
     renderer.render(scene, camera);
   }
-
-  animate();
 }
 
 let hasCollided = false;
