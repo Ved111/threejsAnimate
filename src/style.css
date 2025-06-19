@@ -46,12 +46,13 @@
 
 .fruit-2-img {
   margin-top: 34vh;
-  margin-right: 19vw;
+  margin-right: 11vw;
+
 }
 
 .fruit-3-img {
   margin-top: 34vh;
-  margin-left: 19vw;
+  margin-left: 11vw;
 }
 
 .fruit-text {
@@ -142,8 +143,8 @@
 
 
 .fruit-1-img {
-  margin-top: 31vh;
-  margin-left: 19vw;
+  margin-top: 23vh;
+  margin-left: 11vw;
   animation: slowBounce 1s ease-in-out infinite;
 
 }
@@ -184,21 +185,25 @@ h1 {
   font-size: 5vw;
   font-weight: 300;
   line-height: 100%;
-  font-family: 'Roboto', sans-serif; /* Google Font */
+  font-family: 'ActiveOne', serif; /* Custom OTF Font */
 }
 
 h2 {
   font-size: 2.5vw;
   font-weight: 500;
   line-height: 100%;
-  font-family: 'Roboto', sans-serif; /* Google Font */
+  font-family: 'ActiveOne', serif; /* Custom OTF Font */
 }
 
 p {
   font-size: 16px;
   font-weight: 500;
   line-height: 100%;
-  font-family: 'ActiveOne', serif; /* Custom OTF Font */
+  font-family: 'Roboto', sans-serif; /* Google Font */
+  line-height: 22px;
+  word-spacing: 8px;
+  letter-spacing: 1px;
+  font-size: 20px;
 }
 
 .model {
@@ -207,6 +212,11 @@ p {
   height: 100vh;
   background: #fefdfd;
   z-index: 10;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  background-image: url('https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png');
 }
 
 section {
@@ -233,7 +243,6 @@ padding: 0 80px;
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
   gap: 1em;
   z-index: 10;
@@ -244,14 +253,15 @@ padding: 0 80px;
 
 
 .hero p {
-  width: 50%;
   text-align: center;
   line-height: 22px;
   word-spacing: 8px;
   letter-spacing: 1px;
   font-size: 20px;
   color: #a7251a;
-  margin-bottom: 3vh;
+  margin-bottom: 12vh;
+  font-family: 'ActiveOne', serif; /* Custom OTF Font */
+
 }
 
 .info {
@@ -661,6 +671,11 @@ align-items: center;
   z-index: 2;
 }
 
+.can-right {
+  margin-top: 30px;
+  align-self: flex-start;
+}
+
 .can-right:hover {
   transform: scale(1.15) rotate(8deg);
   z-index: 2;
@@ -679,27 +694,38 @@ align-items: center;
 
 
 .can-hero-section {
-  padding: 100px 20px 80px;
+  padding: 3vh 20px 80px;
   text-align: center;
-  background-color: white;
-  z-index: 10;
+  z-index: 11;
+  background-image: url('');
 
   background-size: cover;
   background-repeat: repeat-y;
   background-position: center;
+
+}
+
+.can-hero-section.superimposed {
+  position: fixed;
+  z-index: 11;
+  background-image: url('https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png');
+
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999; /* Ensure it's on top */
 }
 
 .can-group {
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  gap: 30px;
-  margin-bottom: 60px;
-  perspective: 1000px;
+  gap: 53px;
+  margin: 5vh 0;
 }
 
 .can {
-  height: 500px;
+  height: 383px;
   transition: transform 0.4s ease;
   transform-origin: bottom center;
 }
@@ -925,6 +951,7 @@ align-items: center;
   height: auto;
   padding-bottom: 40px;
   margin-top: 3vh;
+  margin-bottom: auto;
 }
 
 .intro-screen {
@@ -940,6 +967,10 @@ align-items: center;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+
+body.no-scroll {
+  overflow: hidden;
 }
 
 .logo-container {
@@ -958,12 +989,23 @@ align-items: center;
   justify-content: center;
 }
 
-.flavor-img {
-  width: 60px;
-  height: auto;
-  object-fit: contain;
-
+.flavor-circle {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #c83f3f; /* red circle */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
 }
+
+.flavor-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
 
 .shimmer {
   animation: shimmer 1s infinite linear;
@@ -999,6 +1041,23 @@ align-items: center;
     margin-right: 0;
   }
 
+  .hero p {
+    margin-bottom: 25vh;
+  }
+
+  .fruit-1-img {
+    margin-top: 5vh;
+    margin-left: 19vw;
+  }
+
+  .fruit-2-img {
+    margin-right: 19vw;
+  }
+
+  .fruit-3-img {
+    margin-left: 19vw;
+  }
+
   .heading-info-container {
     width: 100%;
   }
@@ -1008,7 +1067,7 @@ align-items: center;
   }
 
   .fruit-1 {
-    height: 12vh;
+    height: 8vh;
   }
 
   .info h1 {
@@ -1152,7 +1211,7 @@ align-items: center;
   padding: 4rem 2rem;
   margin: auto;
   font-family: sans-serif;
-  z-index: 10;
+  z-index: 12;
   background: #fafafa;
   height: unset;
 }
@@ -1189,19 +1248,26 @@ align-items: center;
   border: none;
   font-size: 1.1rem;
   cursor: pointer;
+  font-family: 'ActiveOne', serif; /* Custom OTF Font */
+  line-height: 22px;
+  word-spacing: 8px;
+  letter-spacing: 1px;
+  font-size: 20px;
 }
 
 .faq-answer {
-  max-height: 0;
   overflow: hidden;
   padding: 0 1rem;
+  max-height: 0;
   background-color: #fff;
   transition: max-height 0.4s ease, padding 0.3s ease;
 }
 
 .faq-item.active .faq-answer {
-  max-height: 300px;
-  padding: 1rem;
+  overflow: hidden;
+  padding: 0 1rem;
+  max-height: 0;
+  transition: max-height 0.4s ease, padding 0.3s ease;
 }
 
 .faq-image {
@@ -1209,7 +1275,9 @@ align-items: center;
   display: flex;
   justify-content: center;
   align-items: center;
+  max-height: 80vh;
 }
+
 
 .faq-image img {
   max-width: 100%;
@@ -1219,14 +1287,13 @@ align-items: center;
 
 
 .recipe-section {
-  height: 100vh;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   background: linear-gradient(145deg, #fff9f9, #ffeaea);
-  z-index: 10;
+  z-index: 12;
 }
 
 .recipe-heading {
@@ -1276,8 +1343,9 @@ align-items: center;
   padding: 1rem;
   font-family: sans-serif;
   text-align: center;
-  z-index: 10;
+  z-index: 12;
   background-color: white;
+  height: 100vh;
 }
 
 .top-bar {
@@ -1306,14 +1374,16 @@ align-items: center;
   align-items: center;
   margin: 1rem 0;
   position: relative;
+  margin-top: 10vh;
 }
 
 .main-can {
-  width: 120px;
+  width: 100px;
   z-index: 2;
   position: relative;
   height: auto;
   transition: transform 0.3s ease, opacity 0.3s ease;
+  padding-top: 2vh;
 }
 
 .fade-out {
@@ -1328,20 +1398,19 @@ align-items: center;
 
 .can-bg {
   position: absolute;
-  width: 90px;
+  width: 100px;
   height: auto;
-  opacity: 0.5;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
 }
 
 .can-bg.left {
-  left: 10%;
+  left: 4%;
 }
 
 .can-bg.right {
-  right: 10%;
+  right: 4%;
 }
 
 .nav-arrow {
@@ -1431,15 +1500,15 @@ align-items: center;
 
   .can-hero-section {
     display: none;
-  }
-
+  } 
+ 
   .mobile-can-ui {
     display: block;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     transition: background-image 0.4s ease;
-  }
+  } 
 
   .review-section {
     padding: 3rem 1rem;

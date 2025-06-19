@@ -33,7 +33,6 @@ let canIsCentered = false; // global flag outside ScrollTrigger
 
 // Ensure DOM is ready before initializing Three.js
 window.addEventListener("DOMContentLoaded", () => {
-  console.log("✅ DOM Loaded");
   initThreeJS();
 });
 
@@ -54,7 +53,7 @@ function replaceInitialCanWithGLB(url, scene, hex) {
       newModel.position.sub(center);
 
       // Shift it up so its base sits at y = 0
-      newModel.position.y = -1;
+      newModel.position.y = isMobile ? 0 : -1;
       newModel.scale.set(0.6, 0.6, 0.6);
 
       // Fix materials
@@ -120,6 +119,7 @@ function updateModelColor(model, colorHex) {
 
 const backgroundImages = [
   "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png",
+  "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png",
   "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067031/IMG_2126_1_tesfjm.png",
   "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067028/IMG_2125_1_ojbhu5.png",
 ];
@@ -127,6 +127,7 @@ const backgroundImages = [
 function updateBackgroundImage(index) {
   const bgLayer = document.querySelector(".background-image-layer");
   if (bgLayer) {
+    console.log(index, "bg");
     bgLayer.style.backgroundImage = `url('${backgroundImages[index]}')`;
   }
 }
@@ -134,8 +135,6 @@ function updateBackgroundImage(index) {
 let scene = null;
 
 function initThreeJS() {
-  console.log("✅ Initializing Three.js");
-
   scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
@@ -147,10 +146,13 @@ function initThreeJS() {
   camera.position.set(0, 0, 10);
   camera.lookAt(0, 0, 0);
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+  renderer.shadowMap.enabled = false;
+  renderer.setPixelRatio(
+    window.devicePixelRatio < 2 ? window.devicePixelRatio : 2
+  );
   renderer.setClearColor(0xffffff, 0); // Fully transparent background
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
 
   const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
   scene.add(ambientLight);
@@ -193,7 +195,6 @@ function initThreeJS() {
     return;
   }
   modelContainer.appendChild(renderer.domElement);
-  console.log("✅ Renderer attached to .model");
 
   const keyLight = new THREE.DirectionalLight(0xffffff, 2);
   keyLight.position.set(10, 10, 10);
@@ -227,8 +228,7 @@ function initThreeJS() {
               const center = box.getCenter(new THREE.Vector3());
               const size = box.getSize(new THREE.Vector3());
               model.position.sub(center);
-              model.position.y = -1;
-              console.log("Initial center", -center.y);
+              model.position.y = isMobile ? 0 : -1;
               model.scale.set(0.6, 0.6, 0.6);
 
               model.traverse((child) => {
@@ -238,16 +238,6 @@ function initThreeJS() {
                   child.material.isMeshStandardMaterial
                 ) {
                   const oldMat = child.material;
-
-                  console.log(child.name, child.geometry?.uuid);
-
-                  if (
-                    oldMat.transparent ||
-                    oldMat.opacity < 1 ||
-                    oldMat.alphaTest > 0
-                  ) {
-                    console.log("Potential transparency issue in:", child.name);
-                  }
 
                   // Replace material with custom MeshStandardMaterial
                   const newMat = new THREE.MeshStandardMaterial({
@@ -316,7 +306,7 @@ function initThreeJS() {
         }
         if (key === "initial") {
           // ➤ original initialCan: #c78345
-          updateModelColor(model, "#c78345");
+          updateModelColor(model, "#619b58");
           model.position.x = 0;
           model.rotation.set(0, 0, 0);
           initialCan = model;
@@ -324,7 +314,7 @@ function initThreeJS() {
 
           // ➤ Clone for initialLeftCan: #619b58
           initialLeftCan = model.clone(true);
-          updateModelColor(initialLeftCan, "#619b58");
+          updateModelColor(initialLeftCan, "#c78345");
           initialLeftCan.position.x = window.innerWidth < 768 ? -0.9 : -1;
           scene.add(initialLeftCan);
 
@@ -338,7 +328,14 @@ function initThreeJS() {
         scene.add(model);
         maxWidth = Math.max(maxWidth, size.x, size.y, size.z);
       });
+
+      initialCan.visible = false;
+      initialLeftCan.visible = false;
+      initialRightCan.visible = false;
+
       modelLoaded = true;
+
+      document.body.classList.add("no-scroll");
 
       // ✅ Hide intro screen now
       const intro = document.querySelector(".intro-screen");
@@ -348,12 +345,13 @@ function initThreeJS() {
 
       setTimeout(() => {
         intro.style.opacity = "0";
+        document.body.classList.remove("no-scroll");
         audio.play();
 
         setTimeout(() => {
           intro.style.display = "none";
-        }, 800);
-      }, 500); // Optional delay
+        }, 0);
+      }, 0); // Optional delay
 
       // Adjust camera to fit the largest model
       camera.position.z = maxWidth * 2;
@@ -434,7 +432,7 @@ function setupScrollAnimations(updateFruitCallback) {
     replaceInitialCanWithGLB(
       urlToLoad,
       scene,
-      newRange === 0 ? "#d09f5c" : null
+      newRange === 0 ? "#619b58" : null
     );
 
     // Update x position
@@ -442,7 +440,7 @@ function setupScrollAnimations(updateFruitCallback) {
       initialCan.position.x = xMovement * responsiveScale;
     }
 
-    updateBackgroundImage(newRange % 3); // or use a mapping if image order differs
+    updateBackgroundImage(newRange % 4); // or use a mapping if image order differs
   }
 
   ScrollTrigger.create({
@@ -455,30 +453,31 @@ function setupScrollAnimations(updateFruitCallback) {
 
       const t = self.progress;
 
-      const leftX = gsap.utils.interpolate(isMobile ? -0.9 : -1, -7, t);
-      const rightX = gsap.utils.interpolate(isMobile ? 0.9 : 1, 7, t);
-      const centerX = gsap.utils.interpolate(0, -2, t);
+      const centerX = gsap.utils.interpolate(0, isMobile ? -0.9 : -2, t);
 
-      // Animate X position
-      initialLeftCan.position.x = leftX;
-      initialRightCan.position.x = rightX;
       initialCan.position.x = centerX;
 
-      // Optional: fade out if needed
-      const fadeOutT = gsap.utils.clamp(0, 1, (t - 0.8) / 0.2);
+      // Animate side cans' Y position upward
+      const startY = isMobile ? 0 : -1;
+      const endY = 4; // move up (higher Y = up in camera view)
+      const upwardY = gsap.utils.interpolate(startY, endY, t);
+      initialLeftCan.position.y = upwardY;
+      initialRightCan.position.y = upwardY;
+
+      // Make sure they stay visible during scroll
       initialLeftCan.visible = true;
       initialRightCan.visible = true;
 
-      initialLeftCan.material.opacity = 1 - fadeOutT;
-      initialRightCan.material.opacity = 1 - fadeOutT;
-      initialLeftCan.material.transparent = true;
-      initialRightCan.material.transparent = true;
+      initialLeftCan.visible = true;
+      initialRightCan.visible = true;
     },
     onLeave: () => {
-      // Offscreen
-      initialLeftCan.position.x = -7;
-      initialRightCan.position.x = 7;
-      initialCan.position.x = -2;
+      initialCan.position.x = isMobile ? -0.9 : -2;
+    },
+    onEnter: () => {
+      initialCan.visible = true;
+      initialLeftCan.visible = true;
+      initialRightCan.visible = true;
     },
     onEnterBack: () => {
       // Restore positions
@@ -487,11 +486,17 @@ function setupScrollAnimations(updateFruitCallback) {
       initialLeftCan.visible = true;
       initialRightCan.visible = true;
 
-      initialLeftCan.position.x = isMobile ? -0.9 : -1;
-      initialRightCan.position.x = isMobile ? 0.9 : 1;
-
       initialCan.position.x = 0;
       centerCan.visible = false;
+
+      currentRange = -1; // reset to force GLB swap
+      const url =
+        "https://res.cloudinary.com/do7dxrdey/image/upload/v1749915409/DCcanWithENGRAVEDlogo_2_ecjm5i.glb";
+      replaceInitialCanWithGLB(url, scene, "#c78345"); // your base color for hero section
+      updateBackgroundImage(0); // set to first fruit background
+
+      initialLeftCan.position.y = isMobile ? 0 : -1;
+      initialRightCan.position.y = isMobile ? 0 : -1;
     },
   });
 
@@ -527,7 +532,6 @@ function setupScrollAnimations(updateFruitCallback) {
       initialCan.visible = true;
     },
     onUpdate: (self) => {
-      console.log("swapCount", swapCount);
       if (!modelLoaded) return;
 
       const progress = self.progress;
@@ -573,8 +577,6 @@ function setupScrollAnimations(updateFruitCallback) {
         screenWidth
       );
       initialCan.position.x = xMovement * responsiveScale;
-
-      console.log(progress, "progress");
 
       const textIndices = [0, 1, 2];
 
@@ -629,8 +631,6 @@ function setupScrollAnimations(updateFruitCallback) {
       const reachedRight =
         xMovement >= 2 - threshold && lastXMovement < 2 - threshold;
 
-      console.log(xMovement);
-
       const direction = scrollVelocity > 0 ? "down" : "up";
 
       // if (
@@ -670,7 +670,6 @@ function setupScrollAnimations(updateFruitCallback) {
       if (!isAtExtreme) {
         didSwapRecently = false;
       }
-      console.log("actualSwapCount", actualSwapCount, xMovement);
 
       lastXMovement = xMovement;
     },
@@ -687,21 +686,21 @@ function setupScrollAnimations(updateFruitCallback) {
           x: 0.001,
           y: 0.001,
           z: 0.001,
-          duration: 0.5,
+          duration: 0.01,
           ease: "power2.out",
         });
         gsap.to(leftCan.scale, {
           x: 0.001,
           y: 0.001,
           z: 0.001,
-          duration: 0.5,
+          duration: 0.01,
           ease: "power2.out",
         });
         gsap.to(rightCan.scale, {
           x: 0.001,
           y: 0.001,
           z: 0.001,
-          duration: 0.5,
+          duration: 0.01,
           ease: "power2.out",
         });
       }
@@ -768,18 +767,9 @@ function setupScrollAnimations(updateFruitCallback) {
       }
 
       // Thrust down: Y = -0.05 → -1
-      centerCan.position.y = gsap.utils.interpolate(-1, -1.1, dropT);
-
-      // Animate all rotations from (0, 0, 0) to (0, 2, 0)
-      const targetRotationY = gsap.utils.interpolate(
-        centerCan.rotation.y,
-        0,
-        easedT
-      );
-
-      leftCan.rotation.set(0, targetRotationY, 0);
-      centerCan.rotation.set(0, targetRotationY, 0);
-      rightCan.rotation.set(0, targetRotationY, 0);
+      if (isMobile) {
+        centerCan.position.y = gsap.utils.interpolate(0, -0.1, dropT);
+      } else centerCan.position.y = gsap.utils.interpolate(-1, -1.1, dropT);
 
       // Start moving side cans earlier
       const appearStart = 0.7;
@@ -794,13 +784,22 @@ function setupScrollAnimations(updateFruitCallback) {
         leftCan.visible = false;
         rightCan.visible = false;
       }
+      // Animate all rotations from (0, 0, 0) to (0, 2, 0)
+      const targetRotationY = gsap.utils.interpolate(
+        centerCan.rotation.y,
+        0,
+        easedT
+      );
 
-      const isMobile = window.innerWidth < 768;
-      const leftTargetX = isMobile ? -0.9 : -1;
-      const rightTargetX = isMobile ? 0.9 : 1;
+      centerCan.rotation.set(0, targetRotationY, 0);
+
+      const leftTargetX = isMobile ? -0.8 : -1;
+      const rightTargetX = isMobile ? 0.8 : 1;
 
       leftCan.position.x = gsap.utils.interpolate(0, leftTargetX, earlyT);
       rightCan.position.x = gsap.utils.interpolate(0, rightTargetX, earlyT);
+      leftCan.rotation.set(0, -0.6, 0);
+      rightCan.rotation.set(0, -0.32, 0);
     },
     onLeaveBack: () => {
       // Reset positions when scrolling back up
@@ -822,6 +821,105 @@ function setupScrollAnimations(updateFruitCallback) {
       }
     },
   });
+
+  if (isMobile) {
+    ScrollTrigger.create({
+      trigger: ".poppy-section",
+      start: "top 1%", // Begin right after your current one ends
+      end: () => {
+        const section = document.querySelector(".poppy-section");
+        return `+=${section.offsetHeight * 0.2}`; // 20% of its height
+      },
+      scrub: true,
+      onUpdate: (self) => {
+        const t = self.progress;
+
+        if (leftCan && rightCan && centerCan) {
+          // Slide leftCan left
+
+          if (isMobile) {
+            leftCan.position.y = 0;
+            rightCan.position.y = 0;
+          } else {
+            leftCan.position.y = -1;
+            rightCan.position.y = -1;
+          }
+          // Hide centerCan once the poppy-section is 20% scrolled past
+          if (t > 0.2) {
+            centerCan.visible = false;
+          } else {
+            centerCan.visible = true;
+          }
+        }
+      },
+      onLeave: () => {
+        // Fully hide when done
+        // leftCan.visible = false;
+        // rightCan.visible = false;
+        // centerCan.visible = false;
+      },
+      onEnterBack: () => {
+        // Restore visibility and opacity
+        leftCan.visible = true;
+        rightCan.visible = true;
+        centerCan.visible = true;
+      },
+    });
+  }
+
+  ScrollTrigger.create({
+    trigger: ".poppy-section",
+    start: "top top", // 🔥 Triggers when the top of .poppy-section hits the top of viewport
+    end: "top top-=1", // Ends 1px after leaving
+    onLeave: () => {
+      if (!isMobile) {
+        centerCan.visible = false;
+        leftCan.visible = false;
+        rightCan.visible = false;
+      }
+    },
+    onEnterBack: () => {
+      if (!isMobile) {
+        centerCan.visible = true;
+        leftCan.visible = true;
+        rightCan.visible = true;
+      }
+    },
+  });
+
+  ScrollTrigger.create({
+    trigger: ".model",
+    start: "top top", // or adjust based on when you want them hidden
+    end: "bottom top",
+    onEnter: () => {
+      if (modelLoaded) {
+        [
+          initialCan,
+          initialLeftCan,
+          initialRightCan,
+          centerCan,
+          leftCan,
+          rightCan,
+        ].forEach((can) => {
+          if (can) can.visible = false;
+        });
+      }
+    },
+    onEnterBack: () => {
+      if (modelLoaded) {
+        [
+          initialCan,
+          initialLeftCan,
+          initialRightCan,
+          centerCan,
+          leftCan,
+          rightCan,
+        ].forEach((can) => {
+          if (can) can.visible = true;
+        });
+      }
+    },
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -831,10 +929,17 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="logo-container">
     <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png" class="main-logo shimmer" />
     <div class="flavors-row">
-      <img src='https://res.cloudinary.com/do7dxrdey/image/upload/v1744616117/12_1_tgay16.png' class="flavor-img shimmer" />
-      <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744617210/38_1_ppivfj.png" class="flavor-img shimmer" />
-      <img src='https://res.cloudinary.com/do7dxrdey/image/upload/v1744617469/25_1_y9hpks.png' class="flavor-img shimmer" />
-    </div>
+  <div class="flavor-circle">
+    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744616117/12_1_tgay16.png" class="flavor-img shimmer" />
+  </div>
+  <div class="flavor-circle">
+    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744617210/38_1_ppivfj.png" class="flavor-img shimmer" />
+  </div>
+  <div class="flavor-circle">
+    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744617469/25_1_y9hpks.png" class="flavor-img shimmer" />
+  </div>
+</div>
+
   </div>
 </div>
 <section class="hero">
@@ -887,20 +992,26 @@ document.addEventListener("DOMContentLoaded", () => {
 <audio id="explosion-sound" src="/sounds/fruit-explosion.mp3" preload="auto"></audio>
 <div id="dom-explosion-container"></div>
 <section class="can-hero-section">
+<div class="can-text">
+<h2 id="can-title">Pop. Sip. Repeat.</h2>
+<p id="can-description">Three bold flavors, zero regrets. Which one will you choose?</p>
+
+</div>
   <div class="can-group">
   <img 
-  src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749066942/Adobe_Express_-_file_4_1_druku2.png" 
-  alt="Watermelon Sorbet" 
-  class="can"
-  data-flavor="Watermelon Sorbet" 
-  data-color="#4BAB55" 
-  data-darker-color="#3a8a41"
-    data-text="Zesty, juicy, and refreshingly wild. Watermelon Sorbet is here to wake you up."
-  data-btn="Buy Watermelon Sorbet"
-  data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6110_li3uxr.png"
-  />
+  src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.53.54_PM-removebg-preview_awbuwn.png" 
+  alt="Strawberry Cream" 
+  class="can can-left" 
+  data-flavor="Strawberry Cream" 
+  data-color="#ee6876" 
+  data-darker-color="#c06a23"
+  data-text="Berry bold and bubbly. Strawberry Cream brings the sweet punch you crave."
+  data-btn="Buy Strawberry Cream"
+  data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6111_gpzjeq.png"
+/>
+
   <img 
-  src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749066841/Adobe_Express_-_file_2_1_aci4ev.png" 
+  src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png" 
   alt="Applecot Relish" 
   class="can can-right"
   data-flavor="Applecot Relish" 
@@ -914,31 +1025,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 <img 
-  src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749067023/Adobe_Express_-_file_3_1_syhwrv.png" 
-  alt="Strawberry Cream" 
-  class="can can-left" 
-  data-flavor="Strawberry Cream" 
-  data-color="#ee6876" 
-  data-darker-color="#c06a23"
-  data-text="Berry bold and bubbly. Strawberry Cream brings the sweet punch you crave."
-  data-btn="Buy Strawberry Cream"
-  data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6111_gpzjeq.png"
+src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png" 
+alt="Watermelon Sorbet" 
+class="can"
+data-flavor="Watermelon Sorbet" 
+data-color="#4BAB55" 
+data-darker-color="#3a8a41"
+  data-text="Zesty, juicy, and refreshingly wild. Watermelon Sorbet is here to wake you up."
+data-btn="Buy Watermelon Sorbet"
+data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6110_li3uxr.png"
 />
 
 
 
   </div>
 
-  <div class="can-text">
-    <h2 id="can-title">Pop. Sip. Repeat.</h2>
-    <p id="can-description">Three bold flavors, zero regrets. Which one will you choose?</p>
-    <div class="btn-row" id="btn-row">
-    <button class="soda-btn" style="background: linear-gradient(145deg, #ee6876, #d0485c);">Buy Strawberry Cream</button>
-    <button class="soda-btn" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">Buy Watermelon Sorbet</button>
-    <button class="soda-btn" style="background: linear-gradient(145deg, #F4812C, #c06a23);">Buy Applecot Relish</button>
-    </div>
-  </div>
+  <div class="btn-row" id="btn-row">
+<button class="soda-btn" style="background: linear-gradient(145deg, #ee6876, #d0485c);">Buy Strawberry Cream</button>
+<button class="soda-btn" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">Buy Watermelon Sorbet</button>
+<button class="soda-btn" style="background: linear-gradient(145deg, #F4812C, #c06a23);">Buy Applecot Relish</button>
+</div>
+ 
 </section>
+
 
 <section class="mobile-can-ui">
   <!-- Top Bar -->
@@ -980,7 +1089,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </section>
 
 <section class="recipe-section">
-  <h2 class="recipe-heading">Delicious Recipes</h2>
+  <h2 class="recipe-heading">Don's Recipes</h2>
   <div class="recipe-grid" id="recipe-grid">
     <!-- Cards will be injected by JavaScript -->
   </div>
@@ -1089,7 +1198,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   
 
-    <div class="model"></div>
+    <div class="model">
+    
+    </div>
   `;
 
   const fruits = [
@@ -1163,6 +1274,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ✅ Setup ScrollTrigger after fruitEl is defined
+
   setupScrollAnimations(updateFruitIndex);
 });
 
@@ -1170,17 +1282,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const flavors = [
     {
       name: "Watermelon Sorbet",
-      src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749066942/Adobe_Express_-_file_4_1_druku2.png",
+      src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png",
       bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6110_li3uxr.png",
     },
     {
       name: "Strawberry Cream",
-      src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067023/Adobe_Express_-_file_3_1_syhwrv.png",
+      src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.53.54_PM-removebg-preview_awbuwn.png",
       bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6111_gpzjeq.png",
     },
     {
       name: "Applecot Relish",
-      src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749066841/Adobe_Express_-_file_2_1_aci4ev.png",
+      src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png",
       bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6109_z0i9vk.png",
     },
   ];
@@ -1277,13 +1389,26 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   faqItems.forEach((item, index) => {
-    item.querySelector(".faq-question").addEventListener("click", () => {
-      // Close all
-      faqItems.forEach((el) => el.classList.remove("active"));
-      // Open current
-      item.classList.add("active");
-      // Update image
-      faqImage.src = images[index];
+    const question = item.querySelector(".faq-question");
+    const answer = item.querySelector(".faq-answer");
+
+    // Set default open one if it has class "active"
+    if (item.classList.contains("active")) {
+      answer.style.maxHeight = answer.scrollHeight + "px";
+    }
+
+    question.addEventListener("click", () => {
+      const isOpen = item.classList.contains("active");
+
+      faqItems.forEach((el) => {
+        el.classList.remove("active");
+        el.querySelector(".faq-answer").style.maxHeight = null;
+      });
+
+      if (!isOpen) {
+        item.classList.add("active");
+        answer.style.maxHeight = answer.scrollHeight + "px";
+      }
     });
   });
 });
@@ -1340,14 +1465,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 👇 ScrollTrigger to pin poppy section
+  const canHero = document.querySelector(".can-hero-section");
+
   ScrollTrigger.create({
-    trigger: ".poppy-section",
-    start: "top top",
-    end: "+=100%",
-    pin: true,
-    pinSpacing: false,
-    anticipatePin: 1,
+    trigger: ".can-hero-section",
+    start: "top bottom", // when .can-hero-section hits the bottom of viewport
+    end: "top top", // until it reaches top of viewport
+    onEnter: () => {
+      document.querySelector(".poppy-section").style.display = "none";
+      document.querySelector(".poppy-section").style.height = "0px";
+    },
+    onLeaveBack: () => {
+      document.querySelector(".poppy-section").style.display = "block";
+      document.querySelector(".poppy-section").style.height = "100vh"; // or whatever original height you used
+    },
   });
 });
 
