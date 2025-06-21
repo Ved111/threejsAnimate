@@ -6,6 +6,8 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 import "./style.css";
 import { openCanAudio } from "./openCanAudio";
+import { flavors } from "./utils";
+import { carouselGesture } from "./carouselGesture";
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -133,7 +135,6 @@ const backgroundImages = [
 function updateBackgroundImage(index) {
   const bgLayer = document.querySelector(".background-image-layer");
   if (bgLayer) {
-    console.log(index, "bg");
     bgLayer.style.backgroundImage = `url('${backgroundImages[index]}')`;
   }
 }
@@ -960,16 +961,16 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="logo-container">
   <p>Heee</p>
     <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png" class="main-logo shimmer" />
-    <div class="flavors-row">
-  <div class="flavor-circle">
-    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750412492/11_1_cukhbe.png" class="flavor-img shimmer" />
-  </div>
-  <div class="flavor-circle">
-    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750412499/37_1_vb6ngi.png" class="flavor-img shimmer" />
-  </div>
-  <div class="flavor-circle">
-    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744617469/25_1_y9hpks.png" class="flavor-img shimmer" />
-  </div>
+  <div class="flavors-row">
+    <div class="flavor-circle">
+      <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750412492/11_1_cukhbe.png" class="flavor-img shimmer" />
+    </div>
+    <div class="flavor-circle">
+      <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750412499/37_1_vb6ngi.png" class="flavor-img shimmer" />
+    </div>
+    <div class="flavor-circle">
+      <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744617469/25_1_y9hpks.png" class="flavor-img shimmer" />
+    </div>
 </div>
 
   </div>
@@ -1311,25 +1312,7 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_61
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const flavors = [
-    {
-      name: "Watermelon Sorbet",
-      src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png",
-      bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6110_li3uxr.png",
-    },
-    {
-      name: "Strawberry Cream",
-      src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.53.54_PM-removebg-preview_awbuwn.png",
-      bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6111_gpzjeq.png",
-    },
-    {
-      name: "Applecot Relish",
-      src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png",
-      bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6109_z0i9vk.png",
-    },
-  ];
-
-  let currentIndex = 0;
+  let currentIndex = { value: 0 };
 
   let isAnimating = false;
 
@@ -1338,9 +1321,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const rightBgCan = document.getElementById("right-bg-can");
   const leftArrow = document.querySelector(".nav-arrow.left");
   const rightArrow = document.querySelector(".nav-arrow.right");
+  const mobileCanUI = document.querySelector(".mobile-can-ui");
+
+  carouselGesture({
+    swipeArea: mobileCanUI,
+    carouselLength: flavors.length,
+    callback: updateMainCan,
+    currentIndex,
+    condition: isMobile,
+  });
 
   function updateMainCan(index) {
-    currentIndex = index;
+    currentIndex.value = index;
 
     // Smooth fade animation
     mainCan.classList.add("fade-out");
@@ -1358,16 +1350,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 👇 Set mobile background
     const mobileUI = document.querySelector(".mobile-can-ui");
-    mobileUI.style.backgroundImage = `url(${flavors[currentIndex].bg})`;
+    mobileUI.style.backgroundImage = `url(${flavors[currentIndex.value].bg})`;
   }
 
   leftArrow.addEventListener("click", () => {
-    const newIndex = (currentIndex - 1 + flavors.length) % flavors.length;
+    const newIndex = (currentIndex.value - 1 + flavors.length) % flavors.length;
     updateMainCan(newIndex);
   });
 
   rightArrow.addEventListener("click", () => {
-    const newIndex = (currentIndex + 1) % flavors.length;
+    const newIndex = (currentIndex.value + 1) % flavors.length;
     updateMainCan(newIndex);
   });
 
@@ -1379,7 +1371,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Initialize
-  updateMainCan(currentIndex);
+  updateMainCan(currentIndex.value);
 });
 
 document.addEventListener("DOMContentLoaded", () => {
