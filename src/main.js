@@ -53,7 +53,7 @@ function replaceInitialCanWithGLB(url, scene, hex) {
       newModel.position.sub(center);
 
       // Shift it up so its base sits at y = 0
-      newModel.position.y = isMobile ? 0 : -1;
+      newModel.position.y = isMobile ? -0.7 : -1;
       newModel.scale.set(0.6, 0.6, 0.6);
 
       // Fix materials
@@ -133,6 +133,18 @@ function updateBackgroundImage(index) {
 }
 
 let scene = null;
+
+function fadeOutIntro() {
+  const intro = document.querySelector(".intro-screen");
+  if (!intro) return;
+
+  intro.style.opacity = "0";
+  document.body.classList.remove("no-scroll");
+
+  setTimeout(() => {
+    intro.style.display = "none";
+  }, 300); // or 2000 if you want a delay
+}
 
 function initThreeJS() {
   const ASSET_URLS = [
@@ -273,7 +285,7 @@ function initThreeJS() {
           const center = box.getCenter(new THREE.Vector3());
           const size = box.getSize(new THREE.Vector3());
           model.position.sub(center);
-          model.position.y = window.innerWidth < 768 ? 0 : -1;
+          model.position.y = window.innerWidth < 768 ? -0.7 : -1;
           model.scale.set(0.6, 0.6, 0.6);
 
           model.traverse((child) => {
@@ -352,26 +364,15 @@ function initThreeJS() {
         maxWidth = Math.max(maxWidth, size.x, size.y, size.z);
       });
 
-      initialCan.visible = false;
-      initialLeftCan.visible = false;
-      initialRightCan.visible = false;
       modelLoaded = true;
+      fadeOutIntro();
 
-      document.body.classList.add("no-scroll");
-
-      const intro = document.querySelector(".intro-screen");
       const audio = new Audio(
         "https://res.cloudinary.com/do7dxrdey/video/upload/v1745594133/soda-can-opening-169337_aekjbs.mp3"
       );
 
-      setTimeout(() => {
-        intro.style.opacity = "0";
-        document.body.classList.remove("no-scroll");
-        audio.play();
-        setTimeout(() => {
-          intro.style.display = "none";
-        }, 300);
-      }, 100);
+      // Optional: play audio if you want, but don’t block fade
+      audio.play().catch(() => {});
 
       camera.position.z = maxWidth * 2;
       if (window.innerWidth < 768) {
@@ -416,45 +417,57 @@ function setupScrollAnimations(updateFruitCallback) {
   ) {
     if (!modelLoaded) return;
 
-    // Define custom soft-swap progress midpoints
-    const swapPoints = [0.12, 0.37, 0.62]; // we now only need 3 points
-
-    // Detect which range you're in
+    const swapPoints = [0.12, 0.37, 0.62];
     let newRange = 0;
+
     if (progress >= swapPoints[0] && progress < swapPoints[1]) {
       newRange = 1;
     } else if (progress >= swapPoints[1] && progress < swapPoints[2]) {
       newRange = 2;
     } else if (progress >= swapPoints[2]) {
-      newRange = 3; // this now covers 0.62 to 1
+      newRange = 3;
     }
 
     if (newRange === currentRange) return;
     currentRange = newRange;
 
-    // URLs for each can flavor
     const glbURLs = [
       "https://res.cloudinary.com/do7dxrdey/image/upload/v1750236870/DCcanWithENGRAVEDlogo_2_ecjm5i_dobnwk.glb",
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747923870/2.44_u6yamm.glb", // center
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747987124/starberry_yeswvi.glb", // left
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747977846/appleCOT_tibxq0.glb", // right
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747923870/2.44_u6yamm.glb",
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747987124/starberry_yeswvi.glb",
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747977846/appleCOT_tibxq0.glb",
     ];
 
     const urlToLoad = glbURLs[newRange];
 
-    replaceInitialCanWithGLB(
-      urlToLoad,
-      scene,
-      newRange === 0 ? "#619b58" : null
-    );
-
-    // Update x position
     if (initialCan) {
       initialCan.position.x = xMovement * responsiveScale;
     }
 
-    updateBackgroundImage(newRange % 4); // or use a mapping if image order differs
+    // ✅ Only update background if not near the beginning (range 0)
+
+    if (progress > 0.1) {
+      console.log(progress, "newRange");
+      updateBackgroundImage(newRange % 4);
+
+      replaceInitialCanWithGLB(
+        urlToLoad,
+        scene,
+        newRange === 0 ? "#619b58" : null
+      );
+    }
   }
+
+  const resetCansY = () => {
+    const y = isMobile ? -0.7 : -1;
+    if (initialCan && initialCan.visible) initialCan.position.y = y;
+    if (initialLeftCan && initialLeftCan.visible) initialLeftCan.position.y = y;
+    if (initialRightCan && initialRightCan.visible)
+      initialRightCan.position.y = y;
+    if (centerCan && centerCan.visible) centerCan.position.y = y;
+    if (leftCan && leftCan.visible) leftCan.position.y = y;
+    if (rightCan && rightCan.visible) rightCan.position.y = y;
+  };
 
   ScrollTrigger.create({
     trigger: ".hero-section",
@@ -467,11 +480,10 @@ function setupScrollAnimations(updateFruitCallback) {
       const t = self.progress;
 
       const centerX = gsap.utils.interpolate(0, isMobile ? -0.9 : -2, t);
-
       initialCan.position.x = centerX;
 
       // Animate side cans' Y position upward
-      const startY = isMobile ? 0 : -1;
+      const startY = isMobile ? -0.7 : -1;
       const endY = 4; // move up (higher Y = up in camera view)
       const upwardY = gsap.utils.interpolate(startY, endY, t);
       initialLeftCan.position.y = upwardY;
@@ -484,32 +496,41 @@ function setupScrollAnimations(updateFruitCallback) {
       initialLeftCan.visible = true;
       initialRightCan.visible = true;
     },
+
     onLeave: () => {
       initialCan.position.x = isMobile ? -0.9 : -2;
     },
+
     onEnter: () => {
       initialCan.visible = true;
       initialLeftCan.visible = true;
       initialRightCan.visible = true;
     },
-    onEnterBack: () => {
-      // Restore positions
-      lastXMovement = 0;
 
+    onEnterBack: () => {
+      lastXMovement = 0;
+      centerCan.visible = false;
+      currentRange = -1;
+
+      initialCan.visible = true;
       initialLeftCan.visible = true;
       initialRightCan.visible = true;
 
-      initialCan.position.x = 0;
-      centerCan.visible = false;
+      updateBackgroundImage(0);
+      replaceInitialCanWithGLB(
+        "https://res.cloudinary.com/do7dxrdey/image/upload/v1749915409/DCcanWithENGRAVEDlogo_2_ecjm5i.glb",
+        scene,
+        "#619b58"
+      );
 
-      currentRange = -1; // reset to force GLB swap
-      const url =
-        "https://res.cloudinary.com/do7dxrdey/image/upload/v1749915409/DCcanWithENGRAVEDlogo_2_ecjm5i.glb";
-      replaceInitialCanWithGLB(url, scene, "#c78345"); // your base color for hero section
-      updateBackgroundImage(0); // set to first fruit background
+      const baseY = isMobile ? -0.7 : -1;
 
-      initialLeftCan.position.y = isMobile ? 0 : -1;
-      initialRightCan.position.y = isMobile ? 0 : -1;
+      // ✅ Make sure this happens next frame after visibility is already set
+      requestAnimationFrame(() => {
+        initialCan.position.set(isMobile ? -0.9 : -2, baseY, 0);
+        initialLeftCan.position.set(isMobile ? -0.9 : -1, baseY, 0);
+        initialRightCan.position.set(isMobile ? 0.9 : 1, baseY, 0);
+      });
     },
   });
 
@@ -523,7 +544,7 @@ function setupScrollAnimations(updateFruitCallback) {
       resetSwapState();
       if (centerCan) {
         centerCan.visible = false;
-        centerCan.position.set(7, -1, 0); // move it right
+        centerCan.position.set(7, isMobile ? -0.7 : -1, 0); // move it right
       }
       initialLeftCan.visible = false;
       initialRightCan.visible = false;
@@ -535,14 +556,12 @@ function setupScrollAnimations(updateFruitCallback) {
 
     // 🧹 Optional: also reset when completely leaving the section forward
     onLeave: () => {
+      console.log("triggered");
       lastXMovement = 0;
       if (centerCan) {
         centerCan.visible = true;
-        centerCan.position.set(0, -1, 0); // restore position
+        centerCan.position.set(isMobile ? -0.7 : -1, -4, 0); // restore position
       }
-      initialLeftCan.visible = true;
-      initialRightCan.visible = true;
-      initialCan.visible = true;
     },
     onUpdate: (self) => {
       if (!modelLoaded) return;
@@ -781,7 +800,7 @@ function setupScrollAnimations(updateFruitCallback) {
 
       // Thrust down: Y = -0.05 → -1
       if (isMobile) {
-        centerCan.position.y = gsap.utils.interpolate(0, -0.1, dropT);
+        centerCan.position.y = gsap.utils.interpolate(-0.7, -0.8, dropT);
       } else centerCan.position.y = gsap.utils.interpolate(-1, -1.1, dropT);
 
       // Start moving side cans earlier
@@ -817,10 +836,9 @@ function setupScrollAnimations(updateFruitCallback) {
     onLeaveBack: () => {
       // Reset positions when scrolling back up
       if (leftCan && rightCan) {
-        leftCan.position.set(-7, -1, 0); // Reset X-position
-        rightCan.position.set(7, -1, 0); // Reset X-position
-        centerCan.position.set(7, -1, 0);
-        centerCan.position.set(0, -1, 0);
+        leftCan.position.set(-7, isMobile ? -0.7 : -1, 0); // Reset X-position
+        rightCan.position.set(7, isMobile ? -0.7 : -1, 0); // Reset X-position
+        centerCan.position.set(0, isMobile ? -0.7 : -1, 0);
         leftCan.rotation.set(0, 0, 0);
         centerCan.rotation.set(0, 0, 0);
         rightCan.rotation.set(0, 0, 0);
@@ -829,7 +847,7 @@ function setupScrollAnimations(updateFruitCallback) {
         rightCan.visible = true;
 
         // ✅ Restore initialCan position & visibility
-        initialCan.position.set(0, -1, 0);
+        initialCan.position.set(0, isMobile ? -0.7 : -1, 0);
         initialCan.visible = true;
       }
     },
@@ -851,8 +869,8 @@ function setupScrollAnimations(updateFruitCallback) {
           // Slide leftCan left
 
           if (isMobile) {
-            leftCan.position.y = 0;
-            rightCan.position.y = 0;
+            leftCan.position.y = -0.7;
+            rightCan.position.y = -0.7;
           } else {
             leftCan.position.y = -1;
             rightCan.position.y = -1;
@@ -940,13 +958,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   <div class="intro-screen">
   <div class="logo-container">
+  <p>Heee</p>
     <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png" class="main-logo shimmer" />
     <div class="flavors-row">
   <div class="flavor-circle">
-    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744616117/12_1_tgay16.png" class="flavor-img shimmer" />
+    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750412492/11_1_cukhbe.png" class="flavor-img shimmer" />
   </div>
   <div class="flavor-circle">
-    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744617210/38_1_ppivfj.png" class="flavor-img shimmer" />
+    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750412499/37_1_vb6ngi.png" class="flavor-img shimmer" />
   </div>
   <div class="flavor-circle">
     <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744617469/25_1_y9hpks.png" class="flavor-img shimmer" />

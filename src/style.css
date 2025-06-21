@@ -1042,7 +1042,7 @@ body.no-scroll {
   }
 
   .hero p {
-    margin-bottom: 25vh;
+    margin-bottom: 12vh;
   }
 
   .fruit-1-img {
@@ -1137,6 +1137,7 @@ body.no-scroll {
   .donchico-image {
     width: 60vw;
     height: auto;
+    margin-top: 12vh;
   }
 
   .social-feed {
@@ -1160,6 +1161,10 @@ body.no-scroll {
     background: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
+
+  .model {
+background-size: contain;  
+}
   
   .social-post img {
     width: 100%;
