@@ -5,6 +5,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 import "./style.css";
+import { openCanAudio } from "./openCanAudio";
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -20,7 +21,12 @@ let shouldRepeat = false;
 const isMobile = window.innerWidth < 768;
 
 // Declare global model variable
-let centerCan, leftCan, rightCan, initialCan, initialLeftCan, initialRightCan;
+let centerCan,
+  leftCan,
+  rightCan,
+  initialCan = {},
+  initialLeftCan,
+  initialRightCan;
 let modelLoaded = false; // Track if the model has finished loading
 
 let swapCount = 0;
@@ -366,13 +372,7 @@ function initThreeJS() {
 
       modelLoaded = true;
       fadeOutIntro();
-
-      const audio = new Audio(
-        "https://res.cloudinary.com/do7dxrdey/video/upload/v1745594133/soda-can-opening-169337_aekjbs.mp3"
-      );
-
-      // Optional: play audio if you want, but don’t block fade
-      audio.play().catch(() => {});
+      openCanAudio(camera);
 
       camera.position.z = maxWidth * 2;
       if (window.innerWidth < 768) {
