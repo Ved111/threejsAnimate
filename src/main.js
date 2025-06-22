@@ -1082,8 +1082,8 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_61
 
   <div class="btn-row" id="btn-row">
 <button class="soda-btn" style="background: linear-gradient(145deg, #ee6876, #d0485c);">Buy Strawberry Cream</button>
-<button class="soda-btn" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">Buy Watermelon Sorbet</button>
 <button class="soda-btn" style="background: linear-gradient(145deg, #F4812C, #c06a23);">Buy Applecot Relish</button>
+<button class="soda-btn" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">Buy Watermelon Sorbet</button>
 </div>
  
 </section>
@@ -1122,8 +1122,8 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_61
 
   <!-- Flavor Buttons -->
   <div class="flavor-buttons">
-    <button class="flavor-btn soda-btn lemon" data-index="0" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">WATERMELON SORBET</button>
-    <button class="flavor-btn orange soda-btn" data-index="2" style="background: linear-gradient(145deg, #F4812C, #c06a23);">APPLECOT RELISH</button>
+  <button class="flavor-btn orange soda-btn" data-index="2" style="background: linear-gradient(145deg, #F4812C, #c06a23);">APPLECOT RELISH</button>
+  <button class="flavor-btn soda-btn lemon" data-index="0" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">WATERMELON SORBET</button>
     <button class="flavor-btn mango soda-btn" data-index="1" style="background: linear-gradient(145deg, #ee6876, #d0485c);">STRAWBERRY CREAM</button>
   </div>
 </section>
