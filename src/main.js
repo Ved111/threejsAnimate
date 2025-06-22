@@ -647,6 +647,7 @@ function setupScrollAnimations(updateFruitCallback) {
             opacity,
             position: "absolute",
             display: "block",
+            bottom: "-100px",
           });
         } else {
           gsap.set(textEl, {
@@ -991,16 +992,21 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="fruit-zone fruit-1-img">
   
     <img class="fruit-img fruit-1" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749059138/Adobe_Express_-_file_1_pccfnh.png" />
+    <div class="fruit-text text-0">Watermelon Sorbet</div>
+
   </div>
 
   <div class="fruit-zone fruit-2-img">
     
     <img class="fruit-img fruit-2" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1748930509/strawberry_1_rgx8eh.png" />
+    <div class="fruit-text text-1">Strawberry Cream</div>
   </div>
 
   <div class="fruit-zone fruit-3-img">
    
     <img class="fruit-img fruit-3" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1748930645/apricot3d_1_uavqqj.png" />
+    <div class="fruit-text text-2">Applecot Relish</div>
+
   </div>
 </div>
 
