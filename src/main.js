@@ -6,7 +6,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 import "./style.css";
 import { openCanAudio } from "./openCanAudio";
-import { flavors, bubbleImageUrl } from "./utils";
+import { flavors } from "./utils";
 import { carouselGesture } from "./carouselGesture";
 import { generateBubble } from "./generateBubble";
 
@@ -1509,6 +1509,11 @@ document.addEventListener("DOMContentLoaded", () => {
     onLeaveBack: () => {
       document.querySelector(".poppy-section").style.display = "block";
       document.querySelector(".poppy-section").style.height = "100vh"; // or whatever original height you used
+      if (isMobile) {
+        document.querySelector(
+          ".poppy-section"
+        ).style.backgroundImage = `url${flavors[0].bg}`;
+      }
     },
   });
 });
