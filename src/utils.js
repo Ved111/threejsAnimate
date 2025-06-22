@@ -18,3 +18,6 @@ export const flavors = [
     bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6109_z0i9vk.png",
   },
 ];
+
+export const bubbleImageUrl =
+  "https://res.cloudinary.com/do7dxrdey/image/upload/v1750159941/de7b6738e9c3be8feb23abc4b1116b8d-removebg-preview_1_h5zpws.png";

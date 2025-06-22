@@ -6,8 +6,9 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 import "./style.css";
 import { openCanAudio } from "./openCanAudio";
-import { flavors } from "./utils";
+import { flavors, bubbleImageUrl } from "./utils";
 import { carouselGesture } from "./carouselGesture";
+import { generateBubble } from "./generateBubble";
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -1531,4 +1532,9 @@ document.addEventListener("mousemove", (e) => {
   setTimeout(() => {
     bubble.remove();
   }, 800);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const customBorderSection = document.querySelector(".custom-border-section");
+  generateBubble(customBorderSection, !isMobile);
 });
