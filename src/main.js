@@ -196,12 +196,18 @@ function initThreeJS() {
     });
   }
 
-  // Start asset preloading
-  const preloadAssetsPromise = Promise.allSettled(
-    ASSET_URLS.map(preloadAsset)
-  ).then(() => {
-    console.log("✅ Asset preload completed (errors ignored)");
-  });
+  let preloadAssetsPromise;
+
+  if (!isMobile) {
+    preloadAssetsPromise = Promise.allSettled(
+      ASSET_URLS.map(preloadAsset)
+    ).then(() => {
+      console.log("✅ Asset preload completed (errors ignored)");
+    });
+  } else {
+    console.log("📱 Skipping preload on mobile");
+    preloadAssetsPromise = Promise.resolve();
+  }
 
   scene = new THREE.Scene();
 
@@ -331,13 +337,13 @@ function initThreeJS() {
 
           resolve({ key, model, size });
         },
-        undefined,
-        (err) => reject(err)
+
+        undefined
       );
     });
   });
 
-  Promise.all([preloadAssetsPromise, Promise.all(loadModelPromises)])
+  Promise.all([preloadAsset, Promise.all(loadModelPromises)])
     .then(([_, models]) => {
       let maxWidth = 0;
       models.forEach(({ key, model, size }) => {
@@ -472,7 +478,7 @@ function setupScrollAnimations(updateFruitCallback) {
   };
 
   ScrollTrigger.create({
-    trigger: ".hero-section",
+    trigger: ".hero",
     start: "top top",
     end: "+=50%",
     scrub: true,
@@ -961,7 +967,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   <div class="intro-screen">
   <div class="logo-container">
-  <p>Heee</p>
     <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png" class="main-logo shimmer" />
   <div class="flavors-row">
     <div class="flavor-circle">
@@ -1029,7 +1034,6 @@ document.addEventListener("DOMContentLoaded", () => {
 </section>
 
 
-<audio id="explosion-sound" src="/sounds/fruit-explosion.mp3" preload="auto"></audio>
 <div id="dom-explosion-container"></div>
 <section class="can-hero-section">
 <div class="can-text">
@@ -1495,8 +1499,6 @@ document.addEventListener("DOMContentLoaded", () => {
       cans.forEach((c) => c.classList.remove("hovered"));
     });
   });
-
-  const canHero = document.querySelector(".can-hero-section");
 
   ScrollTrigger.create({
     trigger: ".can-hero-section",
