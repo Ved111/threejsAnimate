@@ -9,6 +9,7 @@ import { openCanAudio } from "./openCanAudio";
 import { flavors } from "./utils";
 import { carouselGesture } from "./carouselGesture";
 import { generateBubble } from "./generateBubble";
+import recipe from "./templates/recipes";
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -1548,4 +1549,8 @@ document.addEventListener("mousemove", (e) => {
 document.addEventListener("DOMContentLoaded", () => {
   const customBorderSection = document.querySelector(".custom-border-section");
   generateBubble(customBorderSection, !isMobile);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  recipe();
 });
