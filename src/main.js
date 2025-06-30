@@ -115,24 +115,11 @@ function replaceInitialCanWithGLB(url, scene, hex) {
   );
 }
 
-function updateModelColor(model, colorHex) {
-  model.traverse((child) => {
-    if (child.isMesh && child.material) {
-      child.material = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(colorHex),
-        metalness: 1,
-        roughness: 0.5,
-      });
-      child.material.needsUpdate = true;
-    }
-  });
-}
-
 const backgroundImages = [
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png",
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png",
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067031/IMG_2126_1_tesfjm.png",
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067028/IMG_2125_1_ojbhu5.png",
+  "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png",
+  "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png",
+  "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/3_1_hajus7.png",
+  "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png",
 ];
 
 function updateBackgroundImage(index) {
@@ -198,12 +185,18 @@ function initThreeJS() {
     });
   }
 
-  // Start asset preloading
-  const preloadAssetsPromise = Promise.allSettled(
-    ASSET_URLS.map(preloadAsset)
-  ).then(() => {
-    console.log("✅ Asset preload completed (errors ignored)");
-  });
+  let preloadAssetsPromise;
+
+  if (!isMobile) {
+    preloadAssetsPromise = Promise.allSettled(
+      ASSET_URLS.map(preloadAsset)
+    ).then(() => {
+      console.log("✅ Asset preload completed (errors ignored)");
+    });
+  } else {
+    console.log("📱 Skipping preload on mobile");
+    preloadAssetsPromise = Promise.resolve();
+  }
 
   scene = new THREE.Scene();
 
@@ -333,13 +326,13 @@ function initThreeJS() {
 
           resolve({ key, model, size });
         },
-        undefined,
-        (err) => reject(err)
+
+        undefined
       );
     });
   });
 
-  Promise.all([preloadAssetsPromise, Promise.all(loadModelPromises)])
+  Promise.all([preloadAsset, Promise.all(loadModelPromises)])
     .then(([_, models]) => {
       let maxWidth = 0;
       models.forEach(({ key, model, size }) => {
@@ -356,15 +349,12 @@ function initThreeJS() {
           model.position.x = 7;
           centerCan = model;
         } else if (key === "initial") {
-          updateModelColor(model, "#619b58");
           model.position.x = 0;
           model.rotation.set(0, 0, 0);
           initialCan = model;
           initialLeftCan = model.clone(true);
-          updateModelColor(initialLeftCan, "#c78345");
           initialLeftCan.position.x = window.innerWidth < 768 ? -0.9 : -1;
           initialRightCan = model.clone(true);
-          updateModelColor(initialRightCan, "#c67578");
           initialRightCan.position.x = window.innerWidth < 768 ? 0.9 : 1;
 
           scene.add(initialCan, initialLeftCan, initialRightCan);
@@ -454,11 +444,7 @@ function setupScrollAnimations(updateFruitCallback) {
       console.log(progress, "newRange");
       updateBackgroundImage(newRange % 4);
 
-      replaceInitialCanWithGLB(
-        urlToLoad,
-        scene,
-        newRange === 0 ? "#619b58" : null
-      );
+      replaceInitialCanWithGLB(urlToLoad, scene);
     }
   }
 
@@ -474,7 +460,7 @@ function setupScrollAnimations(updateFruitCallback) {
   };
 
   ScrollTrigger.create({
-    trigger: ".hero-section",
+    trigger: ".hero",
     start: "top top",
     end: "+=50%",
     scrub: true,
@@ -483,24 +469,23 @@ function setupScrollAnimations(updateFruitCallback) {
 
       const t = self.progress;
 
+      // Central can moves left at normal scroll pace
       const centerX = gsap.utils.interpolate(0, isMobile ? -0.9 : -2, t);
       initialCan.position.x = centerX;
 
-      // Animate side cans' Y position upward
+      // Side cans move up faster (amplified t)
       const startY = isMobile ? -0.7 : -1;
-      const endY = 4; // move up (higher Y = up in camera view)
-      const upwardY = gsap.utils.interpolate(startY, endY, t);
+      const endY = 4;
+      const fastT = Math.min(t * 2, 1); // scrolls 50% faster
+      const upwardY = gsap.utils.interpolate(startY, endY, fastT);
       initialLeftCan.position.y = upwardY;
       initialRightCan.position.y = upwardY;
 
-      // Make sure they stay visible during scroll
+      // Ensure visibility
       initialLeftCan.visible = true;
       initialRightCan.visible = true;
-
-      initialLeftCan.visible = true;
-      initialRightCan.visible = true;
+      initialCan.visible = true;
     },
-
     onLeave: () => {
       initialCan.position.x = isMobile ? -0.9 : -2;
     },
@@ -523,8 +508,7 @@ function setupScrollAnimations(updateFruitCallback) {
       updateBackgroundImage(0);
       replaceInitialCanWithGLB(
         "https://res.cloudinary.com/do7dxrdey/image/upload/v1749915409/DCcanWithENGRAVEDlogo_2_ecjm5i.glb",
-        scene,
-        "#619b58"
+        scene
       );
 
       const baseY = isMobile ? -0.7 : -1;
@@ -963,7 +947,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   <div class="intro-screen">
   <div class="logo-container">
-  <p>Heee</p>
     <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png" class="main-logo shimmer" />
   <div class="flavors-row">
     <div class="flavor-circle">
@@ -982,8 +965,6 @@ document.addEventListener("DOMContentLoaded", () => {
 <section class="hero">
 
 
-<img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png" class="donchico-image" />
-<p>The fizzy world of soda had surrendered to the ordinary—until Don Chico stepped in. A legend. A rebel. A mastermind of flavour.</p>
 </section>
   
 
@@ -1000,13 +981,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   <div class="fruit-zone fruit-2-img">
     
-    <img class="fruit-img fruit-2" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1748930509/strawberry_1_rgx8eh.png" />
+    <img class="fruit-img fruit-2" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033116/Don_Chicos_Website_1_-removebg-preview_eoaxqi.webp" />
     <div class="fruit-text text-1">Strawberry Cream</div>
   </div>
 
   <div class="fruit-zone fruit-3-img">
    
-    <img class="fruit-img fruit-3" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1748930645/apricot3d_1_uavqqj.png" />
+    <img class="fruit-img fruit-3" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033228/Don_Chicos_Website_2_-removebg-preview_hss1cg.webp" />
     <div class="fruit-text text-2">Applecot Relish</div>
 
   </div>
@@ -1031,16 +1012,13 @@ document.addEventListener("DOMContentLoaded", () => {
 </section>
 
 
-<audio id="explosion-sound" src="/sounds/fruit-explosion.mp3" preload="auto"></audio>
 <div id="dom-explosion-container"></div>
 <section class="can-hero-section">
 <div class="can-text">
-<h2 id="can-title">Pop. Sip. Repeat.</h2>
-<p id="can-description">Three bold flavors, zero regrets. Which one will you choose?</p>
 
 </div>
   <div class="can-group">
-  <img 
+  <div> <img 
   src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.53.54_PM-removebg-preview_awbuwn.png" 
   alt="Strawberry Cream" 
   class="can can-left" 
@@ -1049,24 +1027,29 @@ document.addEventListener("DOMContentLoaded", () => {
   data-darker-color="#c06a23"
   data-text="Berry bold and bubbly. Strawberry Cream brings the sweet punch you crave."
   data-btn="Buy Strawberry Cream"
-  data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6111_gpzjeq.png"
+  data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/3_1_hajus7.png"
 />
+<p class="flav-text text-0">Watermelon Sorbet</p><button class="soda-btn" >+ 6 Pack</button>
+</div>
+ 
+<div>  <img 
+src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png" 
+alt="Applecot Relish" 
+class="can can-right"
+data-flavor="Applecot Relish" 
+data-color="#F4812C" 
+data-darker-color="#d0485c"
 
-  <img 
-  src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png" 
-  alt="Applecot Relish" 
-  class="can can-right"
-  data-flavor="Applecot Relish" 
-  data-color="#F4812C" 
-  data-darker-color="#d0485c"
-
-  data-text="Cool, calm, and delicious. Applecot Relish's got that mellow magic."
-  data-btn="Buy Applecot Relish"
-  data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6109_z0i9vk.png"
+data-text="Cool, calm, and delicious. Applecot Relish's got that mellow magic."
+data-btn="Buy Applecot Relish"
+data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png"
 />
+<p class="flav-text text-1">Strawberry Cream</p><button class="soda-btn" >+ 6 Pack</button>
+</div>
 
 
-<img 
+
+<div><img 
 src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png" 
 alt="Watermelon Sorbet" 
 class="can"
@@ -1075,18 +1058,16 @@ data-color="#4BAB55"
 data-darker-color="#3a8a41"
   data-text="Zesty, juicy, and refreshingly wild. Watermelon Sorbet is here to wake you up."
 data-btn="Buy Watermelon Sorbet"
-data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6110_li3uxr.png"
+data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png"
 />
+<p class="flav-text text-2">Applecot Relish</p><button class="soda-btn" >+ 6 Pack</button>
+</div>
 
 
 
   </div>
 
-  <div class="btn-row" id="btn-row">
-<button class="soda-btn" style="background: linear-gradient(145deg, #ee6876, #d0485c);">Buy Strawberry Cream</button>
-<button class="soda-btn" style="background: linear-gradient(145deg, #F4812C, #c06a23);">Buy Applecot Relish</button>
-<button class="soda-btn" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">Buy Watermelon Sorbet</button>
-</div>
+
  
 </section>
 
@@ -1497,8 +1478,6 @@ document.addEventListener("DOMContentLoaded", () => {
       cans.forEach((c) => c.classList.remove("hovered"));
     });
   });
-
-  const canHero = document.querySelector(".can-hero-section");
 
   ScrollTrigger.create({
     trigger: ".can-hero-section",
