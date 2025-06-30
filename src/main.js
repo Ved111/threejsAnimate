@@ -348,14 +348,12 @@ function initThreeJS() {
           centerCan = model;
         } else if (key === "initial") {
           model.position.x = 0;
+
           model.rotation.set(0, 0, 0);
           initialCan = model;
-          initialLeftCan = model.clone(true);
-          initialLeftCan.position.x = window.innerWidth < 768 ? -0.9 : -1;
-          initialRightCan = model.clone(true);
-          initialRightCan.position.x = window.innerWidth < 768 ? 0.9 : 1;
+          initialCan.visible = false;
 
-          scene.add(initialCan, initialLeftCan, initialRightCan);
+          scene.add(initialCan);
         }
 
         scene.add(model);
@@ -465,33 +463,34 @@ function setupScrollAnimations(updateFruitCallback) {
     onUpdate: (self) => {
       if (!modelLoaded) return;
 
+      const centerImg = document.querySelector(".can[key='center']");
+      if (centerImg) centerImg.style.opacity = 0;
+
       const t = self.progress;
+
+      // Hide when reversed fully
+      if (t === 0) {
+        initialCan.visible = false;
+        if (centerImg) centerImg.style.opacity = 1;
+        return;
+      }
 
       // Central can moves left at normal scroll pace
       const centerX = gsap.utils.interpolate(0, isMobile ? -0.9 : -2, t);
       initialCan.position.x = centerX;
 
-      // Side cans move up faster (amplified t)
-      const startY = isMobile ? -0.7 : -1;
-      const endY = 4;
-      const fastT = Math.min(t * 2, 1); // scrolls 50% faster
-      const upwardY = gsap.utils.interpolate(startY, endY, fastT);
-      initialLeftCan.position.y = upwardY;
-      initialRightCan.position.y = upwardY;
-
-      // Ensure visibility
-      initialLeftCan.visible = true;
-      initialRightCan.visible = true;
       initialCan.visible = true;
     },
     onLeave: () => {
+      const centerImg = document.querySelector(".can[key='center']");
+      if (centerImg) centerImg.style.opacity = 1;
+      initialCan.visible = true;
+
       initialCan.position.x = isMobile ? -0.9 : -2;
     },
 
     onEnter: () => {
       initialCan.visible = true;
-      initialLeftCan.visible = true;
-      initialRightCan.visible = true;
     },
 
     onEnterBack: () => {
@@ -500,9 +499,6 @@ function setupScrollAnimations(updateFruitCallback) {
       currentRange = -1;
 
       initialCan.visible = true;
-      initialLeftCan.visible = true;
-      initialRightCan.visible = true;
-
       updateBackgroundImage(0);
       replaceInitialCanWithGLB(
         "https://res.cloudinary.com/do7dxrdey/image/upload/v1749915409/DCcanWithENGRAVEDlogo_2_ecjm5i.glb",
@@ -514,8 +510,6 @@ function setupScrollAnimations(updateFruitCallback) {
       // ✅ Make sure this happens next frame after visibility is already set
       requestAnimationFrame(() => {
         initialCan.position.set(isMobile ? -0.9 : -2, baseY, 0);
-        initialLeftCan.position.set(isMobile ? -0.9 : -1, baseY, 0);
-        initialRightCan.position.set(isMobile ? 0.9 : 1, baseY, 0);
       });
     },
   });
@@ -960,7 +954,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   </div>
 </div>
+<section class="don-landing">
+
+<div class="hero-content">
+<div class="logo-container">
+<img  src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751272545/Screenshot_2025-06-30_at_2.04.26_PM-removebg-preview_1_fb01a6.png" />
+
+</div>
+
+<img class='badges' src='https://res.cloudinary.com/do7dxrdey/image/upload/v1751272786/Screenshot_2025-06-30_at_2.08.52_PM-removebg-preview_fh0akn.png' />
+    <p class="hero-desc">
+      Crisp juicy apple meets golden apricot <br />
+      Sparkling Prebiotic Soda!
+    </p>
+
+    <button class="soda-btn">
+      Shop Now 
+    </button>
+  </div>
+
+  <div class="bubble-wrapper">
+  <img class="bubble-1" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751273819/Screenshot_2025-06-30_at_2.23.57_PM-removebg-preview_1_yz6e5n.png" />
+  <img class="bubble-2" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751273811/Screenshot_2025-06-30_at_2.24.02_PM-removebg-preview_1_ttdgew.png" />
+  <img class="bubble-3" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751273802/Screenshot_2025-06-30_at_2.24.06_PM-removebg-preview_1_q46g4b.png" />
+</div>
+
+
+</section>
 <section class="hero">
+<div class="can-group-hero">
+<img class="can " key='left' src='https://res.cloudinary.com/do7dxrdey/image/upload/v1751262477/Screenshot_2025-06-30_at_11.16.55_AM-removebg-preview_1_lsivbz.png' />
+<img class="can " key='center' src='https://res.cloudinary.com/do7dxrdey/image/upload/v1751262477/Screenshot_2025-06-30_at_11.16.55_AM-removebg-preview_1_lsivbz.png' />
+<img class="can " key='right' src='https://res.cloudinary.com/do7dxrdey/image/upload/v1751262477/Screenshot_2025-06-30_at_11.16.55_AM-removebg-preview_1_lsivbz.png' />
+</div>
 
 
 </section>
