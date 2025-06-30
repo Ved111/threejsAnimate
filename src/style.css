@@ -54,11 +54,23 @@
   margin-left: 11vw;
 }
 
+.text-0 {
+  color: #e32633 
+}
+
+.text-1 {
+  color: #d40019
+}
+.text-2 {
+  color: #e41717
+}
 .fruit-text {
   margin-right: 10px; /* Optional spacing between bubble and image */
   z-index: -1;
   display: flex;
   flex-direction: column;
+  font-size: 28px;
+  font-family: "ActiveOne", serif; /* Custom OTF Font */
 }
 
 .fruit-bubble {
@@ -137,7 +149,7 @@
 }
 
 .fruit-img {
-  height: 30vh;
+  height: 40vh;
   transition: opacity 0.3s ease;
 }
 
@@ -148,7 +160,7 @@
 }
 
 .fruit-1 {
-  height: 20vh;
+  height: 40vh;
 }
 
 @keyframes popBurst {
@@ -245,7 +257,8 @@ section {
   gap: 1em;
   z-index: 10;
   text-align: center;
-  color: white; /* Ensure text is visible */
+  background-color: white;
+  background: radial-gradient(circle at 50% 50%, #9f0404 0%, #540404 100%);
 }
 
 .hero p {
@@ -380,26 +393,34 @@ section {
   align-items: stretch;
   overflow: hidden;
   z-index: 8;
+  padding: unset
 }
 
 .soda-btn {
   position: relative;
-  padding: 1rem 2rem;
-  background: linear-gradient(145deg, #f17588, #ee6876);
-  color: white;
+  padding: 1rem 3rem;
+  background-color: #ffe7d7;
+  color: #9f0404;
+  font-family: "ActiveOne", serif;
   border: none;
   border-radius: 50px;
-  font-size: 1rem;
+  font-size: 23px;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.6),
-    inset 2px 2px 5px rgba(0, 0, 0, 0.1), 0 6px 12px rgba(0, 0, 0, 0.15);
+
+  /* 3D-style shadow */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15),
+              inset -2px -2px 5px rgba(255, 255, 255, 0.6),
+              inset 2px 2px 5px rgba(0, 0, 0, 0.05);
+
   transform-style: preserve-3d;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
   overflow: hidden;
 }
 
 .soda-btn:hover {
+  background-color: #9f0404;
+  color: #ffe7d7;
   transform: translateY(-2px) scale(1.02);
 }
 
@@ -429,6 +450,7 @@ section {
   animation-delay: 1.5s;
 }
 
+
 @keyframes bubble {
   0% {
     transform: translateY(0) scale(1);
@@ -452,7 +474,7 @@ section {
   z-index: -1;
   pointer-events: none;
   transition: background-image 0.4s ease-in-out;
-  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png");
+  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png");
 }
 
 .border-strip {
@@ -550,30 +572,22 @@ section {
 /* Keep this as-is or with minimal changes */
 .poppy-section {
   position: relative;
-  padding: 4rem 2rem;
+  height: 100vh;
+  z-index: 8;
   color: white;
   overflow: hidden;
-  background-color: transparent;
-  height: 100vh;
-  display: block;
-  z-index: 1;
-  background-color: white;
 }
 
 .poppy-section::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  z-index: 0; /* Behind your content */
   background-size: cover;
   background-position: center 40%;
   background-repeat: no-repeat;
-  z-index: 0;
   pointer-events: none;
-
-  inset: 0;
+  background-image: url('https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/5_4_xo3edi.png');
 }
 
 .podium-class {
@@ -674,12 +688,14 @@ section {
   background-size: cover;
   background-repeat: repeat-y;
   background-position: center;
+  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/5_4_xo3edi.png");
+
 }
 
 .can-hero-section.superimposed {
   position: fixed;
   z-index: 11;
-  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png");
+  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/5_4_xo3edi.png");
 
   top: 0;
   left: 0;
@@ -691,9 +707,17 @@ section {
 .can-group {
   display: flex;
   justify-content: center;
-  gap: 53px;
+  gap: 1vw;
   margin: 5vh 0;
 }
+
+.flav-text {
+  color: #ffe7d7;
+  font-size: 28px;
+  font-family: "ActiveOne", serif; /* Custom OTF Font */
+  padding: 10px 0;
+}
+
 
 .can {
   height: 383px;
