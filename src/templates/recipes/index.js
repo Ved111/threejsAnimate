@@ -61,11 +61,11 @@ const recipe = () => {
     recipeSection.appendChild(recipeCard);
 
     recipeImg.addEventListener(
-      "click",
+      "mouseover",
       handleClick.bind(null, recipeImg, recipeButton)
     );
     recipeButton.addEventListener(
-      "click",
+      "mouseover",
       handleClick.bind(null, recipeImg, recipeButton)
     );
   });
