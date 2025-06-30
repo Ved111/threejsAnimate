@@ -10,6 +10,7 @@ import { flavors } from "./utils";
 import { carouselGesture } from "./carouselGesture";
 import { generateBubble } from "./generateBubble";
 import recipe from "./templates/recipes";
+import pictureCollage from "./templates/pictureCollage";
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -1552,5 +1553,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  pictureCollage();
   recipe();
 });
