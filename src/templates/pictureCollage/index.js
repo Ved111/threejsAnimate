@@ -168,7 +168,7 @@ const pictureCollage = () => {
             textContent: "Benefits of Don Chico’s soda",
           },
           styles: {
-            left: "12rem",
+            left: "14rem",
             bottom: "18rem",
             maxWidth: "180px",
           },
@@ -176,9 +176,15 @@ const pictureCollage = () => {
         },
         {
           element: "button",
-          styles: { left: "12rem", top: "19rem", maxWidth: "180px" },
+          styles: { left: "14rem", top: "19rem", maxWidth: "180px" },
           props: { textContent: "Ingredient List Breakdown" },
           classes: ["collage-text", "collage-btn-2"],
+        },
+        {
+          element: "button",
+          styles: { left: "14rem", bottom: "6rem", maxWidth: "180px" },
+          props: { textContent: "soda benefits" },
+          classes: ["collage-text", "collage-btn"],
         },
       ],
     },
@@ -188,18 +194,18 @@ const pictureCollage = () => {
         {
           element: "button",
           props: {
-            textContent: "recipes",
+            textContent: "who is don chico?",
           },
           styles: {
-            left: "5rem",
+            left: "12rem",
             bottom: "3rem",
           },
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          styles: { left: "6rem", top: "6rem", maxWidth: "100px" },
-          props: { textContent: "if flavors could kill" },
+          styles: { left: "15rem", top: "4rem" },
+          props: { textContent: "brand love" },
           classes: ["collage-text", "collage-btn-2"],
         },
       ],

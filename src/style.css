@@ -1549,6 +1549,7 @@ body.no-scroll {
   z-index: 15;
   padding-bottom: 5rem;
   position: relative;
+  height: 100vh;
 }
 
 .recipeSubContainer {
