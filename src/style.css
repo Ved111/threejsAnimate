@@ -1600,6 +1600,7 @@ body.no-scroll {
   font-family: "ActiveOne", serif;
   font-size: 21px;
   color: #c60000;
+  position: relative;
 }
 
 .btn-bg-red {
@@ -1733,4 +1734,41 @@ body.no-scroll {
   border-radius: 14px;
   border: 10px solid;
   padding: 12px 4px;
+}
+
+.recipe-button::before,
+.recipe-button::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  animation: bubble 4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.recipe-button::before {
+  width: 10px;
+  height: 10px;
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.recipe-button::after {
+  width: 6px;
+  height: 6px;
+  top: 40%;
+  left: 60%;
+  animation-delay: 1.5s;
+}
+
+@keyframes bubble {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px) scale(0.5);
+    opacity: 0;
+  }
 }
