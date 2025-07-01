@@ -14,6 +14,14 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Ohno Blazeface";
+  src: url("./fonts/OhnoBlazeface-12Point.woff2") format("woff2"),
+    url("./fonts/OhnoBlazeface-12Point.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
 .images-container {
   position: relative;
   width: 100%;
@@ -1716,6 +1724,7 @@ body.no-scroll {
   z-index: 15;
   padding-bottom: 5rem;
   position: relative;
+  height: 100vh;
 }
 
 .recipeSubContainer {
@@ -1766,6 +1775,7 @@ body.no-scroll {
   font-family: "ActiveOne", serif;
   font-size: 21px;
   color: #c60000;
+  position: relative;
 }
 
 .btn-bg-red {
@@ -1783,7 +1793,7 @@ body.no-scroll {
 
 .base-container {
   width: 100%;
-  height: 100vw;
+  height: 100%;
   position: relative;
   box-sizing: border-box;
   z-index: 12;
@@ -1792,10 +1802,11 @@ body.no-scroll {
 .collage-container {
   border-left: 6px dotted #800e0e;
   border-right: 6px dotted #800e0e;
+  height: 100vw;
   padding: 2rem;
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: repeat(8, minmax(120px, 1fr));
+  grid-template-columns: repeat(8, minmax(30px, 1fr));
+  grid-template-rows: repeat(8, minmax(30px, 1fr));
   grid-template-areas:
     "img1 img1 img1 img2 img2 img2 img3 img3"
     "img1 img1 img1 img5 img5 img5 img3 img3"
@@ -1805,12 +1816,134 @@ body.no-scroll {
     "img7 img7 img8 img8 img9 img9 img9 img9"
     "img10 img10 img10 img10 img9 img9 img9 img9"
     "img10 img10 img10 img10 img9 img9 img9 img9";
-  gap: 32px;
+  gap: clamp(4px, 2vw, 16px);
 }
 
-.collage-container > img {
+.collage-container img {
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: cover;
   border-radius: 15px;
+  overflow: hidden;
+}
+
+.ticker-container {
+  display: flex;
+  user-select: none;
+  overflow: hidden;
+  gap: 2rem;
+  position: relative;
+}
+
+.ticker-content {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-around;
+  min-width: 100%;
+  gap: 2rem;
+  height: fit-content;
+}
+
+.scroll {
+  animation: scroll 14s linear infinite;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - 2rem));
+  }
+}
+
+.collage-text {
+  font-size: 18px;
+  font-family: "Ohno Blazeface", serif;
+  color: #9f0404;
+  text-transform: capitalize;
+}
+
+.collage-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 1.5rem;
+  background-color: #ffe7d7;
+  border-radius: 50px;
+  border-top: 2px solid #9f0404;
+  border-right: 5px solid #9f0404;
+  border-bottom: 4px solid #9f0404;
+  border-left: 2px solid #9f0404;
+  position: absolute;
+}
+
+.collage-btn-2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background-color: rgb(243, 219, 219);
+  padding: 4px 6px;
+  position: absolute;
+  border: none;
+  font-size: 16px;
+  text-transform: lowercase;
+}
+
+.collage-secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+
+  gap: 8px;
+  grid-template-areas:
+    "flavorSwitch flavorSwitch flavorSwitch"
+    "ig thread spotify";
+}
+
+.border-black {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 10px solid;
+  padding: 12px 4px;
+}
+
+.recipe-button::before,
+.recipe-button::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  animation: bubble 4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.recipe-button::before {
+  width: 10px;
+  height: 10px;
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.recipe-button::after {
+  width: 6px;
+  height: 6px;
+  top: 40%;
+  left: 60%;
+  animation-delay: 1.5s;
+}
+
+@keyframes bubble {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px) scale(0.5);
+    opacity: 0;
+  }
 }

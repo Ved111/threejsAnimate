@@ -61,12 +61,24 @@ const recipe = () => {
     recipeSection.appendChild(recipeCard);
 
     recipeImg.addEventListener(
-      "click",
+      "mouseover",
       handleClick.bind(null, recipeImg, recipeButton)
     );
     recipeButton.addEventListener(
-      "click",
+      "mouseover",
       handleClick.bind(null, recipeImg, recipeButton)
+    );
+
+    recipeImg.addEventListener("mouseleave", () => {
+      document
+        .querySelectorAll(".recipe-image")
+        .forEach((img) => img.classList.remove("border-dotted-red"));
+      console.log("hey");
+    });
+    recipeButton.removeEventListener("mouseleave", () =>
+      document
+        .querySelectorAll(".recipe-image")
+        .forEach((img) => img.classList.remove("border-dotted-red"))
     );
   });
   app.appendChild(recipeContainer);

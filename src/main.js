@@ -13,6 +13,7 @@ import recipe from "./templates/recipes";
 import pictureCollage from "./templates/pictureCollage";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 RectAreaLightUniformsLib.init();
+import ticker from "./templates/ticker";
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -1417,6 +1418,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  ticker();
   pictureCollage();
   recipe();
 });
