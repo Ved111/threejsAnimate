@@ -1639,7 +1639,7 @@ body.no-scroll {
     "img7 img7 img8 img8 img9 img9 img9 img9"
     "img10 img10 img10 img10 img9 img9 img9 img9"
     "img10 img10 img10 img10 img9 img9 img9 img9";
-  gap: clamp(4px, 2vw, 32px);
+  gap: clamp(4px, 2vw, 16px);
 }
 
 .collage-container img {
@@ -1712,4 +1712,24 @@ body.no-scroll {
   border: none;
   font-size: 16px;
   text-transform: lowercase;
+}
+
+.collage-secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+
+  gap: 8px;
+  grid-template-areas:
+    "flavorSwitch flavorSwitch flavorSwitch"
+    "ig thread spotify";
+}
+
+.border-black {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 10px solid;
+  padding: 12px 4px;
 }
