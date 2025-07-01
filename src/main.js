@@ -81,7 +81,7 @@ function replaceInitialCanWithGLB(url, scene, hex) {
               ? new THREE.Color(hex)
               : oldMat.color || new THREE.Color(0xffffff),
             metalness: 0.9,
-            roughness: 0.15,
+            roughness: 0.1,
             envMapIntensity: 2.5,
             map: oldMat.map || null,
           });
@@ -350,7 +350,7 @@ function initThreeJS() {
               const newMat = new THREE.MeshStandardMaterial({
                 color: oldMat.color || new THREE.Color(0xffffff),
                 metalness: 0.9,
-                roughness: 0.15,
+                roughness: 0.1,
                 envMapIntensity: 2.5,
                 map: oldMat.map || null,
               });
