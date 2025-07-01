@@ -46,12 +46,10 @@
 
 .fruit-2-img {
   margin-top: 34vh;
-  margin-right: 11vw;
 }
 
 .fruit-3-img {
   margin-top: 34vh;
-  margin-left: 11vw;
 }
 
 .text-0 {
@@ -155,12 +153,11 @@
 
 .fruit-1-img {
   margin-top: 23vh;
-  margin-left: 11vw;
   animation: slowBounce 1s ease-in-out infinite;
 }
 
 .fruit-1 {
-  height: 40vh;
+  height: 30vh;
 }
 
 @keyframes popBurst {

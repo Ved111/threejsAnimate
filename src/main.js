@@ -11,6 +11,8 @@ import { carouselGesture } from "./carouselGesture";
 import { generateBubble } from "./generateBubble";
 import recipe from "./templates/recipes";
 import pictureCollage from "./templates/pictureCollage";
+import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
+RectAreaLightUniformsLib.init();
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -29,9 +31,7 @@ const isMobile = window.innerWidth < 768;
 let centerCan,
   leftCan,
   rightCan,
-  initialCan = {},
-  initialLeftCan,
-  initialRightCan;
+  initialCan = {};
 let modelLoaded = false; // Track if the model has finished loading
 
 let swapCount = 0;
@@ -51,23 +51,22 @@ function replaceInitialCanWithGLB(url, scene, hex) {
   if (!modelLoaded) return;
 
   const loader = new GLTFLoader();
+
   loader.load(
     url,
     (gltf) => {
       const newModel = gltf.scene;
 
-      // Center & scale
+      // Center and scale
       const box = new THREE.Box3().setFromObject(newModel);
       const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
 
-      // Center it
       newModel.position.sub(center);
-
-      // Shift it up so its base sits at y = 0
       newModel.position.y = isMobile ? -0.7 : -1;
       newModel.scale.set(0.6, 0.6, 0.6);
+      newModel.rotation.set(0, 0, 0);
 
-      // Fix materials
       newModel.traverse((child) => {
         if (
           child.isMesh &&
@@ -77,40 +76,49 @@ function replaceInitialCanWithGLB(url, scene, hex) {
           const oldMat = child.material;
 
           const newMat = new THREE.MeshStandardMaterial({
-            map: oldMat.map || null,
             color: hex
               ? new THREE.Color(hex)
               : oldMat.color || new THREE.Color(0xffffff),
-            metalness: 1,
-            roughness: 0.5,
-            envMapIntensity: 2,
+            metalness: 0.9,
+            roughness: 0.15,
+            envMapIntensity: 2.5,
+            map: oldMat.map || null,
           });
 
+          newMat.clearcoat = 0.8;
+          newMat.clearcoatRoughness = 0.1;
           newMat.transparent = false;
           newMat.opacity = 1;
-          newMat.side = THREE.DoubleSide;
+          newMat.alphaTest = 0.0;
+          newMat.side = THREE.FrontSide;
           newMat.depthWrite = true;
           newMat.needsUpdate = true;
 
-          child.material = newMat;
+          if (newMat.map) {
+            newMat.map.encoding = THREE.sRGBEncoding;
+            newMat.map.needsUpdate = true;
+            newMat.alphaMap = null;
+          }
 
+          child.material = newMat;
           child.castShadow = true;
           child.receiveShadow = true;
           child.geometry.computeVertexNormals();
         }
       });
 
-      // Remove old
+      // Remove and replace initialCan
       if (initialCan) {
         scene.remove(initialCan);
       }
 
       initialCan = newModel;
+      initialCan.visible = true;
       scene.add(initialCan);
     },
     undefined,
     (err) => {
-      console.error("🚨 Failed to load new model:", err);
+      console.error("🚨 Failed to load replacement model:", err);
     }
   );
 }
@@ -145,20 +153,46 @@ function fadeOutIntro() {
 
 function initThreeJS() {
   const ASSET_URLS = [
-    // Images
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067029/IMG_2127_1_xxzbnf.png",
     "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067031/IMG_2126_1_tesfjm.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067028/IMG_2125_1_ojbhu5.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6110_li3uxr.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6111_gpzjeq.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749824280/IMG_6109_z0i9vk.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png",
+
+    // 🌈 Hero Section Cans
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751262477/Screenshot_2025-06-30_at_11.16.55_AM-removebg-preview_1_lsivbz.png",
+
+    // 🍍 Logo and Flavors
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750412492/11_1_cukhbe.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750412499/37_1_vb6ngi.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1744617469/25_1_y9hpks.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751272545/Screenshot_2025-06-30_at_2.04.26_PM-removebg-preview_1_fb01a6.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751272786/Screenshot_2025-06-30_at_2.08.52_PM-removebg-preview_fh0akn.png",
+
+    // 💨 Bubbles
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751273819/Screenshot_2025-06-30_at_2.23.57_PM-removebg-preview_1_yz6e5n.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751273811/Screenshot_2025-06-30_at_2.24.02_PM-removebg-preview_1_ttdgew.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751273802/Screenshot_2025-06-30_at_2.24.06_PM-removebg-preview_1_q46g4b.png",
+
+    // 🍎 Fruit Sections
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749059138/Adobe_Express_-_file_1_pccfnh.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751033116/Don_Chicos_Website_1_-removebg-preview_eoaxqi.webp",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751033228/Don_Chicos_Website_2_-removebg-preview_hss1cg.webp",
+
+    // 🥤 Can Hero Section
     "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.53.54_PM-removebg-preview_awbuwn.png",
     "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750159941/de7b6738e9c3be8feb23abc4b1116b8d-removebg-preview_1_h5zpws.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png",
 
-    // Videos
+    // 📱 Mobile UI Cans
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749979554/IMG_4588_1_1_qhx10y.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067023/Adobe_Express_-_file_3_1_syhwrv.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749066942/Adobe_Express_-_file_4_1_druku2.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749066841/Adobe_Express_-_file_2_1_aci4ev.png",
+
+    // 🧃 Background Images
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/3_1_hajus7.png",
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png",
+
+    // 🔊 Audio
     "https://res.cloudinary.com/do7dxrdey/video/upload/v1745594133/soda-can-opening-169337_aekjbs.mp3",
   ];
 
@@ -209,8 +243,7 @@ function initThreeJS() {
   camera.position.set(0, 0, 10);
   camera.lookAt(0, 0, 0);
 
-  const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
-  renderer.shadowMap.enabled = false;
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(
     window.devicePixelRatio < 2 ? window.devicePixelRatio : 2
   );
@@ -221,38 +254,53 @@ function initThreeJS() {
   renderer.setClearColor(0xffffff, 0); // Fully transparent background
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-  scene.add(ambientLight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.physicallyCorrectLights = true;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.4;
 
-  // Top light
-  const topLight = new THREE.DirectionalLight(0xffffff, 2);
-  topLight.position.set(0, 10, 0);
-  scene.add(topLight);
+  // const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+  // scene.add(ambientLight);
 
-  // Bottom fill (bounces light from below)
-  const bottomLight = new THREE.PointLight(0xffffff, 1.5, 2);
-  bottomLight.position.set(0, -5, 0);
-  scene.add(bottomLight);
+  // // Top light
+  // const topLight = new THREE.DirectionalLight(0xffffff, 2);
+  // topLight.position.set(0, 10, 0);
+  // scene.add(topLight);
 
   // Front light
-  const frontLight = new THREE.DirectionalLight(0xffffff, 2);
-  frontLight.position.set(0, 0, 10);
+  // const frontLight = new THREE.DirectionalLight(0xffffff, 2);
+  // frontLight.position.set(0, 0, 10);
+  // scene.add(frontLight);
+
+  // // Back light
+  // const backLight = new THREE.DirectionalLight(0xffffff, 2);
+  // backLight.position.set(0, 0, -10);
+  // scene.add(backLight);
+
+  // Clear existing lights
+  scene.clear();
+
+  // Add new top key light
+  const keyLight2 = new THREE.DirectionalLight(0xffffff, 4.5);
+  keyLight2.position.set(-2, 5, 5);
+  keyLight2.castShadow = false;
+  scene.add(keyLight2);
+
+  // Add top highlight light
+  const topHighlight = new THREE.DirectionalLight(0xffffff, 4.0);
+  topHighlight.position.set(0, 10, 10);
+  scene.add(topHighlight);
+
+  // Front light
+  const frontLight = new THREE.DirectionalLight(0xffffff, 0.2);
+  frontLight.position.set(2, 0, 2);
   scene.add(frontLight);
 
-  // Back light
-  const backLight = new THREE.DirectionalLight(0xffffff, 2);
-  backLight.position.set(0, 0, -10);
-  scene.add(backLight);
-
-  // Left light
-  const leftLight = new THREE.DirectionalLight(0xffffff, 2);
-  leftLight.position.set(-10, 0, 0);
-  scene.add(leftLight);
-
-  // Right light
-  const rightLight = new THREE.DirectionalLight(0xffffff, 2);
-  rightLight.position.set(10, 0, 0);
-  scene.add(rightLight);
+  // Add very soft ambient light to lift shadows slightly
+  const ambientLight = new THREE.AmbientLight(0xffffff, 5);
+  scene.add(ambientLight);
 
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
@@ -300,11 +348,13 @@ function initThreeJS() {
               const oldMat = child.material;
               const newMat = new THREE.MeshStandardMaterial({
                 color: oldMat.color || new THREE.Color(0xffffff),
-                metalness: 1,
-                roughness: 0.5,
-                envMapIntensity: 2,
+                metalness: 0.9,
+                roughness: 0.15,
+                envMapIntensity: 2.5,
                 map: oldMat.map || null,
               });
+              newMat.clearcoat = 0.8;
+              newMat.clearcoatRoughness = 0.1;
               newMat.transparent = false; // Fully opaque
               newMat.opacity = 1; // Full visibility
               newMat.alphaTest = 0.0; // Disable alpha cutoff
@@ -446,17 +496,6 @@ function setupScrollAnimations(updateFruitCallback) {
     }
   }
 
-  const resetCansY = () => {
-    const y = isMobile ? -0.7 : -1;
-    if (initialCan && initialCan.visible) initialCan.position.y = y;
-    if (initialLeftCan && initialLeftCan.visible) initialLeftCan.position.y = y;
-    if (initialRightCan && initialRightCan.visible)
-      initialRightCan.position.y = y;
-    if (centerCan && centerCan.visible) centerCan.position.y = y;
-    if (leftCan && leftCan.visible) leftCan.position.y = y;
-    if (rightCan && rightCan.visible) rightCan.position.y = y;
-  };
-
   ScrollTrigger.create({
     trigger: ".hero",
     start: "top top",
@@ -473,7 +512,6 @@ function setupScrollAnimations(updateFruitCallback) {
       // Hide when reversed fully
       if (t === 0) {
         initialCan.visible = false;
-        if (centerImg) centerImg.style.opacity = 1;
         return;
       }
 
@@ -484,15 +522,9 @@ function setupScrollAnimations(updateFruitCallback) {
       initialCan.visible = true;
     },
     onLeave: () => {
-      const centerImg = document.querySelector(".can[key='center']");
-      if (centerImg) centerImg.style.opacity = 1;
       initialCan.visible = true;
 
       initialCan.position.x = isMobile ? -0.9 : -2;
-    },
-
-    onEnter: () => {
-      initialCan.visible = true;
     },
 
     onEnterBack: () => {
@@ -500,7 +532,6 @@ function setupScrollAnimations(updateFruitCallback) {
       centerCan.visible = false;
       currentRange = -1;
 
-      initialCan.visible = true;
       updateBackgroundImage(0);
       replaceInitialCanWithGLB(
         "https://res.cloudinary.com/do7dxrdey/image/upload/v1749915409/DCcanWithENGRAVEDlogo_2_ecjm5i.glb",
@@ -513,6 +544,17 @@ function setupScrollAnimations(updateFruitCallback) {
       requestAnimationFrame(() => {
         initialCan.position.set(isMobile ? -0.9 : -2, baseY, 0);
       });
+    },
+    onLeaveBack: () => {
+      const centerImg = document.querySelector(".can[key='center']");
+      if (centerImg) centerImg.style.opacity = 1;
+
+      if (modelLoaded) {
+        [initialCan, centerCan, leftCan, rightCan].forEach((can) => {
+          if (can) can.visible = false;
+        });
+      }
+      console.log("Heroooo");
     },
   });
 
@@ -528,23 +570,21 @@ function setupScrollAnimations(updateFruitCallback) {
         centerCan.visible = false;
         centerCan.position.set(7, isMobile ? -0.7 : -1, 0); // move it right
       }
-      initialLeftCan.visible = false;
-      initialRightCan.visible = false;
-      // Make sure they're out of view
-      initialLeftCan.position.x = -7;
-      initialRightCan.position.x = 7;
-      initialCan.visible = true;
+    },
+    onLeaveBack: () => {
+      const centerImg = document.querySelector(".can[key='center']");
+      if (centerImg) centerImg.style.opacity = 1;
+
+      if (modelLoaded) {
+        [initialCan, centerCan, leftCan, rightCan].forEach((can) => {
+          if (can) can.visible = false;
+        });
+      }
+      console.log("Custom");
     },
 
     // 🧹 Optional: also reset when completely leaving the section forward
-    onLeave: () => {
-      console.log("triggered");
-      lastXMovement = 0;
-      if (centerCan) {
-        centerCan.visible = true;
-        centerCan.position.set(isMobile ? -0.7 : -1, -4, 0); // restore position
-      }
-    },
+    onLeave: () => {},
     onUpdate: (self) => {
       if (!modelLoaded) return;
 
@@ -639,7 +679,7 @@ function setupScrollAnimations(updateFruitCallback) {
 
       // ✅ Detect zero-crossing (sign change) in xMovement
 
-      const threshold = isMobile ? 1.9 : 1.5; // how close to the extreme before triggering
+      const threshold = 2; // how close to the extreme before triggering
 
       const reachedLeft =
         xMovement <= -2 + threshold && lastXMovement > -2 + threshold;
@@ -907,28 +947,14 @@ function setupScrollAnimations(updateFruitCallback) {
     end: "bottom top",
     onEnter: () => {
       if (modelLoaded) {
-        [
-          initialCan,
-          initialLeftCan,
-          initialRightCan,
-          centerCan,
-          leftCan,
-          rightCan,
-        ].forEach((can) => {
+        [initialCan, centerCan, leftCan, rightCan].forEach((can) => {
           if (can) can.visible = false;
         });
       }
     },
     onEnterBack: () => {
       if (modelLoaded) {
-        [
-          initialCan,
-          initialLeftCan,
-          initialRightCan,
-          centerCan,
-          leftCan,
-          rightCan,
-        ].forEach((can) => {
+        [initialCan, centerCan, leftCan, rightCan].forEach((can) => {
           if (can) can.visible = true;
         });
       }
@@ -1137,110 +1163,6 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
   </div>
 </section>
 
-<section class="recipe-section">
-  <h2 class="recipe-heading">Don's Recipes</h2>
-  <div class="recipe-grid" id="recipe-grid">
-    <!-- Cards will be injected by JavaScript -->
-  </div>
-</section>
-
-<section class="faq-section">
-  <h2 class="faq-heading">Frequently Asked Questions</h2>
-  <div class="faq-container">
-    <div class="faq-accordion">
-      <div class="faq-item active">
-        <button class="faq-question">What exactly is Don Chico’s Gut Loving Soda? </button>
-        <div class="faq-answer">
-          <p>We are a new age, premium, non-alcoholic, carbonated beverage for a world riddled with unhealthy, gimmicky drinks that are crammed with chemicals. Don Chico's is a prebiotic infused carbonated beverage that's low on sugar while also helping you with your daily dose of dietary fibre (in a cool, less prescription drug manner) We are a solution (quite literally). Sugary, carbonated drinks that taste nothing like a tastefully AND carefully crafted beverage are the problem. </p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question"> I'm confused now. Probiotics or Prebiotics? </button>
-        <div class="faq-answer">
-          <p>
-
-          Prebiotics are the ultimate hype crew for your gut—laying down the red carpet, setting the vibe, and making sure the good bacteria (probiotics) have the fuel to keep the party going.
-          
-          Unlike probiotics, which are the VIP guests, prebiotics do the real work behind the scenes—feeding the good guys so your digestion stays smooth, your immunity stays strong, and your gut stays happy.
-          
-          And the best part? You don’t need fermented foods or bland fiber bars—just sip on a refreshing prebiotic soda and let the gut-friendly fiesta begin!
-          </p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question"> Okay, fair. But what's the point of having fibre in my soda? </button>
-        <div class="faq-answer">
-          <p>Y
-
-          Because your gut deserves VIP treatment!
-          
-          We’ve packed our soda with prebiotic fiber from nature’s finest sources—cassava root, chicory root inulin, Jerusalem artichoke, calendula flower, kudzu root, and marshmallow root—all chosen to feed the good bacteria in your gut and keep digestion smooth.
-          
-          Unlike regular sodas that do nothing for your microbiome, ours brings the fizz and the fiber—because a happy gut = a happy you!
-          </p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">  Why carbonated? Why not a simple fruit juice? </button>
-        <div class="faq-answer">
-          <p>If we go a level down with this question, you might as well ask, ‘Why fruit juice? Why not plain water?’ Let’s make this a little more easy to understand (For Don Chico’s crew’s understanding..not for you of course): We all know the purpose of fluid intake is to quench one’s thirst and keep our bodies hydrated. However, let’s roll back to some million years ago:
-          Humans being humans, discovered they can create multiple concoctions by adding fruit to plain water in a bid to HELP with hydration- the idea was to make it easier for many to consume this mana of life. Blame this on the basic human flaw of finding monotony in the most essential of things; of feeling that the important things in life are all ‘mundane’.  Fast forward to some thousand years later: humans have now added sugar to make this experience a tad bit more pleasant for the larger masses, including the children and the elderly. Fast forward to many thousand years later, Joseph Priestly in the year 1767 invents carbonated water. This is fine- because it makes the task of consuming fluids fun, bubbly and exciting. Add a bit of flavour and you now have flavoured carbonated water.  It’s all fun and games UNTIL some folks (we are not taking any names here) begin making this concoction borderline addictive by adding a truck load of sugar and artificial sweeteners. There is no turning back since then: We all acknowledge that the world is going through an obesity pandemic that has been brought to existence by the modern day dietary intake. There is a negative connotation attached to the word ‘soda’ at times because the beverages being sold as ‘sodas’ are called just that in popular culture- SODA.However, the real evil in these carbonated drinks is, you guessed it right- extremely high quantities of artificial sweeteners and sugars!
-          </p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">How does a can of Don Chico's benefit my gut? </button>
-        <div class="faq-answer">
-          <p>Well, a thriving gut (referred to as the microbiome) is where different key hormones and vitamins are produced. These hormones & vitamins are vital to both, your physical & mental health. This is what you need to know: a healthy microbiome ultimately leads to a healthy & happy you. In short, Don Chico's aids you in digestion & ensures that you have a healthy gut (apart from being the tastiest fizzy drink out there of course). No funny, gimmicky tall claims. Just a tastefully crafted beverage that's here to ensure that you have one less thing to worry about.
-          </p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">  Why carbonated? Why not a simple fruit juice? </button>
-        <div class="faq-answer">
-          <p>If we go a level down with this question, you might as well ask, ‘Why fruit juice? Why not plain water?’ Let’s make this a little more easy to understand (For Don Chico’s crew’s understanding..not for you of course): We all know the purpose of fluid intake is to quench one’s thirst and keep our bodies hydrated. However, let’s roll back to some million years ago:
-          Humans being humans, discovered they can create multiple concoctions by adding fruit to plain water in a bid to HELP with hydration- the idea was to make it easier for many to consume this mana of life. Blame this on the basic human flaw of finding monotony in the most essential of things; of feeling that the important things in life are all ‘mundane’.  Fast forward to some thousand years later: humans have now added sugar to make this experience a tad bit more pleasant for the larger masses, including the children and the elderly. Fast forward to many thousand years later, Joseph Priestly in the year 1767 invents carbonated water. This is fine- because it makes the task of consuming fluids fun, bubbly and exciting. Add a bit of flavour and you now have flavoured carbonated water.  It’s all fun and games UNTIL some folks (we are not taking any names here) begin making this concoction borderline addictive by adding a truck load of sugar and artificial sweeteners. There is no turning back since then: We all acknowledge that the world is going through an obesity pandemic that has been brought to existence by the modern day dietary intake. There is a negative connotation attached to the word ‘soda’ at times because the beverages being sold as ‘sodas’ are called just that in popular culture- SODA.However, the real evil in these carbonated drinks is, you guessed it right- extremely high quantities of artificial sweeteners and sugars!
-          </p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">Is Don Chico's Gluten Free & Vegan?  </button>
-        <div class="faq-answer">
-          <p>
-
-          Yes, and yes! Sip on & embark on a guilt free yet flavourful adventure!
-          
-          </p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">Is Don Chico's anything like Kombucha?  </button>
-        <div class="faq-answer">
-          <p>
-
-          No. Kombucha walks so we can run. While kombucha brings the funk with its fermented tang, our prebiotic soda keeps it fresh, fizzy, and full of gut-loving goodness—no mystery floaties, no vinegar vibes, just a smooth, delicious way to fuel your microbiome. Cheers to gut health, minus the kombucha culture shock! 
-          
-          </p>
-        </div>
-      </div>
-      <div class="faq-item">
-      <button class="faq-question">Will consuming Don Chico's Soda prove to be bad for my teeth?  </button>
-      <div class="faq-answer">
-        <p>
-
-        Nah, our prebiotic soda is more like a charm for your gut, not a crime scene for your enamel. Teeth largely go bad either because of the sugar content or acids in most fizzy drinks (we aren't taking any names here!) Don Chico's on the other hand: no harsh acids, no sneaky sugars—just a smooth, refreshing sip that keeps both your taste buds and your teeth smiling!        
-        </p>
-      </div>
-    </div>
-    
-    </div>
-    <div class="faq-image">
-      <img id="faq-img" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png" alt="FAQ" />
-    </div>
-  </div>
-</section>
-
-
 
 
 
@@ -1388,69 +1310,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize
   updateMainCan(currentIndex.value);
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const recipes = [
-    {
-      img: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png",
-      title: "Apple, Cinammon& Orange Water",
-      text: "Comforting ingredients, apple and cinnamon come together with ....",
-    },
-    {
-      img: "https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png",
-      title: "Sparkling Apple Pie",
-      text: "Loaded with the fresh flavours of apples and cinnamon, this recipe is ...",
-    },
-  ];
-
-  const grid = document.getElementById("recipe-grid");
-
-  recipes.forEach((recipe) => {
-    const card = document.createElement("div");
-    card.className = "recipe-card";
-    card.innerHTML = `
-      <img src="${recipe.img}" alt="Recipe Image">
-      <h1 style="margin-left: 16px; margin-top: 16px;">${recipe.title}</h1>
-      <p>${recipe.text}</p>
-    `;
-    grid.appendChild(card);
-  });
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const faqItems = document.querySelectorAll(".faq-item");
-  const faqImage = document.getElementById("faq-img");
-
-  const images = [
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png",
-  ];
-
-  faqItems.forEach((item, index) => {
-    const question = item.querySelector(".faq-question");
-    const answer = item.querySelector(".faq-answer");
-
-    // Set default open one if it has class "active"
-    if (item.classList.contains("active")) {
-      answer.style.maxHeight = answer.scrollHeight + "px";
-    }
-
-    question.addEventListener("click", () => {
-      const isOpen = item.classList.contains("active");
-
-      faqItems.forEach((el) => {
-        el.classList.remove("active");
-        el.querySelector(".faq-answer").style.maxHeight = null;
-      });
-
-      if (!isOpen) {
-        item.classList.add("active");
-        answer.style.maxHeight = answer.scrollHeight + "px";
-      }
-    });
-  });
 });
 
 document.addEventListener("DOMContentLoaded", () => {
