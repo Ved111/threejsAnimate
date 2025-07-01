@@ -19,6 +19,7 @@ const ticker = () => {
     elem.innerText = `text${item}`;
     tickerContent.append(elem);
   });
+
   const clone = tickerContent.cloneNode(true);
 
   tickerMainContainer.append(tickerContent);
