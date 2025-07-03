@@ -48,80 +48,59 @@ window.addEventListener("DOMContentLoaded", () => {
   initThreeJS();
 });
 
-function replaceInitialCanWithGLB(url, scene, hex) {
-  if (!modelLoaded) return;
+function replaceInitialCanWithGLB(key, scene, hex) {
+  if (!modelLoaded || !glbModelCache[key]) return;
 
-  const loader = new GLTFLoader();
+  const original = glbModelCache[key];
+  const newModel = original.clone(true); // ✅ Clone the cached original
 
-  loader.load(
-    url,
-    (gltf) => {
-      const newModel = gltf.scene;
+  // Reset transform
+  const box = new THREE.Box3().setFromObject(newModel);
+  const center = box.getCenter(new THREE.Vector3());
+  newModel.position.sub(center);
+  newModel.position.y = isMobile ? -0.7 : -1;
+  newModel.position.x = initialCan?.position.x || 0;
+  newModel.scale.set(0.6, 0.6, 0.6);
+  newModel.rotation.set(0, 0, 0);
 
-      // Center and scale
-      const box = new THREE.Box3().setFromObject(newModel);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-
-      newModel.position.sub(center);
-      newModel.position.y = isMobile ? -0.7 : -1;
-      newModel.scale.set(0.6, 0.6, 0.6);
-      newModel.rotation.set(0, 0, 0);
-
-      newModel.traverse((child) => {
-        if (
-          child.isMesh &&
-          child.material &&
-          child.material.isMeshStandardMaterial
-        ) {
-          const oldMat = child.material;
-
-          const newMat = new THREE.MeshStandardMaterial({
-            color: hex
-              ? new THREE.Color(hex)
-              : oldMat.color || new THREE.Color(0xffffff),
-            metalness: 0.9,
-            roughness: 0.1,
-            envMapIntensity: 2.5,
-            map: oldMat.map || null,
-          });
-
-          newMat.clearcoat = 0.8;
-          newMat.clearcoatRoughness = 0.1;
-          newMat.transparent = false;
-          newMat.opacity = 1;
-          newMat.alphaTest = 0.0;
-          newMat.side = THREE.FrontSide;
-          newMat.depthWrite = true;
-          newMat.needsUpdate = true;
-
-          if (newMat.map) {
-            newMat.map.encoding = THREE.sRGBEncoding;
-            newMat.map.needsUpdate = true;
-            newMat.alphaMap = null;
-          }
-
-          child.material = newMat;
-          child.castShadow = true;
-          child.receiveShadow = true;
-          child.geometry.computeVertexNormals();
-        }
+  newModel.traverse((child) => {
+    if (child.isMesh && child.material?.isMeshStandardMaterial) {
+      const oldMat = child.material;
+      const newMat = new THREE.MeshStandardMaterial({
+        color: hex ? new THREE.Color(hex) : oldMat.color.clone(),
+        metalness: 0.9,
+        roughness: 0.1,
+        envMapIntensity: 2.5,
+        map: oldMat.map || null,
+        clearcoat: 0.8,
+        clearcoatRoughness: 0.1,
+        transparent: false,
+        opacity: 1,
+        alphaTest: 0.0,
+        side: THREE.FrontSide,
+        depthWrite: true,
       });
 
-      // Remove and replace initialCan
-      if (initialCan) {
-        scene.remove(initialCan);
+      if (newMat.map) {
+        newMat.map.encoding = THREE.sRGBEncoding;
+        newMat.map.needsUpdate = true;
       }
 
-      initialCan = newModel;
-      initialCan.visible = true;
-      scene.add(initialCan);
-    },
-    undefined,
-    (err) => {
-      console.error("🚨 Failed to load replacement model:", err);
+      child.material = newMat;
+      child.castShadow = true;
+      child.receiveShadow = true;
+      child.geometry.computeVertexNormals();
     }
-  );
+  });
+
+  // Replace old can
+  if (initialCan) {
+    scene.remove(initialCan);
+  }
+
+  initialCan = newModel;
+  initialCan.visible = true;
+  scene.add(initialCan);
 }
 
 const backgroundImages = [
@@ -131,10 +110,17 @@ const backgroundImages = [
   "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png",
 ];
 
+let currentBgIndex = -1;
+
 function updateBackgroundImage(index) {
-  const bgLayer = document.querySelector(".background-image-layer");
-  if (bgLayer) {
-    bgLayer.style.backgroundImage = `url('${backgroundImages[index]}')`;
+  if (index === currentBgIndex) return;
+
+  const bgImg = document.getElementById("bg-image");
+  const url = backgroundImages[index];
+
+  if (bgImg && url) {
+    bgImg.src = url;
+    currentBgIndex = index;
   }
 }
 
@@ -151,6 +137,8 @@ function fadeOutIntro() {
     intro.style.display = "none";
   }, 300); // or 2000 if you want a delay
 }
+
+const glbModelCache = {};
 
 function initThreeJS() {
   const ASSET_URLS = [
@@ -188,14 +176,11 @@ function initThreeJS() {
     "https://res.cloudinary.com/do7dxrdey/image/upload/v1749066942/Adobe_Express_-_file_4_1_druku2.png",
     "https://res.cloudinary.com/do7dxrdey/image/upload/v1749066841/Adobe_Express_-_file_2_1_aci4ev.png",
 
-    // 🧃 Background Images
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/3_1_hajus7.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png",
-
     // 🔊 Audio
     "https://res.cloudinary.com/do7dxrdey/video/upload/v1745594133/soda-can-opening-169337_aekjbs.mp3",
   ];
+
+  preloadBackgroundImages(backgroundImages);
 
   function preloadAsset(url) {
     return new Promise((resolve, reject) => {
@@ -376,6 +361,7 @@ function initThreeJS() {
           });
 
           resolve({ key, model, size });
+          glbModelCache[key] = model; // ✅ Add this line
         },
 
         undefined
@@ -474,17 +460,12 @@ function setupScrollAnimations(updateFruitCallback) {
     if (newRange === currentRange) return;
     currentRange = newRange;
 
-    const glbURLs = [
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1750236870/DCcanWithENGRAVEDlogo_2_ecjm5i_dobnwk.glb",
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747923870/2.44_u6yamm.glb",
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747987124/starberry_yeswvi.glb",
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747977846/appleCOT_tibxq0.glb",
-    ];
+    const keys = ["initial", "right", "left", "center"];
 
-    const urlToLoad = glbURLs[newRange];
+    const keysToLoad = keys[newRange];
 
     if (initialCan) {
-      initialCan.position.x = xMovement * responsiveScale;
+      initialCan.position.x = xMovement;
     }
 
     // ✅ Only update background if not near the beginning (range 0)
@@ -493,14 +474,14 @@ function setupScrollAnimations(updateFruitCallback) {
       console.log(progress, "newRange");
       updateBackgroundImage(newRange % 4);
 
-      replaceInitialCanWithGLB(urlToLoad, scene);
+      replaceInitialCanWithGLB(keysToLoad, scene);
     }
   }
 
   ScrollTrigger.create({
     trigger: ".hero",
     start: "top top",
-    end: "+=50%",
+    end: "+=45%",
     scrub: true,
     onUpdate: (self) => {
       if (!modelLoaded) return;
@@ -522,12 +503,6 @@ function setupScrollAnimations(updateFruitCallback) {
 
       initialCan.visible = true;
     },
-    onLeave: () => {
-      initialCan.visible = true;
-
-      initialCan.position.x = isMobile ? -0.9 : -2;
-    },
-
     onEnterBack: () => {
       lastXMovement = 0;
       centerCan.visible = false;
@@ -546,23 +521,28 @@ function setupScrollAnimations(updateFruitCallback) {
         initialCan.position.set(isMobile ? -0.9 : -2, baseY, 0);
       });
     },
+    onEnter: () => {
+      if (!modelLoaded) return;
+
+      centerCan.visible = false;
+      currentRange = -1;
+      lastXMovement = 0;
+
+      updateBackgroundImage(0);
+
+      replaceInitialCanWithGLB("initial", scene); // 👈 This is your function
+    },
+
     onLeaveBack: () => {
       const centerImg = document.querySelector(".can[key='center']");
       if (centerImg) centerImg.style.opacity = 1;
-
-      if (modelLoaded) {
-        [initialCan, centerCan, leftCan, rightCan].forEach((can) => {
-          if (can) can.visible = false;
-        });
-      }
-      console.log("Heroooo");
     },
   });
 
   ScrollTrigger.create({
     trigger: ".custom-border-section",
     start: "top center",
-    end: "bottom 80%",
+    end: "bottom 50%",
     scrub: true,
     onEnterBack: () => {
       lastXMovement = 0;
@@ -572,17 +552,7 @@ function setupScrollAnimations(updateFruitCallback) {
         centerCan.position.set(7, isMobile ? -0.7 : -1, 0); // move it right
       }
     },
-    onLeaveBack: () => {
-      const centerImg = document.querySelector(".can[key='center']");
-      if (centerImg) centerImg.style.opacity = 1;
-
-      if (modelLoaded) {
-        [initialCan, centerCan, leftCan, rightCan].forEach((can) => {
-          if (can) can.visible = false;
-        });
-      }
-      console.log("Custom");
-    },
+    onLeaveBack: () => {},
 
     // 🧹 Optional: also reset when completely leaving the section forward
     onLeave: () => {},
@@ -616,8 +586,7 @@ function setupScrollAnimations(updateFruitCallback) {
         xMovement = -2 + 4 * t;
       } else {
         const t = getLocalT(progress, 0.75, 1);
-        const damping = 1 - Math.pow(t, 3);
-        xMovement = (2 - 2 * t) * damping;
+        xMovement = 2 - 2 * t;
       }
 
       // 👇 Apply responsive scale to xMovement based on screen size
@@ -631,7 +600,7 @@ function setupScrollAnimations(updateFruitCallback) {
         maxScale,
         screenWidth
       );
-      initialCan.position.x = xMovement * responsiveScale;
+      initialCan.position.x = xMovement;
 
       const textIndices = [0, 1, 2];
 
@@ -778,7 +747,7 @@ function setupScrollAnimations(updateFruitCallback) {
 
   ScrollTrigger.create({
     trigger: ".poppy-section",
-    start: "top 80%",
+    start: "top 50%",
     end: "top 1%",
     scrub: true,
     onUpdate: (self) => {
@@ -789,6 +758,7 @@ function setupScrollAnimations(updateFruitCallback) {
         initialCan.visible = false;
         initialCan.position.x = -10; // or any offscreen value
         centerCan.position.x = 0;
+        centerCan.visible = true;
       }
 
       const t = self.progress; // from 0 to 1
@@ -941,26 +911,6 @@ function setupScrollAnimations(updateFruitCallback) {
       }
     },
   });
-
-  ScrollTrigger.create({
-    trigger: ".model",
-    start: "top top", // or adjust based on when you want them hidden
-    end: "bottom top",
-    onEnter: () => {
-      if (modelLoaded) {
-        [initialCan, centerCan, leftCan, rightCan].forEach((can) => {
-          if (can) can.visible = false;
-        });
-      }
-    },
-    onEnterBack: () => {
-      if (modelLoaded) {
-        [initialCan, centerCan, leftCan, rightCan].forEach((can) => {
-          if (can) can.visible = true;
-        });
-      }
-    },
-  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1022,26 +972,43 @@ document.addEventListener("DOMContentLoaded", () => {
   
 
   <section class="custom-border-section">
-  <div class="background-image-layer"></div>
+  
+  <div class="background-image-layer">
+  <img id="bg-image" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png" alt="" />
+</div>
+
 
   <div class="fruit-container">
   <div class="fruit-zone fruit-1-img">
   
     <img class="fruit-img fruit-1" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749059138/Adobe_Express_-_file_1_pccfnh.png" />
-    <div class="fruit-text text-0">Watermelon Sorbet</div>
+    <div class="fruit-text text-0">
+    <p className='fruit-label-text'>    Watermelon Sorbet
+    </p>
+    <p>This isn’t just watermelon and mint. It’s a chilled rebellion against boring.
+    A summer stunner with a minty twist.
+    </p>
+    </div>
+
 
   </div>
 
   <div class="fruit-zone fruit-2-img">
     
     <img class="fruit-img fruit-2" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033116/Don_Chicos_Website_1_-removebg-preview_eoaxqi.webp" />
-    <div class="fruit-text text-1">Strawberry Cream</div>
+    <div class="fruit-text text-1"> <p className='fruit-label-text'>    Strawberry Cream
+    </p>
+    <p>The strawberry-vanilla soda you wish you grew up with, finally done right.
+    </p></div>
   </div>
 
   <div class="fruit-zone fruit-3-img">
    
     <img class="fruit-img fruit-3" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033228/Don_Chicos_Website_2_-removebg-preview_hss1cg.webp" />
-    <div class="fruit-text text-2">Applecot Relish</div>
+    <div class="fruit-text text-2"><p className='fruit-label-text'>    AppleCot Relish
+    </p>
+    <p>Half apple, half apricot, fully addictive.
+    </p></div>
 
   </div>
 </div>
@@ -1370,17 +1337,20 @@ document.addEventListener("DOMContentLoaded", () => {
     start: "top bottom", // when .can-hero-section hits the bottom of viewport
     end: "top top", // until it reaches top of viewport
     onEnter: () => {
-      document.querySelector(".poppy-section").style.display = "none";
-      document.querySelector(".poppy-section").style.height = "0px";
+      requestAnimationFrame(() => {
+        const poppy = document.querySelector(".poppy-section");
+        poppy.style.position = "absolute";
+        poppy.style.top = "-100vh"; // Push it above viewport
+        poppy.style.left = "0";
+        poppy.style.width = "100%";
+        poppy.style.zIndex = "-1";
+      });
     },
     onLeaveBack: () => {
-      document.querySelector(".poppy-section").style.display = "block";
-      document.querySelector(".poppy-section").style.height = "100vh"; // or whatever original height you used
-      if (isMobile) {
-        document.querySelector(
-          ".poppy-section"
-        ).style.backgroundImage = `url${flavors[0].bg}`;
-      }
+      const poppy = document.querySelector(".poppy-section");
+
+      poppy.style.position = "relative"; // restore layout
+      poppy.style.top = "0";
     },
   });
 });
@@ -1420,5 +1390,55 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   ticker();
   pictureCollage();
-  recipe();
+});
+
+const backgroundImageCache = {};
+
+function preloadBackgroundImages(urls) {
+  urls.forEach((url) => {
+    const img = new Image();
+    img.src = url;
+    backgroundImageCache[url] = img;
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document
+    .querySelectorAll(".bg-red-circular-gradient")
+    .forEach((container) => {
+      console.log("Hello");
+
+      // Create wrapper div
+      const wrapper = document.createElement("div");
+      wrapper.style.top = "20px";
+      wrapper.style.left = "20px";
+      wrapper.style.zIndex = "10";
+      wrapper.style.textAlign = "center";
+      wrapper.style.gap = "10px";
+      wrapper.style.padding = "10vh";
+      wrapper.style.display = "flex";
+      wrapper.style.flexDirection = "column";
+      wrapper.style.alignItems = "center";
+      wrapper.style.justifyContent = "center";
+
+      // Create image
+      const image = document.createElement("img");
+      image.src =
+        "https://res.cloudinary.com/do7dxrdey/image/upload/v1751557233/IMG_6889-removebg-preview_jsgrpz.png";
+      image.alt = "Extra image";
+      image.style.height = "60vh";
+      image.style.paddingBottom = "5vh";
+
+      // Create button
+      const button = document.createElement("button");
+      button.textContent = "+ 6 Pack";
+      button.classList.add("soda-btn"); // ✅ add both classes
+
+      // Append image and button to wrapper
+      wrapper.appendChild(image);
+      wrapper.appendChild(button);
+
+      // Append wrapper to container
+      container.appendChild(wrapper);
+    });
 });

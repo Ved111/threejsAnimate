@@ -4,7 +4,7 @@ export const generateBubble = (container, condition) => {
   if (!container || !condition) {
     return;
   }
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 40; i++) {
     const img = document.createElement("img");
     img.src = bubbleImageUrl;
     img.style.position = "absolute";

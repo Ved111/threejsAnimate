@@ -20,4 +20,4 @@ export const flavors = [
 ];
 
 export const bubbleImageUrl =
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1750159941/de7b6738e9c3be8feb23abc4b1116b8d-removebg-preview_1_h5zpws.png";
+  "https://res.cloudinary.com/do7dxrdey/image/upload/v1751273819/Screenshot_2025-06-30_at_2.23.57_PM-removebg-preview_1_yz6e5n.png";

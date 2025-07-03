@@ -290,6 +290,7 @@ const pictureCollage = () => {
     img.src = url;
     img.alt = "image";
     wrapperDiv.append(img);
+
     collageContainer.append(wrapperDiv);
   });
   app.appendChild(collageContainer);
