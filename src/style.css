@@ -284,7 +284,7 @@ section {
   padding: 2rem;
   position: relative;
   text-align: center;
-  font-family: 'ActiveOne', sans-serif;
+  font-family: "ActiveOne", sans-serif;
   overflow: hidden;
 }
 
@@ -393,7 +393,6 @@ section {
     transform: translateY(0);
   }
 }
-
 
 .don-landing {
   position: relative;
@@ -870,7 +869,7 @@ section {
   justify-content: center;
   gap: 5vw;
   margin: 7vh 0;
-  margin-top: 12vh
+  margin-top: 12vh;
 }
 
 .flav-text {
@@ -1696,7 +1695,6 @@ body.no-scroll {
   }
 }
 
-
 .bubble-wrapper {
   position: absolute;
   top: 50%;
@@ -1719,7 +1717,6 @@ body.no-scroll {
   position: absolute;
   right: 10%;
   top: 10%;
-
 }
 
 .bubble-3 {
@@ -1727,7 +1724,6 @@ body.no-scroll {
   position: absolute;
   right: 10%;
   bottom: 10%;
-
 }
 .newRecipeContainer {
   display: flex;
@@ -1959,5 +1955,73 @@ body.no-scroll {
   100% {
     transform: translateY(-50px) scale(0.5);
     opacity: 0;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .collage-container {
+    height: fit-content;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(9, 250px);
+    grid-template-areas:
+      "img1 img1 img1 img1"
+      "img4 img4 img4 img4"
+      "img7 img7 img8 img8"
+      "img10 img10 img10 img10"
+      "img9 img9 img9 img9"
+      "img9 img9 img9 img9"
+      "img2 img2 img3 img3"
+      "img5 img5 img3 img3"
+      "img5 img5 img6 img6";
+  }
+
+  .collage-container img {
+    border-radius: 10px;
+  }
+
+  .collage-1 > .collage-btn-2 {
+    left: 42% !important;
+  }
+
+  .collage-4 > .collage-btn-2 {
+    left: 42% !important;
+  }
+
+  .collage-4 > .collage-btn {
+    left: 39% !important;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
+  .collage-7 > .collage-btn {
+    left: 30% !important;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
+  .collage-8 > .collage-btn {
+    left: 25% !important;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
+  .collage-5 > .collage-btn {
+    left: 24% !important;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
+  .collage-5 > .collage-btn-2 {
+    left: 32% !important;
+  }
+
+  .collage-text {
+    font-size: 16px;
+  }
+
+  .ticker-main-container {
+    height: fit-content;
   }
 }

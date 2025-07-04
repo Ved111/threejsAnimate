@@ -276,6 +276,7 @@ const pictureCollage = () => {
     wrapperDiv.style.width = "100%";
     wrapperDiv.style.position = "relative";
     wrapperDiv.style.gridArea = `img${index + 1}`;
+    wrapperDiv.classList.add(`collage-${index + 1}`);
 
     properties.forEach(({ element, styles = {}, props = {}, classes = [] }) => {
       const elem = document.createElement(element);

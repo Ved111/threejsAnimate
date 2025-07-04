@@ -1403,42 +1403,38 @@ function preloadBackgroundImages(urls) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  document
-    .querySelectorAll(".bg-red-circular-gradient")
-    .forEach((container) => {
-      console.log("Hello");
+  const container = document.querySelector(".ticker-main-container");
 
-      // Create wrapper div
-      const wrapper = document.createElement("div");
-      wrapper.style.top = "20px";
-      wrapper.style.left = "20px";
-      wrapper.style.zIndex = "10";
-      wrapper.style.textAlign = "center";
-      wrapper.style.gap = "10px";
-      wrapper.style.padding = "10vh";
-      wrapper.style.display = "flex";
-      wrapper.style.flexDirection = "column";
-      wrapper.style.alignItems = "center";
-      wrapper.style.justifyContent = "center";
+  // Create wrapper div
+  const wrapper = document.createElement("div");
+  wrapper.style.top = "20px";
+  wrapper.style.left = "20px";
+  wrapper.style.zIndex = "10";
+  wrapper.style.textAlign = "center";
+  wrapper.style.gap = "10px";
+  wrapper.style.padding = "10vh";
+  wrapper.style.display = "flex";
+  wrapper.style.flexDirection = "column";
+  wrapper.style.alignItems = "center";
+  wrapper.style.justifyContent = "center";
 
-      // Create image
-      const image = document.createElement("img");
-      image.src =
-        "https://res.cloudinary.com/do7dxrdey/image/upload/v1751557233/IMG_6889-removebg-preview_jsgrpz.png";
-      image.alt = "Extra image";
-      image.style.height = "60vh";
-      image.style.paddingBottom = "5vh";
+  // Create image
+  const image = document.createElement("img");
+  image.src =
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751557233/IMG_6889-removebg-preview_jsgrpz.png";
+  image.alt = "Extra image";
+  image.style.height = "60vh";
+  image.style.paddingBottom = "5vh";
 
-      // Create button
-      const button = document.createElement("button");
-      button.textContent = "+ 6 Pack";
-      button.classList.add("soda-btn"); // ✅ add both classes
+  // Create button
+  const button = document.createElement("button");
+  button.textContent = "+ 6 Pack";
+  button.classList.add("soda-btn"); // ✅ add both classes
 
-      // Append image and button to wrapper
-      wrapper.appendChild(image);
-      wrapper.appendChild(button);
+  // Append image and button to wrapper
+  wrapper.appendChild(image);
+  wrapper.appendChild(button);
 
-      // Append wrapper to container
-      container.appendChild(wrapper);
-    });
+  // Append wrapper to container
+  container.appendChild(wrapper);
 });

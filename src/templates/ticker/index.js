@@ -6,6 +6,7 @@ const ticker = () => {
   const tickerContainer = document.createElement("div");
   tickerContainer.classList.add("bg-red-circular-gradient");
   tickerContainer.classList.add("base-container");
+  tickerContainer.classList.add("ticker-main-container");
 
   const tickerMainContainer = document.createElement("div");
   tickerMainContainer.classList.add("ticker-container");
