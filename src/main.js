@@ -92,8 +92,6 @@ function replaceInitialCanWithGLB(key, scene, hex) {
       child.geometry.computeVertexNormals();
     }
   });
-
-  // Replace old can
   if (initialCan) {
     scene.remove(initialCan);
   }
@@ -442,6 +440,8 @@ function setupScrollAnimations(updateFruitCallback) {
     if (!modelLoaded) return;
 
     const swapPoints = [0.12, 0.37, 0.62];
+
+    console.log(progress);
     let newRange = 0;
 
     if (progress >= swapPoints[0] && progress < swapPoints[1]) {
@@ -544,57 +544,55 @@ function setupScrollAnimations(updateFruitCallback) {
       resetSwapState();
       if (centerCan) {
         centerCan.visible = false;
-        centerCan.position.set(7, isMobile ? -0.9 : -1, 0); // move it right
+        centerCan.position.set(7, isMobile ? -0.9 : -1, 0);
       }
     },
     onLeaveBack: () => {},
-
-    // 🧹 Optional: also reset when completely leaving the section forward
     onLeave: () => {},
     onUpdate: (self) => {
       if (!modelLoaded) return;
 
       const progress = self.progress;
-
-      // Spin bacesed on scroll velocity
       const scrollVelocity = self.getVelocity();
+      const screenWidth = window.innerWidth;
+
+      const minX = isMobile ? -0.7 : -2;
+      const maxX = isMobile ? 0.7 : 2;
+      const rangeX = maxX - minX;
+
+      // 🌀 Y rotation
       const segmentStart = Math.floor(progress / 0.25) * 0.25;
       const localT = (progress - segmentStart) / 0.25;
       initialCan.rotation.y = gsap.utils.interpolate(0, Math.PI * 2, localT);
 
-      // X-movement for oscillation
-
+      // 📍 Position logic
       function getLocalT(p, start, end) {
         return (p - start) / (end - start);
       }
 
       let xMovement;
-
       if (progress < 0.25) {
         const t = getLocalT(progress, 0, 0.25);
-        xMovement = -2 + 4 * t;
+        xMovement = minX + rangeX * t;
       } else if (progress < 0.5) {
         const t = getLocalT(progress, 0.25, 0.5);
-        xMovement = 2 - 4 * t;
+        xMovement = maxX - rangeX * t;
       } else if (progress < 0.75) {
         const t = getLocalT(progress, 0.5, 0.75);
-        xMovement = -2 + 4 * t;
+        xMovement = minX + rangeX * t;
       } else {
         const t = getLocalT(progress, 0.75, 1);
-        xMovement = 2 - 2 * t;
+        xMovement = gsap.utils.interpolate(maxX, 0, t); // ✅ Final move: right → center
       }
 
       initialCan.position.x = xMovement;
 
+      // 📝 Text animation
       const textIndices = [0, 1, 2];
-
       textIndices.forEach((index) => {
         const textEl = document.querySelector(`.fruit-text.text-${index}`);
         if (!textEl) return;
 
-        const screenWidth = window.innerWidth;
-
-        // Define timing for this text
         const enterStart = index * 0.25;
         const enterEnd = enterStart + 0.25;
         const exitStart = enterEnd;
@@ -604,12 +602,10 @@ function setupScrollAnimations(updateFruitCallback) {
         let opacity = 0;
 
         if (progress >= enterStart && progress < enterEnd) {
-          // Entering: left → center
           const t = (progress - enterStart) / 0.25;
           x = gsap.utils.interpolate(-screenWidth, 0, t);
           opacity = gsap.utils.interpolate(0, 1, t);
         } else if (progress >= exitStart && progress < exitEnd) {
-          // Exiting: center → right
           const t = (progress - exitStart) / 0.25;
           x = gsap.utils.interpolate(0, screenWidth, t);
           opacity = gsap.utils.interpolate(1, 0, t);
@@ -631,23 +627,15 @@ function setupScrollAnimations(updateFruitCallback) {
         }
       });
 
-      // ✅ Detect zero-crossing (sign change) in xMovement
-
-      const threshold = 2; // how close to the extreme before triggering
+      // 🔁 Swap detection
+      const threshold = Math.abs(rangeX) * 0.1;
 
       const reachedLeft =
-        xMovement <= -2 + threshold && lastXMovement > -2 + threshold;
+        xMovement <= minX + threshold && lastXMovement > minX + threshold;
       const reachedRight =
-        xMovement >= 2 - threshold && lastXMovement < 2 - threshold;
+        xMovement >= maxX - threshold && lastXMovement < maxX - threshold;
 
       const direction = scrollVelocity > 0 ? "down" : "up";
-
-      // if (
-      //   (direction === "down" && isExactlyRightExtreme) ||
-      //   (direction === "up" && isExactlyLeftExtreme)
-      // ) {
-      //   playCanSpinInPlace(initialCan);
-      // }
 
       updateInitialCanByProgress(progress, xMovement, scene);
 
@@ -668,13 +656,12 @@ function setupScrollAnimations(updateFruitCallback) {
           (direction === "up" && swapCount > 0)
         ) {
           updateFruitCallback(direction, progress);
-
           actualSwapCount++;
         }
       }
 
       const isAtExtreme =
-        xMovement <= -2 + threshold || xMovement >= 2 - threshold;
+        xMovement <= minX + threshold || xMovement >= maxX - threshold;
 
       if (!isAtExtreme) {
         didSwapRecently = false;
@@ -1099,13 +1086,7 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
   </div>
 
   <!-- Nutrition Facts -->
-  <div class="nutrition-card">
-    <p><strong>CALORIES:</strong> 0</p>
-    <p><strong>SUGAR:</strong> 0</p>
-    <p><strong>VITAMINS:</strong> B2, B6, B12, NIACIN</p>
-    <p><strong>CAFFEINE:</strong> 75mg</p>
-    <p><strong>TAURINE:</strong> 1000mg</p>
-  </div>
+
 
   <!-- Flavor Buttons -->
   <div class="flavor-buttons">
@@ -1409,6 +1390,7 @@ document.addEventListener("DOMContentLoaded", () => {
   image.alt = "Extra image";
   image.style.height = "60vh";
   image.style.paddingBottom = "5vh";
+  image.classList.add("assorted-class");
 
   // Create button
   const button = document.createElement("button");
