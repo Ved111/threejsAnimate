@@ -1181,6 +1181,10 @@ body.no-scroll {
     background-size: cover; /* Ensure background scales properly */
     background-position: center;
   }
+  
+  .badges {
+ height: 8vh;
+}
 
   .fruit-1-img {
     margin-left: 0;
@@ -1192,16 +1196,12 @@ body.no-scroll {
   }
 
   .fruit-1-img {
-    margin-top: 5vh;
-    margin-left: 19vw;
   }
 
   .fruit-2-img {
-    margin-right: 19vw;
   }
 
   .fruit-3-img {
-    margin-left: 19vw;
   }
 
   .heading-info-container {

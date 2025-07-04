@@ -438,12 +438,7 @@ function resetSwapState() {
 function setupScrollAnimations(updateFruitCallback) {
   let currentRange = -1;
 
-  function updateInitialCanByProgress(
-    progress,
-    xMovement,
-    responsiveScale,
-    scene
-  ) {
+  function updateInitialCanByProgress(progress, xMovement, scene) {
     if (!modelLoaded) return;
 
     const swapPoints = [0.12, 0.37, 0.62];
@@ -549,7 +544,7 @@ function setupScrollAnimations(updateFruitCallback) {
       resetSwapState();
       if (centerCan) {
         centerCan.visible = false;
-        centerCan.position.set(7, isMobile ? -0.7 : -1, 0); // move it right
+        centerCan.position.set(7, isMobile ? -0.9 : -1, 0); // move it right
       }
     },
     onLeaveBack: () => {},
@@ -589,17 +584,6 @@ function setupScrollAnimations(updateFruitCallback) {
         xMovement = 2 - 2 * t;
       }
 
-      // 👇 Apply responsive scale to xMovement based on screen size
-      const screenWidth = window.innerWidth;
-      const minScale = 0.3;
-      const maxScale = 1.0;
-      const responsiveScale = gsap.utils.mapRange(
-        320,
-        1200,
-        minScale,
-        maxScale,
-        screenWidth
-      );
       initialCan.position.x = xMovement;
 
       const textIndices = [0, 1, 2];
@@ -665,7 +649,7 @@ function setupScrollAnimations(updateFruitCallback) {
       //   playCanSpinInPlace(initialCan);
       // }
 
-      updateInitialCanByProgress(progress, xMovement, responsiveScale, scene);
+      updateInitialCanByProgress(progress, xMovement, scene);
 
       if ((reachedLeft || reachedRight) && !didSwapRecently) {
         didSwapRecently = true;
@@ -937,7 +921,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <div class="hero-content">
 <div class="logo-container">
-<img  src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751272545/Screenshot_2025-06-30_at_2.04.26_PM-removebg-preview_1_fb01a6.png" />
+<img class="main-logo" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751272545/Screenshot_2025-06-30_at_2.04.26_PM-removebg-preview_1_fb01a6.png" />
 
 </div>
 
