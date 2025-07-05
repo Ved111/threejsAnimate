@@ -236,19 +236,36 @@ const pictureCollage = () => {
     spotify.classList.add("border-black");
 
     const flavorTitle = document.createElement("button");
-    const igTitle = document.createElement("button");
+    const igTitle = document.createElement("i");
     const threadTitle = document.createElement("button");
-    const spotifyTitle = document.createElement("button");
+    const spotifyTitle = document.createElement("i");
 
     flavorTitle.textContent = "flavours switch";
-    igTitle.textContent = "ig";
-    threadTitle.textContent = "thread";
-    spotifyTitle.textContent = "spotify";
 
+    threadTitle.textContent = "thread";
     flavorTitle.classList.add("collage-text", "collage-btn-2");
-    igTitle.classList.add("collage-text", "collage-btn-2");
+    igTitle.classList.add(
+      "fab",
+      "fa-instagram",
+      "d-flex",
+      "align-items-center",
+      "justify-content-center",
+      "bg-white",
+      "rem-2",
+      "instagram-gradient"
+    );
     threadTitle.classList.add("collage-text", "collage-btn-2");
-    spotifyTitle.classList.add("collage-text", "collage-btn-2");
+    spotifyTitle.classList.add(
+      "fab",
+      "fa-spotify",
+      "d-flex",
+      "align-items-center",
+      "justify-content-center",
+      "bg-black",
+      "rem-2",
+      "color-spotify",
+      "rounded-circle"
+    );
 
     flavorSwitch.append(flavorTitle);
     ig.append(igTitle);
