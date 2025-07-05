@@ -53,11 +53,11 @@
 }
 
 .fruit-2-img {
-  margin-top: 21vh;
+  margin-top: 32vh;
 }
 
 .fruit-3-img {
-  margin-top: 16vh;
+  margin-top: 31vh;
 }
 
 .text-0 {
@@ -76,19 +76,16 @@
   flex-direction: column;
   align-items: center;
   font-size: 28px;
-  font-family: "ActiveOne", serif; /* Custom OTF Font */
   gap: 20px;
-  bottom: -145px !important;
+  bottom: -150px !important;
   text-align: center;
-}
-
-.fruit-text p {
-  font-family: "ActiveOne", serif; /* Custom OTF Font */
-  margin-bottom: 20px;
+  font-size: 18px;
 }
 
 .fruit-label-text {
+  font-family: "ActiveOne", serif !important; /* Custom OTF Font */
   margin-bottom: 20px;
+  font-size: 29px;
 }
 
 .fruit-bubble {
@@ -171,12 +168,15 @@
 }
 
 .fruit-1-img {
-  margin-top: 15vh;
+  margin-top: 14vh;
   animation: slowBounce 1s ease-in-out infinite;
 }
 
-.fruit-1 {
-  height: 30vh;
+
+.fruit-para {
+  font-size: 18px;
+  font-family: "ActiveOne", serif !important; /* Custom OTF Font */
+  text-transform: none;
 }
 
 @keyframes popBurst {
@@ -274,7 +274,7 @@ section {
   z-index: 10;
   text-align: center;
   background-color: white;
-  background: radial-gradient(circle at 50% 50%, #9f0404 0%, #540404 100%);
+  background: url('https://res.cloudinary.com/do7dxrdey/image/upload/v1751632170/WhatsApp_Image_2025-07-04_at_5.40.12_PM_a1wuwe.jpg')
 }
 
 .hero-section {
@@ -309,7 +309,11 @@ section {
   height: 12vh;
   width: auto;
   margin-left: auto;
-  margin: 10vh 0 10vh auto;
+  margin:  0 0 10vh auto;
+}
+
+.badges-img {
+  height: 70px;
 }
 
 .badge-container {
@@ -320,6 +324,7 @@ section {
   font-size: 21px;
   margin-bottom: 2rem;
   color: #ffe7d7;
+  
 }
 
 .shop-btn {
@@ -405,6 +410,7 @@ section {
   z-index: 12;
   text-align: center;
   background-color: white;
+  padding: 0;
   background: radial-gradient(circle at 50% 50%, #9f0404 0%, #540404 100%);
 }
 
@@ -532,7 +538,7 @@ section {
 }
 
 .custom-border-section {
-  height: 220vh;
+  height: 280vh;
   width: 100vw;
   position: relative;
   display: flex;
@@ -830,12 +836,13 @@ section {
 .hero-content {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .can-hero-section {
   padding: 3vh 20px 80px;
   text-align: center;
-  z-index: 11;
+  z-index: 11; 
   background-image: url("");
   position: relative;
 
@@ -1126,8 +1133,13 @@ body.no-scroll {
   text-align: center;
 }
 
+.main-logo-2 {
+    width: 410px;
+  margin-bottom: 20px;
+}
+
 .main-logo {
-  width: 40vw;
+    width: 40vw;
   height: auto;
   margin-bottom: 20px;
 }
@@ -1171,6 +1183,16 @@ body.no-scroll {
   }
 }
 
+.badges {
+  display: flex;
+  justify-content: end;
+
+}
+
+.og-container {
+  max-width: 410px;
+}
+
 @media (max-width: 1000px) {
   .info {
     display: flex;
@@ -1181,9 +1203,17 @@ body.no-scroll {
     background-size: cover; /* Ensure background scales properly */
     background-position: center;
   }
+
+  .main-logo-2 {
+    width: 250px;
+  }
   
   .badges {
  height: 8vh;
+}
+
+.badges-img {
+  height: 40px;
 }
 
   .fruit-1-img {
@@ -1212,9 +1242,6 @@ body.no-scroll {
     z-index: 0;
   }
 
-  .fruit-1 {
-    height: 8vh;
-  }
 
   .info h1 {
     font-size: 6vw; /* Make heading responsive */
@@ -1865,6 +1892,31 @@ body.no-scroll {
   }
 }
 
+.ticker-item {
+  height: 100%;
+}
+
+.ticker-item span {
+  color: white;
+  font-family: "Roboto", sans-serif; /* Google Font */
+}
+
+.ticker-item img {
+  height: 40px !important;
+  width: 40px !important;
+}
+
+.ticker-content {
+  height: 50px;
+}
+
+.assorted {
+  font-family: "ActiveOne", serif !important; /* Custom OTF Font */
+  color: #ffe7d7;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
 .collage-text {
   font-size: 18px;
   font-family: "Ohno Blazeface", serif;
@@ -1944,6 +1996,7 @@ body.no-scroll {
   left: 60%;
   animation-delay: 1.5s;
 }
+
 
 @keyframes bubble {
   0% {
@@ -2028,7 +2081,10 @@ body.no-scroll {
     font-size: 16px;
   }
 
+
+
   .ticker-main-container {
     height: fit-content;
+
   }
 }

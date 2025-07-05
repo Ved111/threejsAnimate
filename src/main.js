@@ -127,10 +127,8 @@ let scene = null;
 function fadeOutIntro() {
   const intro = document.querySelector(".intro-screen");
   if (!intro) return;
-
   intro.style.opacity = "0";
   document.body.classList.remove("no-scroll");
-
   setTimeout(() => {
     intro.style.display = "none";
   }, 300); // or 2000 if you want a delay
@@ -580,51 +578,51 @@ function setupScrollAnimations(updateFruitCallback) {
       } else if (progress < 0.75) {
         const t = getLocalT(progress, 0.5, 0.75);
         xMovement = minX + rangeX * t;
+      } else if (progress < 0.92) {
+        const t = getLocalT(progress, 0.75, 0.92); // 🔥 shorter range = faster
+        xMovement = gsap.utils.interpolate(maxX, 0, t);
       } else {
-        const t = getLocalT(progress, 0.75, 1);
-        xMovement = gsap.utils.interpolate(maxX, 0, t); // ✅ Final move: right → center
+        xMovement = 0; // ✅ stay at center after 0.9
       }
 
       initialCan.position.x = xMovement;
 
       // 📝 Text animation
       const textIndices = [0, 1, 2];
+
       textIndices.forEach((index) => {
         const textEl = document.querySelector(`.fruit-text.text-${index}`);
         if (!textEl) return;
 
         const enterStart = index * 0.25;
         const enterEnd = enterStart + 0.25;
-        const exitStart = enterEnd;
-        const exitEnd = exitStart + 0.25;
 
-        let x = null;
+        const progressInRange = progress >= enterStart;
+
+        let x = 0;
         let opacity = 0;
 
+        const directionIn = index % 2 === 0 ? -screenWidth : screenWidth;
+
         if (progress >= enterStart && progress < enterEnd) {
+          // Animate in from left or right
           const t = (progress - enterStart) / 0.25;
-          x = gsap.utils.interpolate(-screenWidth, 0, t);
+          x = gsap.utils.interpolate(directionIn, 0, t);
           opacity = gsap.utils.interpolate(0, 1, t);
-        } else if (progress >= exitStart && progress < exitEnd) {
-          const t = (progress - exitStart) / 0.25;
-          x = gsap.utils.interpolate(0, screenWidth, t);
-          opacity = gsap.utils.interpolate(1, 0, t);
+        } else if (progress >= enterEnd) {
+          // Stay in center
+          x = 0;
+          opacity = 1;
         }
 
-        if (x !== null) {
-          gsap.set(textEl, {
-            x,
-            opacity,
-            position: "absolute",
-            display: "block",
-            bottom: "-100px",
-          });
-        } else {
-          gsap.set(textEl, {
-            opacity: 0,
-            display: "none",
-          });
-        }
+        gsap.set(textEl, {
+          x,
+          opacity,
+          position: "absolute",
+          display: opacity > 0 ? "block" : "none",
+          bottom: "-100px",
+          transform: "translateX(0%)",
+        });
       });
 
       // 🔁 Swap detection
@@ -898,7 +896,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750412499/37_1_vb6ngi.png" class="flavor-img shimmer" />
     </div>
     <div class="flavor-circle">
-      <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744617469/25_1_y9hpks.png" class="flavor-img shimmer" />
+      <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751635300/2_2_1_lapjn0.png" class="flavor-img shimmer" />
     </div>
 </div>
 
@@ -907,16 +905,38 @@ document.addEventListener("DOMContentLoaded", () => {
 <section class="don-landing">
 
 <div class="hero-content">
-<div class="logo-container">
-<img class="main-logo" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751272545/Screenshot_2025-06-30_at_2.04.26_PM-removebg-preview_1_fb01a6.png" />
-
+<div class="og-container">
+  <div class="logo-container-2">
+    <img
+      class="main-logo-2"
+      src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751272545/Screenshot_2025-06-30_at_2.04.26_PM-removebg-preview_1_fb01a6.png"
+      alt="Main Logo"
+    />
+  </div>
+  <div class="badges">
+    <img
+      class="badges-img"
+      src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751634605/6_1_3_ydfa44.png"
+      alt="Badge 1"
+    />
+    <img
+      class="badges-img"
+      src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751634604/6_1_1_erur0t.png"
+      alt="Badge 2"
+    />
+    <img
+      class="badges-img"
+      src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751634604/6_1_2_xgycog.png"
+      alt="Badge 3"
+    />
+  </div>
 </div>
 
-<img class='badges' src='https://res.cloudinary.com/do7dxrdey/image/upload/v1751272786/Screenshot_2025-06-30_at_2.08.52_PM-removebg-preview_fh0akn.png' />
+
+
     <p class="hero-desc">
-      Crisp juicy apple meets golden apricot <br />
-      Sparkling Prebiotic Soda!
-    </p>
+    The fizzy world of soda had surrendered to the ordinary- Until Don Chico stepped in. <br />
+    A legend. A rebel. A mastermind of flavour.    </p>
 
     <button class="soda-btn">
       Shop Now 
@@ -949,40 +969,52 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 
 
-  <div class="fruit-container">
-  <div class="fruit-zone fruit-1-img">
-  
-    <img class="fruit-img fruit-1" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749059138/Adobe_Express_-_file_1_pccfnh.png" />
-    <div class="fruit-text text-0">
-    <p className='fruit-label-text'>    Watermelon Sorbet
+<div class="fruit-container">
+<div class="fruit-zone fruit-1-img">
+  <img
+    class="fruit-img fruit-1"
+    src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751635300/2_2_1_lapjn0.png"
+  />
+  <div class="fruit-text text-0">
+    <p class="fruit-label-text">Watermelon Sorbet</p>
+    <p class="fruit-para">
+      This isn’t just watermelon and mint. It’s a chilled rebellion against boring.
+      A summer stunner with a minty twist.
     </p>
-    <p>This isn’t just watermelon and mint. It’s a chilled rebellion against boring.
-    A summer stunner with a minty twist.
-    </p>
-    </div>
-
-
-  </div>
-
-  <div class="fruit-zone fruit-2-img">
-    
-    <img class="fruit-img fruit-2" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033116/Don_Chicos_Website_1_-removebg-preview_eoaxqi.webp" />
-    <div class="fruit-text text-1"> <p className='fruit-label-text'>    Strawberry Cream
-    </p>
-    <p>The strawberry-vanilla soda you wish you grew up with, finally done right.
-    </p></div>
-  </div>
-
-  <div class="fruit-zone fruit-3-img">
-   
-    <img class="fruit-img fruit-3" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033228/Don_Chicos_Website_2_-removebg-preview_hss1cg.webp" />
-    <div class="fruit-text text-2"><p className='fruit-label-text'>    AppleCot Relish
-    </p>
-    <p>Half apple, half apricot, fully addictive.
-    </p></div>
-
   </div>
 </div>
+
+
+
+
+<div class="fruit-zone fruit-2-img">
+  <img
+    class="fruit-img fruit-2"
+    src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033116/Don_Chicos_Website_1_-removebg-preview_eoaxqi.webp"
+  />
+  <div class="fruit-text text-1">
+    <p class="fruit-label-text">Strawberry Cream</p>
+    <p class="fruit-para">
+      The strawberry-vanilla soda you wish you grew up with, finally done right.
+    </p>
+  </div>
+</div>
+
+
+ <div class="fruit-zone fruit-3-img">
+  <img
+    class="fruit-img fruit-3"
+    src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033228/Don_Chicos_Website_2_-removebg-preview_hss1cg.webp"
+  />
+  <div class="fruit-text text-2">
+    <p class="fruit-label-text">AppleCot Relish</p>
+    <p class="fruit-para">Half apple, half apricot, fully addictive.</p>
+  </div>
+</div>
+
+</div>
+</div>
+
 
 
 
@@ -1392,13 +1424,19 @@ document.addEventListener("DOMContentLoaded", () => {
   image.style.paddingBottom = "5vh";
   image.classList.add("assorted-class");
 
+  // Create paragraph
+  const paragraph = document.createElement("p");
+  paragraph.textContent = "Our Assorted Pack"; // Change as needed
+  paragraph.classList.add("assorted"); // Add your desired class(es)
+
   // Create button
   const button = document.createElement("button");
   button.textContent = "+ 6 Pack";
-  button.classList.add("soda-btn"); // ✅ add both classes
+  button.classList.add("soda-btn");
 
-  // Append image and button to wrapper
+  // Append elements to wrapper
   wrapper.appendChild(image);
+  wrapper.appendChild(paragraph); // 👈 insert paragraph between image and button
   wrapper.appendChild(button);
 
   // Append wrapper to container
