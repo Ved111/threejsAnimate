@@ -2009,6 +2009,10 @@ body.no-scroll {
   }
 }
 
+.collage-btn {
+  display: none;
+}
+
 @media screen and (max-width: 700px) {
   .collage-container {
     height: fit-content;
