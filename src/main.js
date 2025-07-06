@@ -6,7 +6,6 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 import "./style.css";
 import { openCanAudio } from "./openCanAudio";
-import { flavors } from "./utils";
 import { carouselGesture } from "./carouselGesture";
 import { generateBubble } from "./generateBubble";
 import recipe from "./templates/recipes";

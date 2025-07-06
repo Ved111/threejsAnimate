@@ -5,6 +5,10 @@
   text-transform: uppercase;
 }
 
+:root {
+  --spotify: #1ed760;
+}
+
 @font-face {
   font-family: "ActiveOne"; /* Replace with your actual font name */
   src: url("../fonts/active-one.woff2") format("woff2"),
@@ -172,7 +176,6 @@
   animation: slowBounce 1s ease-in-out infinite;
 }
 
-
 .fruit-para {
   font-size: 18px;
   font-family: "ActiveOne", serif !important; /* Custom OTF Font */
@@ -274,7 +277,7 @@ section {
   z-index: 10;
   text-align: center;
   background-color: white;
-  background: url('https://res.cloudinary.com/do7dxrdey/image/upload/v1751632170/WhatsApp_Image_2025-07-04_at_5.40.12_PM_a1wuwe.jpg')
+  background: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1751632170/WhatsApp_Image_2025-07-04_at_5.40.12_PM_a1wuwe.jpg");
 }
 
 .hero-section {
@@ -309,7 +312,7 @@ section {
   height: 12vh;
   width: auto;
   margin-left: auto;
-  margin:  0 0 10vh auto;
+  margin: 0 0 10vh auto;
 }
 
 .badges-img {
@@ -324,7 +327,6 @@ section {
   font-size: 21px;
   margin-bottom: 2rem;
   color: #ffe7d7;
-  
 }
 
 .shop-btn {
@@ -842,7 +844,7 @@ section {
 .can-hero-section {
   padding: 3vh 20px 80px;
   text-align: center;
-  z-index: 11; 
+  z-index: 11;
   background-image: url("");
   position: relative;
 
@@ -1134,12 +1136,12 @@ body.no-scroll {
 }
 
 .main-logo-2 {
-    width: 410px;
+  width: 410px;
   margin-bottom: 20px;
 }
 
 .main-logo {
-    width: 40vw;
+  width: 40vw;
   height: auto;
   margin-bottom: 20px;
 }
@@ -1186,7 +1188,6 @@ body.no-scroll {
 .badges {
   display: flex;
   justify-content: end;
-
 }
 
 .og-container {
@@ -1207,14 +1208,14 @@ body.no-scroll {
   .main-logo-2 {
     width: 250px;
   }
-  
-  .badges {
- height: 8vh;
-}
 
-.badges-img {
-  height: 40px;
-}
+  .badges {
+    height: 8vh;
+  }
+
+  .badges-img {
+    height: 40px;
+  }
 
   .fruit-1-img {
     margin: 21vh 0 0 0;
@@ -1223,7 +1224,6 @@ body.no-scroll {
   .hero p {
     margin-bottom: 12vh;
   }
-
 
   .fruit-2-img {
     margin-top: 40vh !important;
@@ -1241,7 +1241,6 @@ body.no-scroll {
     height: 20vh;
     z-index: 0;
   }
-
 
   .info h1 {
     font-size: 6vw; /* Make heading responsive */
@@ -1949,6 +1948,10 @@ body.no-scroll {
   border: none;
   font-size: 16px;
   text-transform: lowercase;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: max-content;
 }
 
 .collage-secondary-grid {
@@ -1997,7 +2000,6 @@ body.no-scroll {
   animation-delay: 1.5s;
 }
 
-
 @keyframes bubble {
   0% {
     transform: translateY(0) scale(1);
@@ -2009,23 +2011,42 @@ body.no-scroll {
   }
 }
 
+.collage-btn {
+  display: none;
+}
+
+.rem-2 {
+  font-size: 2rem;
+}
+
+.color-spotify {
+  color: var(--spotify);
+}
+
+.instagram-gradient {
+  color: white;
+  background: linear-gradient(45deg, #833ab4, #c13584, #fd1d1d, #fcaf45);
+  height: calc(2rem - 8px);
+  width: calc(2rem - 8px);
+  border-radius: 5px;
+}
 @media screen and (max-width: 700px) {
   .collage-container {
     height: fit-content;
     align-items: center;
     justify-content: center;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(9, 250px);
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(9, 160px);
     grid-template-areas:
-      "img1 img1 img1 img1"
-      "img4 img4 img4 img4"
-      "img7 img7 img8 img8"
-      "img10 img10 img10 img10"
-      "img9 img9 img9 img9"
-      "img9 img9 img9 img9"
-      "img2 img2 img3 img3"
-      "img5 img5 img3 img3"
-      "img5 img5 img6 img6";
+      "img1 img1 img1 img1 img1 img1"
+      "img4 img4 img4 img4 img4 img4"
+      "img7 img7 img7 img8 img8 img8"
+      "img10 img10 img10 img10 img10 img10"
+      "img9 img9 img9 img9 img9 img9"
+      "img9 img9 img9 img9 img9 img9"
+      "img2 img2 img2 img2 img3 img3"
+      "img5 img5 img5 img5 img3 img3"
+      "img5 img5 img5 img5 img6 img6";
   }
 
   .assorted-class {
@@ -2037,54 +2058,15 @@ body.no-scroll {
     border-radius: 10px;
   }
 
-  .collage-1 > .collage-btn-2 {
-    left: 42% !important;
-  }
-
-  .collage-4 > .collage-btn-2 {
-    left: 42% !important;
-  }
-
-  .collage-4 > .collage-btn {
-    left: 39% !important;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-
-  .collage-7 > .collage-btn {
-    left: 30% !important;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-
   .fruit-text {
     display: none !important;
   }
 
-  .collage-8 > .collage-btn {
-    left: 25% !important;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-
-  .collage-5 > .collage-btn {
-    left: 24% !important;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-
-  .collage-5 > .collage-btn-2 {
-    left: 32% !important;
-  }
-
   .collage-text {
-    font-size: 16px;
+    font-size: 12px;
   }
-
-
 
   .ticker-main-container {
     height: fit-content;
-
   }
 }
