@@ -46,7 +46,12 @@ const ticker = () => {
 
   tickerItems.forEach(({ text, image }) => {
     const item = document.createElement("div");
-    item.classList.add("ticker-item");
+    item.classList.add(
+      "ticker-item",
+      "d-flex",
+      "align-items-center",
+      "justify-content-center"
+    );
 
     if (image) {
       const img = document.createElement("img");
