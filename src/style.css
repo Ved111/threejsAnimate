@@ -1948,6 +1948,10 @@ body.no-scroll {
   border: none;
   font-size: 16px;
   text-transform: lowercase;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: max-content;
 }
 
 .collage-secondary-grid {
@@ -2054,48 +2058,12 @@ body.no-scroll {
     border-radius: 10px;
   }
 
-  .collage-1 > .collage-btn-2 {
-    left: 42% !important;
-  }
-
-  .collage-4 > .collage-btn-2 {
-    left: 42% !important;
-  }
-
-  .collage-4 > .collage-btn {
-    left: 39% !important;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-
-  .collage-7 > .collage-btn {
-    left: 30% !important;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-
   .fruit-text {
     display: none !important;
   }
 
-  .collage-8 > .collage-btn {
-    left: 25% !important;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-
-  .collage-5 > .collage-btn {
-    left: 24% !important;
-    padding-left: 2.5rem;
-    padding-right: 2.5rem;
-  }
-
-  .collage-5 > .collage-btn-2 {
-    left: 32% !important;
-  }
-
   .collage-text {
-    font-size: 16px;
+    font-size: 12px;
   }
 
   .ticker-main-container {

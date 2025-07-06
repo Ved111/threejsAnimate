@@ -14,15 +14,10 @@ const pictureCollage = () => {
           props: {
             textContent: "About Us",
           },
-          styles: {
-            left: "40%",
-            bottom: "26px",
-          },
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          styles: { left: "40%", top: "26px" },
           props: { textContent: "brand story" },
           classes: ["collage-text", "collage-btn-2"],
         },
@@ -40,15 +35,11 @@ const pictureCollage = () => {
           props: {
             textContent: "Our Story",
           },
-          styles: {
-            left: "30%",
-            bottom: "26px",
-          },
+
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          styles: { left: "30%", top: "26px" },
           props: { textContent: "founder story" },
           classes: ["collage-text", "collage-btn-2"],
         },
@@ -62,15 +53,10 @@ const pictureCollage = () => {
           props: {
             textContent: "learn more",
           },
-          styles: {
-            left: "9rem",
-            bottom: "3rem",
-          },
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          styles: { left: "10rem", top: "5rem" },
           props: { textContent: "why prebiotic ?" },
           classes: ["collage-text", "collage-btn-2"],
         },
@@ -84,15 +70,10 @@ const pictureCollage = () => {
           props: {
             textContent: "shop now",
           },
-          styles: {
-            left: "9rem",
-            bottom: "3rem",
-          },
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          styles: { left: "10rem", top: "8rem" },
           props: { textContent: "product page" },
           classes: ["collage-text", "collage-btn-2"],
         },
@@ -106,15 +87,11 @@ const pictureCollage = () => {
           props: {
             textContent: "recipes",
           },
-          styles: {
-            left: "5rem",
-            bottom: "3rem",
-          },
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          styles: { left: "6rem", top: "6rem", maxWidth: "100px" },
+          styles: { maxWidth: "100px" },
           props: { textContent: "if flavors could kill" },
           classes: ["collage-text", "collage-btn-2"],
         },
@@ -128,11 +105,6 @@ const pictureCollage = () => {
           props: {
             textContent: "faq's",
           },
-          styles: {
-            left: "5rem",
-            bottom: "3rem",
-            textTransform: "uppercase",
-          },
           classes: ["collage-btn", "collage-text"],
         },
       ],
@@ -145,15 +117,10 @@ const pictureCollage = () => {
           props: {
             textContent: "coupon",
           },
-          styles: {
-            left: "5rem",
-            bottom: "3rem",
-          },
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          styles: { left: "5.5rem", top: "3rem" },
           props: { textContent: "email pop up" },
           classes: ["collage-text", "collage-btn-2"],
         },
@@ -164,25 +131,15 @@ const pictureCollage = () => {
       properties: [
         {
           element: "button",
+          styles: { whiteSpace: "pre-line" },
           props: {
-            textContent: "Benefits of Don Chico’s soda",
+            textContent:
+              "Ingredient List\nBreakdown\nBenefits of\nDon Chico’s soda ",
           },
-          styles: {
-            left: "14rem",
-            bottom: "18rem",
-            maxWidth: "180px",
-          },
-          classes: ["collage-btn-2", "collage-text"],
-        },
-        {
-          element: "button",
-          styles: { left: "14rem", top: "19rem", maxWidth: "180px" },
-          props: { textContent: "Ingredient List Breakdown" },
           classes: ["collage-text", "collage-btn-2"],
         },
         {
           element: "button",
-          styles: { left: "14rem", bottom: "6rem", maxWidth: "180px" },
           props: { textContent: "soda benefits" },
           classes: ["collage-text", "collage-btn"],
         },
@@ -196,15 +153,11 @@ const pictureCollage = () => {
           props: {
             textContent: "who is don chico?",
           },
-          styles: {
-            left: "12rem",
-            bottom: "3rem",
-          },
+
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          styles: { left: "15rem", top: "4rem" },
           props: { textContent: "brand love" },
           classes: ["collage-text", "collage-btn-2"],
         },
@@ -226,8 +179,12 @@ const pictureCollage = () => {
     const spotify = document.createElement("div");
 
     flavorSwitch.style.gridArea = "flavorSwitch";
+    flavorSwitch.style.position = "relative";
+
     ig.style.gridArea = "ig";
     thread.style.gridArea = "thread";
+    thread.style.position = "relative";
+
     spotify.style.gridArea = "spotify";
 
     flavorSwitch.classList.add("border-black");
