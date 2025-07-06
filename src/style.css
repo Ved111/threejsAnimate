@@ -370,7 +370,7 @@ section {
   width: 30px;
   height: 30px;
   top: 20%;
-  left: 10%;
+  left: 40%;
 }
 
 .bubble.small {
@@ -1740,14 +1740,14 @@ body.no-scroll {
 .bubble-2 {
   height: 10vh;
   position: absolute;
-  right: 10%;
+  right: 40%;
   top: 10%;
 }
 
 .bubble-3 {
   height: 10vh;
   position: absolute;
-  right: 10%;
+  right: 20%;
   bottom: 10%;
 }
 .newRecipeContainer {
