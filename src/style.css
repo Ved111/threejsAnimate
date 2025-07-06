@@ -1733,7 +1733,7 @@ body.no-scroll {
 .bubble-1 {
   height: 10vh;
   position: absolute;
-  left: 10%;
+  left: 20%;
   top: 50%;
 }
 
@@ -2077,7 +2077,15 @@ body.no-scroll {
   }
 
   .fruit-text {
-    display: none !important;
+    display: block !important; /* Enable the text container */
+  }
+
+  .fruit-label-text {
+    display: block !important; /* ✅ Show label text */
+  }
+
+  .fruit-para {
+    display: none !important; /* ❌ Hide description on mobile */
   }
 
   .collage-text {
