@@ -2031,18 +2031,18 @@ body.no-scroll {
     height: fit-content;
     align-items: center;
     justify-content: center;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(9, 250px);
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(9, 160px);
     grid-template-areas:
-      "img1 img1 img1 img1"
-      "img4 img4 img4 img4"
-      "img7 img7 img8 img8"
-      "img10 img10 img10 img10"
-      "img9 img9 img9 img9"
-      "img9 img9 img9 img9"
-      "img2 img2 img3 img3"
-      "img5 img5 img3 img3"
-      "img5 img5 img6 img6";
+      "img1 img1 img1 img1 img1 img1"
+      "img4 img4 img4 img4 img4 img4"
+      "img7 img7 img7 img8 img8 img8"
+      "img10 img10 img10 img10 img10 img10"
+      "img9 img9 img9 img9 img9 img9"
+      "img9 img9 img9 img9 img9 img9"
+      "img2 img2 img2 img2 img3 img3"
+      "img5 img5 img5 img5 img3 img3"
+      "img5 img5 img5 img5 img6 img6";
   }
 
   .assorted-class {
