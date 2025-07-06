@@ -302,7 +302,7 @@ function initThreeJS() {
       "https://res.cloudinary.com/do7dxrdey/image/upload/v1750236870/DCcanWithENGRAVEDlogo_2_ecjm5i_dobnwk.glb",
     center:
       "https://res.cloudinary.com/do7dxrdey/image/upload/v1747977846/appleCOT_tibxq0.glb",
-    left: "https://res.cloudinary.com/do7dxrdey/image/upload/v1747987124/starberry_yeswvi.glb",
+    left: "https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751806981/starberry_yeswvi_1_kfxrr1.glb",
     right:
       "https://res.cloudinary.com/do7dxrdey/image/upload/v1747923870/2.44_u6yamm.glb",
   };
@@ -364,8 +364,27 @@ function initThreeJS() {
     });
   });
 
+  let fadeOutTriggered = false;
+
+  // Track when model loading completes
+  let modelLoadComplete = false;
+
+  // Start timer
+  const startTime = performance.now();
+
+  // Kick off loading
   Promise.all([preloadAsset, Promise.all(loadModelPromises)])
     .then(([_, models]) => {
+      const endTime = performance.now();
+      const loadTime = endTime - startTime;
+
+      // If it took longer than 4 seconds and model already resolved, trigger fallback
+      if (loadTime > 4000 && !fadeOutTriggered && modelLoadComplete) {
+        fadeOutIntro();
+        fadeOutTriggered = true;
+      }
+
+      // Continue normal model setup
       let maxWidth = 0;
       models.forEach(({ key, model, size }) => {
         if (key === "left") {
@@ -382,11 +401,9 @@ function initThreeJS() {
           centerCan = model;
         } else if (key === "initial") {
           model.position.x = 0;
-
           model.rotation.set(0, 0, 0);
           initialCan = model;
           initialCan.visible = false;
-
           scene.add(initialCan);
         }
 
@@ -395,7 +412,13 @@ function initThreeJS() {
       });
 
       modelLoaded = true;
-      fadeOutIntro();
+
+      // If fadeOutIntro hasn't run yet (and shouldn't be deferred), run it now
+      if (!fadeOutTriggered) {
+        fadeOutIntro();
+        fadeOutTriggered = true;
+      }
+
       openCanAudio(camera);
 
       camera.position.z = maxWidth * 2;
@@ -408,6 +431,15 @@ function initThreeJS() {
     })
     .catch((err) => {
       console.error("🚨 Failed to load models or assets:", err);
+    });
+
+  // Separate tracker: when loadModelPromises completes
+  Promise.all(loadModelPromises)
+    .then(() => {
+      modelLoadComplete = true;
+    })
+    .catch((err) => {
+      console.error("❌ Model loading failed:", err);
     });
 
   function animate() {
@@ -952,9 +984,9 @@ document.addEventListener("DOMContentLoaded", () => {
 </section>
 <section class="hero">
 <div class="can-group-hero">
-<img class="can " key='left' src='https://res.cloudinary.com/do7dxrdey/image/upload/v1751262477/Screenshot_2025-06-30_at_11.16.55_AM-removebg-preview_1_lsivbz.png' />
-<img class="can " key='center' src='https://res.cloudinary.com/do7dxrdey/image/upload/v1751262477/Screenshot_2025-06-30_at_11.16.55_AM-removebg-preview_1_lsivbz.png' />
-<img class="can " key='right' src='https://res.cloudinary.com/do7dxrdey/image/upload/v1751262477/Screenshot_2025-06-30_at_11.16.55_AM-removebg-preview_1_lsivbz.png' />
+<img class="can " key='left' src='https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807053/Screenshot_2025-07-06_at_6.33.09_PM-removebg-preview_uw2zo2.png' />
+<img class="can " key='center' src='https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807053/Screenshot_2025-07-06_at_6.33.09_PM-removebg-preview_uw2zo2.png' />
+<img class="can " key='right' src='https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807053/Screenshot_2025-07-06_at_6.33.09_PM-removebg-preview_uw2zo2.png' />
 </div>
 
 
@@ -1105,14 +1137,22 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
   <!-- Center Can Display -->
   <div class="can-display">
     <button class="nav-arrow left">&#10094;</button>
-    <img class="can-bg left" id="left-bg-can" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749067023/Adobe_Express_-_file_3_1_syhwrv.png" alt="Left Can" />
+    <img class="can-bg left" id="left-bg-can"
+    src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808316/Screenshot_2025-07-06_at_6.52.44_PM__2_-removebg-preview_m5alhr.png"
+
+     alt="Left Can" />
+
+
     <img
     id="main-can"
       class="main-can"
-      src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749066942/Adobe_Express_-_file_4_1_druku2.png"
+      src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808426/Screenshot_2025-07-06_at_6.46.44_PM-removebg-preview_dbjqac.png"
       alt="Watermelon Sorbet"
     />
-    <img class="can-bg right"   id="right-bg-can" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749066841/Adobe_Express_-_file_2_1_aci4ev.png" alt="Right Can" />
+
+
+    <img class="can-bg right"       src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807943/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vac2f3.png"
+    id="right-bg-can"  alt="Right Can" />
     <button class="nav-arrow right">&#10095;</button>
   </div>
 
@@ -1252,7 +1292,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 👇 Set mobile background
     const mobileUI = document.querySelector(".mobile-can-ui");
-    mobileUI.style.backgroundImage = `url(${flavors[currentIndex.value].bg})`;
+    mobileUI.style.background = `url(${
+      flavors[currentIndex.value].bg
+    }) center/cover no-repeat`;
   }
 
   leftArrow.addEventListener("click", () => {
