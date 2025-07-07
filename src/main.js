@@ -9,10 +9,50 @@ import { openCanAudio } from "./openCanAudio";
 import { carouselGesture } from "./carouselGesture";
 import { generateBubble } from "./generateBubble";
 import recipe from "./templates/recipes";
+import { flavors } from "./utils";
 import pictureCollage from "./templates/pictureCollage";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 RectAreaLightUniformsLib.init();
 import ticker from "./templates/ticker";
+
+function getModelScreenHeightInPixels(model, camera, renderer) {
+  const box = new THREE.Box3().setFromObject(model);
+  const center = new THREE.Vector3();
+  box.getCenter(center);
+
+  const top = new THREE.Vector3(center.x, box.max.y, center.z);
+  const bottom = new THREE.Vector3(center.x, box.min.y, center.z);
+
+  const projectY = (v) => {
+    const projected = v.clone().project(camera);
+    return ((1 - projected.y) * renderer.domElement.clientHeight) / 2;
+  };
+
+  return Math.abs(projectY(top) - projectY(bottom));
+}
+
+function applyModelHeightToImages(model, camera, renderer) {
+  const modelHeightPx = getModelScreenHeightInPixels(model, camera, renderer);
+
+  const imageSelectors = [
+    ".can-group-hero .can[key='left']",
+    ".can-group-hero .can[key='center']",
+    ".can-group-hero .can[key='right']",
+    "#left-bg-can",
+    "#main-can",
+    "#right-bg-can",
+  ];
+
+  if (isMobile) {
+    imageSelectors.forEach((selector) => {
+      const img = document.querySelector(selector);
+      if (img) {
+        img.style.height = `${modelHeightPx + 20}px`;
+        img.style.width = "auto"; // preserve aspect ratio
+      }
+    });
+  }
+}
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -411,6 +451,7 @@ function initThreeJS() {
         maxWidth = Math.max(maxWidth, size.x, size.y, size.z);
       });
 
+      applyModelHeightToImages(centerCan, camera, renderer);
       modelLoaded = true;
 
       // If fadeOutIntro hasn't run yet (and shouldn't be deferred), run it now
@@ -465,7 +506,13 @@ function resetSwapState() {
 function setupScrollAnimations(updateFruitCallback) {
   let currentRange = -1;
 
-  function updateInitialCanByProgress(progress, xMovement, scene) {
+  function updateInitialCanByProgress(
+    progress,
+    xMovement,
+    scene,
+    direction,
+    updateFruitCallback
+  ) {
     if (!modelLoaded) return;
 
     const swapPoints = [0.12, 0.37, 0.62];
@@ -497,6 +544,7 @@ function setupScrollAnimations(updateFruitCallback) {
     if (progress > 0.1) {
       console.log(progress, "newRange");
       updateBackgroundImage(newRange % 4);
+      updateFruitCallback(direction, progress);
 
       replaceInitialCanWithGLB(keysToLoad, scene);
     }
@@ -666,7 +714,14 @@ function setupScrollAnimations(updateFruitCallback) {
 
       const direction = scrollVelocity > 0 ? "down" : "up";
 
-      updateInitialCanByProgress(progress, xMovement, scene);
+      updateInitialCanByProgress(
+        progress,
+        xMovement,
+        scene,
+        direction,
+        updateFruitCallback
+      );
+      //           updateFruitCallback(direction, progress);
 
       if ((reachedLeft || reachedRight) && !didSwapRecently) {
         didSwapRecently = true;
@@ -684,7 +739,6 @@ function setupScrollAnimations(updateFruitCallback) {
           (swapCount > 1 && direction === "down") ||
           (direction === "up" && swapCount > 0)
         ) {
-          updateFruitCallback(direction, progress);
           actualSwapCount++;
         }
       }
@@ -1005,6 +1059,7 @@ document.addEventListener("DOMContentLoaded", () => {
   <img
     class="fruit-img fruit-1"
     src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751635300/2_2_1_lapjn0.png"
+
   />
   <div class="fruit-text text-0">
     <p class="fruit-label-text">Watermelon Sorbet</p>
@@ -1036,6 +1091,7 @@ document.addEventListener("DOMContentLoaded", () => {
   <img
     class="fruit-img fruit-3"
     src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033228/Don_Chicos_Website_2_-removebg-preview_hss1cg.webp"
+
   />
   <div class="fruit-text text-2">
     <p class="fruit-label-text">AppleCot Relish</p>
@@ -1137,6 +1193,9 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
   <!-- Center Can Display -->
   <div class="can-display">
     <button class="nav-arrow left">&#10094;</button>
+
+    <img class="can-bg right"       src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807943/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vac2f3.png"
+    id="right-bg-can"  alt="Right Can" />
     <img class="can-bg left" id="left-bg-can"
     src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808316/Screenshot_2025-07-06_at_6.52.44_PM__2_-removebg-preview_m5alhr.png"
 
@@ -1151,8 +1210,6 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
     />
 
 
-    <img class="can-bg right"       src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807943/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vac2f3.png"
-    id="right-bg-can"  alt="Right Can" />
     <button class="nav-arrow right">&#10095;</button>
   </div>
 
@@ -1161,9 +1218,9 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
 
   <!-- Flavor Buttons -->
   <div class="flavor-buttons">
-  <button class="flavor-btn orange soda-btn" data-index="2" style="background: linear-gradient(145deg, #F4812C, #c06a23);">APPLECOT RELISH</button>
-  <button class="flavor-btn soda-btn lemon" data-index="0" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">WATERMELON SORBET</button>
-    <button class="flavor-btn mango soda-btn" data-index="1" style="background: linear-gradient(145deg, #ee6876, #d0485c);">STRAWBERRY CREAM</button>
+  <button class="flavor-btn orange soda-btn" data-index="2" >APPLECOT RELISH</button>
+  <button class="flavor-btn soda-btn lemon" data-index="0" >WATERMELON SORBET</button>
+    <button class="flavor-btn mango soda-btn" data-index="1" >STRAWBERRY CREAM</button>
   </div>
 </section>
 

@@ -3,19 +3,19 @@ export const openCanAudioUrl =
 
 export const flavors = [
   {
+    name: "Applecot Relish",
+    src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1751825740/Screenshot_2025-07-06_at_6.46.44_PM-removebg-preview_plvti6.png",
+    bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png",
+  },
+  {
     name: "Watermelon Sorbet",
-    src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png",
+    src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1751825731/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vfaaiy.png",
     bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png",
   },
   {
     name: "Strawberry Cream",
-    src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.53.54_PM-removebg-preview_awbuwn.png",
+    src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1751825725/Screenshot_2025-07-06_at_6.52.44_PM__2_-removebg-preview_waewbq.png",
     bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/3_1_hajus7.png",
-  },
-  {
-    name: "Applecot Relish",
-    src: "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png",
-    bg: "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png",
   },
 ];
 

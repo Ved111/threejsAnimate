@@ -84,6 +84,7 @@
   bottom: -150px !important;
   text-align: center;
   font-size: 18px;
+  min-width: 400px;
 }
 
 .fruit-label-text {
@@ -553,7 +554,7 @@ section {
 .soda-btn {
   position: relative;
   padding: 1rem 3rem;
-  background-color: #ffe7d7;
+  background-color: #ffe7d7 ;
   color: #9f0404;
   font-family: "ActiveOne", serif;
   border: none;
@@ -881,7 +882,7 @@ section {
 }
 
 .flav-text {
-  color: #ffe7d7;
+  color: #b60909;
   font-size: 18px;
   font-family: "ActiveOne", serif; /* Custom OTF Font */
   padding: 10px 0;
@@ -1623,27 +1624,9 @@ body.no-scroll {
   padding: 0 10vw;
 }
 
-.flavor-btn {
-  border: none;
-  padding: 1rem;
-  border-radius: 2rem;
-  font-weight: bold;
-  color: white;
-  font-size: 12px;
-}
 
-.flavor-btn.lemon {
-  background-color: #00a651;
-}
-.flavor-btn.orange {
-  background-color: #f7931e;
-}
-.flavor-btn.mango {
-  background-color: #fcd12a;
-}
-.flavor-btn.grape {
-  background-color: #8e44ad;
-}
+
+
 
 .cursor-bubble {
   position: fixed;
