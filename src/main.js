@@ -1073,7 +1073,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
   <div class="can-group">
   <div> <img 
-  src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.53.54_PM-removebg-preview_awbuwn.png" 
+  src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808316/Screenshot_2025-07-06_at_6.52.44_PM__2_-removebg-preview_m5alhr.png" 
   alt="Strawberry Cream" 
   class="can can-left" 
   data-flavor="Strawberry Cream" 
@@ -1087,7 +1087,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
  
 <div>  <img 
-src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png" 
+src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808426/Screenshot_2025-07-06_at_6.46.44_PM-removebg-preview_dbjqac.png" 
 alt="Applecot Relish" 
 class="can can-right"
 data-flavor="Applecot Relish" 
@@ -1104,7 +1104,7 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_by
 
 
 <div><img 
-src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png" 
+src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807943/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vac2f3.png" 
 alt="Watermelon Sorbet" 
 class="can"
 data-flavor="Watermelon Sorbet" 
