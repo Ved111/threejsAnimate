@@ -1,18 +1,16 @@
+import { gsap, ScrollTrigger } from "./config/gsap.config.js";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import Lenis from "lenis";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-gsap.registerPlugin(ScrollTrigger);
 import "./style.css";
 import { openCanAudio } from "./openCanAudio";
 import { carouselGesture } from "./carouselGesture";
 import { generateBubble } from "./generateBubble";
-import recipe from "./templates/recipes";
 import pictureCollage from "./templates/pictureCollage";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 RectAreaLightUniformsLib.init();
 import ticker from "./templates/ticker";
+import scrollableTicker from "./templates/scrollableTicker";
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -1428,6 +1426,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   ticker();
   pictureCollage();
+  scrollableTicker(gsap, ScrollTrigger);
 });
 
 const backgroundImageCache = {};
