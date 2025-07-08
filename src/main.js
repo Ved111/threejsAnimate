@@ -1426,7 +1426,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   ticker();
   pictureCollage();
-  scrollableTicker(gsap, ScrollTrigger);
+  // scrollableTicker(gsap, ScrollTrigger);
 });
 
 const backgroundImageCache = {};

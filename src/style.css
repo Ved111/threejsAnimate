@@ -2030,6 +2030,10 @@ body.no-scroll {
   width: calc(2rem - 8px);
   border-radius: 5px;
 }
+
+.ticker-main-container {
+  height: auto;
+}
 @media screen and (max-width: 768px) {
   .collage-container {
     height: fit-content;
