@@ -1936,10 +1936,13 @@ body.no-scroll {
   border-bottom: 4px solid #9f0404;
   border-left: 2px solid #9f0404;
   position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .collage-btn-2 {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
@@ -2010,10 +2013,6 @@ body.no-scroll {
     transform: translateY(-50px) scale(0.5);
     opacity: 0;
   }
-}
-
-.collage-btn {
-  display: none;
 }
 
 .rem-2 {
