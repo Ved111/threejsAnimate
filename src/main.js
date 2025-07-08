@@ -1,9 +1,7 @@
+import { gsap, ScrollTrigger } from "./config/gsap.config.js";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import Lenis from "lenis";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-gsap.registerPlugin(ScrollTrigger);
 import "./style.css";
 import { openCanAudio } from "./openCanAudio";
 import { carouselGesture } from "./carouselGesture";
@@ -53,6 +51,7 @@ function applyModelHeightToImages(model, camera, renderer) {
     });
   }
 }
+import scrollableTicker from "./templates/scrollableTicker";
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -1485,6 +1484,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   ticker();
   pictureCollage();
+  // scrollableTicker(gsap, ScrollTrigger);
 });
 
 const backgroundImageCache = {};
