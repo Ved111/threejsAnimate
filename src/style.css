@@ -84,6 +84,7 @@
   bottom: -150px !important;
   text-align: center;
   font-size: 18px;
+  min-width: 400px;
 }
 
 .fruit-label-text {
@@ -274,9 +275,8 @@ section {
   flex-direction: column;
   align-items: center;
   gap: 1em;
-  z-index: 10;
+  z-index: 8;
   text-align: center;
-  background-color: white;
   background: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1751632170/WhatsApp_Image_2025-07-04_at_5.40.12_PM_a1wuwe.jpg");
 }
 
@@ -554,7 +554,7 @@ section {
 .soda-btn {
   position: relative;
   padding: 1rem 3rem;
-  background-color: #ffe7d7;
+  background-color: #ffe7d7 ;
   color: #9f0404;
   font-family: "ActiveOne", serif;
   border: none;
@@ -870,7 +870,7 @@ section {
   display: flex;
   justify-content: center;
   gap: 2.4vw;
-  margin: 5vh 0;
+  margin: 15vh 0 0 0;
 }
 
 .can-group-hero {
@@ -882,7 +882,7 @@ section {
 }
 
 .flav-text {
-  color: #ffe7d7;
+  color: #b60909;
   font-size: 18px;
   font-family: "ActiveOne", serif; /* Custom OTF Font */
   padding: 10px 0;
@@ -1556,7 +1556,7 @@ body.no-scroll {
   position: relative;
   height: auto;
   transition: transform 0.3s ease, opacity 0.3s ease;
-  padding-top: 2vh;
+  margin-top: 4vh;
 }
 
 .fade-out {
@@ -1571,19 +1571,18 @@ body.no-scroll {
 
 .can-bg {
   position: absolute;
-  width: 100px;
-  height: auto;
+  height: 32vh;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
 }
 
 .can-bg.left {
-  left: 4%;
+  left: 7vw;
 }
 
 .can-bg.right {
-  right: 4%;
+  right: 7vw;
 }
 
 .nav-arrow {
@@ -1625,27 +1624,9 @@ body.no-scroll {
   padding: 0 10vw;
 }
 
-.flavor-btn {
-  border: none;
-  padding: 1rem;
-  border-radius: 2rem;
-  font-weight: bold;
-  color: white;
-  font-size: 12px;
-}
 
-.flavor-btn.lemon {
-  background-color: #00a651;
-}
-.flavor-btn.orange {
-  background-color: #f7931e;
-}
-.flavor-btn.mango {
-  background-color: #fcd12a;
-}
-.flavor-btn.grape {
-  background-color: #8e44ad;
-}
+
+
 
 .cursor-bubble {
   position: fixed;
@@ -1733,21 +1714,21 @@ body.no-scroll {
 .bubble-1 {
   height: 10vh;
   position: absolute;
-  left: 20%;
+  left: 25%;
   top: 50%;
 }
 
 .bubble-2 {
   height: 10vh;
   position: absolute;
-  right: 40%;
+  right: 35%;
   top: 10%;
 }
 
 .bubble-3 {
   height: 10vh;
   position: absolute;
-  right: 20%;
+  right: 18%;
   bottom: 10%;
 }
 .newRecipeContainer {
@@ -2068,11 +2049,11 @@ body.no-scroll {
   }
 
   .can {
-    height: 260px;
+    height: 32vh;
   }
 
   .can-group-hero {
-    margin-top: 0vh !important;
+    margin: -10vh 0 0 0 !important;
   }
 
   .collage-container img {
