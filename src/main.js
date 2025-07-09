@@ -1064,7 +1064,7 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="fruit-text text-0">
     <p class="fruit-label-text">Watermelon Sorbet</p>
     <p class="fruit-para">
-      This isn’t just watermelon and mint. It’s a chilled rebellion against boring.
+       It’s a chilled rebellion against boring.
       A summer stunner with a minty twist.
     </p>
   </div>
@@ -1139,7 +1139,7 @@ document.addEventListener("DOMContentLoaded", () => {
   data-btn="Buy Strawberry Cream"
   data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/3_1_hajus7.png"
 />
-<p class="flav-text text-0">Watermelon Sorbet</p><button class="soda-btn" >+ 6 Pack</button>
+<p class="flav-text text-0">Strawberry Cream</p><button class="soda-btn" >+ 6 Pack</button>
 </div>
  
 <div>  <img 
@@ -1154,7 +1154,7 @@ data-text="Cool, calm, and delicious. Applecot Relish's got that mellow magic."
 data-btn="Buy Applecot Relish"
 data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png"
 />
-<p class="flav-text text-1">Strawberry Cream</p><button class="soda-btn" >+ 6 Pack</button>
+<p class="flav-text text-1">Applecot Relish</p><button class="soda-btn" >+ 6 Pack</button>
 </div>
 
 
@@ -1170,7 +1170,7 @@ data-darker-color="#3a8a41"
 data-btn="Buy Watermelon Sorbet"
 data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png"
 />
-<p class="flav-text text-2">Applecot Relish</p><button class="soda-btn" >+ 6 Pack</button>
+<p class="flav-text text-2">Watermelon Sorbet</p><button class="soda-btn" >+ 6 Pack</button>
 </div>
 
 
@@ -1539,4 +1539,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Append wrapper to container
   container.appendChild(wrapper);
+});
+
+let lastScrollTop = 0;
+
+window.addEventListener("scroll", () => {
+  const scrollTop = window.scrollY;
+  const scrollDown = scrollTop > lastScrollTop;
+
+  window.parent.postMessage(
+    {
+      type: scrollDown ? "hideHeader" : "showHeader",
+    },
+    "*"
+  );
+
+  lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Avoid negative
 });
