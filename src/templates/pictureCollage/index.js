@@ -7,18 +7,22 @@ const pictureCollage = () => {
 
   const pictues = [
     {
-      url: "https://res.cloudinary.com/dgkja1ija/image/upload/v1751234728/Screenshot_2025-06-29_064103_oorc8q.png",
+      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702184/IMG_7516_1_abjhzq.jpg",
       properties: [
         {
           element: "button",
           props: {
             textContent: "About Us",
+            redirectUrl: "https://www.drinkdonchico.com/pages/our-story",
           },
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          props: { textContent: "brand story" },
+          props: {
+            textContent: "brand story",
+            redirectUrl: "https://www.drinkdonchico.com/pages/our-story",
+          },
           classes: ["collage-text", "collage-btn-2"],
         },
       ],
@@ -28,64 +32,78 @@ const pictureCollage = () => {
       customFn: createDiv,
     },
     {
-      url: "https://res.cloudinary.com/dgkja1ija/image/upload/v1751234729/Screenshot_2025-06-29_065538_u9oeab.png",
+      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702169/image_1_ydnyqy.png",
       properties: [
         {
           element: "button",
           props: {
             textContent: "Our Story",
+            redirectUrl: "https://www.drinkdonchico.com/pages/our-story-1",
           },
 
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          props: { textContent: "founder story" },
+          props: {
+            textContent: "founder story",
+            redirectUrl: "https://www.drinkdonchico.com/pages/our-story",
+          },
           classes: ["collage-text", "collage-btn-2"],
         },
       ],
     },
     {
-      url: "https://res.cloudinary.com/dgkja1ija/image/upload/v1751234728/Screenshot_2025-06-29_064151_uqayx7.png",
+      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702354/IMG_7630_1_vl9vv1.jpg",
       properties: [
         {
           element: "button",
           props: {
             textContent: "learn more",
+            redirectUrl:
+              "https://www.drinkdonchico.com/pages/why-prebiotics-what-exactly-do-they-do",
           },
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          props: { textContent: "why prebiotic ?" },
+          props: {
+            textContent: "why prebiotic ?",
+            redirectUrl: "https://www.drinkdonchico.com/pages/why-prebiotic",
+          },
           classes: ["collage-text", "collage-btn-2"],
         },
       ],
     },
     {
-      url: "https://res.cloudinary.com/dgkja1ija/image/upload/v1751234729/Screenshot_2025-06-29_064312_ermy0h.png",
+      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702468/IMG_7626_1_wxubd7.jpg",
       properties: [
         {
           element: "button",
           props: {
-            textContent: "shop now",
+            textContent: "view sodas",
+            redirectUrl: "https://www.drinkdonchico.com/collections/all",
           },
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          props: { textContent: "product page" },
+          props: {
+            textContent: "product page",
+            redirectUrl: "https://www.drinkdonchico.com/collections/all",
+          },
           classes: ["collage-text", "collage-btn-2"],
         },
       ],
     },
     {
-      url: "https://res.cloudinary.com/dgkja1ija/image/upload/v1751234729/Screenshot_2025-06-29_065608_khvrzn.png",
+      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702840/Screenshot_2025-07-17_at_3.23.36_AM_umlhzf.png",
       properties: [
         {
           element: "button",
           props: {
             textContent: "recipes",
+            redirectUrl: "https://www.drinkdonchico.com/blogs/recipes",
           },
           classes: ["collage-btn", "collage-text"],
         },
@@ -98,19 +116,20 @@ const pictureCollage = () => {
       ],
     },
     {
-      url: "https://res.cloudinary.com/dgkja1ija/image/upload/v1751234727/Screenshot_2025-06-29_065629_hpod2j.png",
+      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702940/IMG_7629_1_v4l6wv.jpg",
       properties: [
         {
           element: "button",
           props: {
-            textContent: "faq's",
+            textContent: "FAQ'S",
+            redirectUrl: "https://www.drinkdonchico.com/pages/why-prebiotic",
           },
           classes: ["collage-btn", "collage-text"],
         },
       ],
     },
     {
-      url: "https://res.cloudinary.com/dgkja1ija/image/upload/v1751234727/Screenshot_2025-06-29_065641_m2zjap.png",
+      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702593/IMG_7627_1_ldmvdx.jpg",
       properties: [
         {
           element: "button",
@@ -127,7 +146,7 @@ const pictureCollage = () => {
       ],
     },
     {
-      url: "https://res.cloudinary.com/dgkja1ija/image/upload/v1751234728/Screenshot_2025-06-29_065701_o1p3o6.png",
+      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702697/IMG_7628_1_vmpy4t.jpg",
       properties: [
         {
           element: "button",
@@ -135,30 +154,40 @@ const pictureCollage = () => {
           props: {
             textContent:
               "Ingredient List\nBreakdown\nBenefits of\nDon Chico’s soda ",
+            redirectUrl: "https://www.drinkdonchico.com/blogs/news/ingredients",
           },
           classes: ["collage-text", "collage-btn-2"],
         },
         {
           element: "button",
-          props: { textContent: "soda benefits" },
+          props: {
+            textContent: "soda benefits",
+            redirectUrl:
+              "https://www.drinkdonchico.com/pages/benefits-of-don-chicos-soda-with-benefits",
+          },
           classes: ["collage-text", "collage-btn"],
         },
       ],
     },
     {
-      url: "https://res.cloudinary.com/dgkja1ija/image/upload/v1751234728/Screenshot_2025-06-29_065750_cdculv.png",
+      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752703085/IMG_7631_2_eul96x.jpg",
       properties: [
         {
           element: "button",
           props: {
-            textContent: "who is don chico?",
+            textContent: "Don's Lore",
+            redirectUrl:
+              "https://www.drinkdonchico.com/pages/don-chicos-legend",
           },
 
           classes: ["collage-btn", "collage-text"],
         },
         {
           element: "button",
-          props: { textContent: "brand love" },
+          props: {
+            textContent: "brand love",
+            redirectUrl: "https://www.drinkdonchico.com/pages/our-story",
+          },
           classes: ["collage-text", "collage-btn-2"],
         },
       ],
@@ -187,20 +216,18 @@ const pictureCollage = () => {
 
     spotify.style.gridArea = "spotify";
 
-    flavorSwitch.classList.add("border-black");
+    flavorSwitch.classList.add("flavorSwitch");
     ig.classList.add("border-black");
     thread.classList.add("border-black");
     spotify.classList.add("border-black");
 
-    const flavorTitle = document.createElement("button");
     const igTitle = document.createElement("i");
-    const threadTitle = document.createElement("button");
     const spotifyTitle = document.createElement("i");
+    const threadTitle = document.createElement("img");
 
-    flavorTitle.textContent = "flavours switch";
+    flavorSwitch.textContent = "Follow us here";
 
     threadTitle.textContent = "thread";
-    flavorTitle.classList.add("collage-text", "collage-btn-2");
     igTitle.classList.add(
       "fab",
       "fa-instagram",
@@ -211,7 +238,17 @@ const pictureCollage = () => {
       "rem-2",
       "instagram-gradient"
     );
-    threadTitle.classList.add("collage-text", "collage-btn-2");
+    // Twitter/X image icon
+    threadTitle.src =
+      "https://res.cloudinary.com/do7dxrdey/image/upload/v1752705953/sl_z_072523_61700_05-removebg-preview_qe4kfn.png";
+    threadTitle.alt = "Twitter X";
+    threadTitle.style.width = "32px";
+    threadTitle.style.height = "32px";
+    threadTitle.classList.add(
+      "d-flex",
+      "align-items-center",
+      "justify-content-center"
+    );
     spotifyTitle.classList.add(
       "fab",
       "fa-spotify",
@@ -224,7 +261,6 @@ const pictureCollage = () => {
       "rounded-circle"
     );
 
-    flavorSwitch.append(flavorTitle);
     ig.append(igTitle);
     thread.append(threadTitle);
     spotify.append(spotifyTitle);
@@ -245,6 +281,7 @@ const pictureCollage = () => {
       customFn({ index });
       return;
     }
+
     const wrapperDiv = document.createElement("div");
     wrapperDiv.style.height = "100%";
     wrapperDiv.style.width = "100%";
@@ -252,22 +289,42 @@ const pictureCollage = () => {
     wrapperDiv.style.gridArea = `img${index + 1}`;
     wrapperDiv.classList.add(`collage-${index + 1}`);
 
-    properties.forEach(({ element, styles = {}, props = {}, classes = [] }) => {
-      const elem = document.createElement(element);
-      Object.entries(props).forEach(([key, value]) => (elem[key] = value));
-      Object.entries(styles).forEach(
-        ([key, value]) => (elem.style[key] = value)
-      );
-      elem.classList.add(...classes);
-      wrapperDiv.append(elem);
-    });
+    // ✅ Add image
     const img = document.createElement("img");
     img.src = url;
     img.alt = "image";
+    img.addEventListener("click", () => {
+      // You can redirect or show modal here
+    });
     wrapperDiv.append(img);
+
+    // ✅ Add buttons with click listeners
+    properties.forEach(({ element, styles = {}, props = {}, classes = [] }) => {
+      const elem = document.createElement(element);
+
+      Object.entries(props).forEach(([key, value]) => {
+        elem[key] = value;
+      });
+
+      Object.entries(styles).forEach(([key, value]) => {
+        elem.style[key] = value;
+      });
+
+      elem.classList.add(...classes);
+
+      // ✅ Add redirect logic if redirectUrl is defined
+      if (props.redirectUrl) {
+        elem.addEventListener("click", () => {
+          window.top.location.href = props.redirectUrl;
+        });
+      }
+
+      wrapperDiv.append(elem);
+    });
 
     collageContainer.append(wrapperDiv);
   });
+
   app.appendChild(collageContainer);
 };
 

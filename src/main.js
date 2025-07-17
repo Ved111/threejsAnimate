@@ -516,7 +516,6 @@ function setupScrollAnimations(updateFruitCallback) {
 
     const swapPoints = [0.12, 0.37, 0.62];
 
-    console.log(progress);
     let newRange = 0;
 
     if (progress >= swapPoints[0] && progress < swapPoints[1]) {
@@ -541,7 +540,6 @@ function setupScrollAnimations(updateFruitCallback) {
     // ✅ Only update background if not near the beginning (range 0)
 
     if (progress > 0.1) {
-      console.log(progress, "newRange");
       updateBackgroundImage(newRange % 4);
       updateFruitCallback(direction, progress);
 
@@ -966,6 +964,8 @@ function setupScrollAnimations(updateFruitCallback) {
   });
 }
 
+gsap.ticker.lagSmoothing(500, 33); // smooths FPS drops
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelector("#app").innerHTML = `
 
@@ -1019,12 +1019,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     <p class="hero-desc">
-    The fizzy world of soda had surrendered to the ordinary- Until Don Chico stepped in. <br />
+    The fizzy world of soda had surrendered to the ordinary- Until Don Chico stepped in. 
     A legend. A rebel. A mastermind of flavour.    </p>
 
-    <button class="soda-btn">
-      Shop Now 
-    </button>
+    <button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/collections/all', '_blank')">
+    Shop Now 
+  </button>
+  
   </div>
 
   <div class="bubble-wrapper">
@@ -1128,6 +1129,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
   <div class="can-group">
   <div> <img 
+  onclick="window.open('https://www.drinkdonchico.com/products/strawberry-cream', '_blank')"
   src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808316/Screenshot_2025-07-06_at_6.52.44_PM__2_-removebg-preview_m5alhr.png" 
   alt="Strawberry Cream" 
   class="can can-left" 
@@ -1138,10 +1140,13 @@ document.addEventListener("DOMContentLoaded", () => {
   data-btn="Buy Strawberry Cream"
   data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/3_1_hajus7.png"
 />
-<p class="flav-text text-0">Strawberry Cream</p><button class="soda-btn" >+ 6 Pack</button>
+<p class="flav-text text-0">Strawberry Cream</p><button class="soda-btn"  onclick="window.open('https://www.drinkdonchico.com/products/strawberry-cream', '_blank')"
+
+>+ 6 Pack</button>
 </div>
  
 <div>  <img 
+onclick="window.open('https://www.drinkdonchico.com/products/applecot-relish', '_blank')"
 src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808426/Screenshot_2025-07-06_at_6.46.44_PM-removebg-preview_dbjqac.png" 
 alt="Applecot Relish" 
 class="can can-right"
@@ -1153,12 +1158,13 @@ data-text="Cool, calm, and delicious. Applecot Relish's got that mellow magic."
 data-btn="Buy Applecot Relish"
 data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png"
 />
-<p class="flav-text text-1">Applecot Relish</p><button class="soda-btn" >+ 6 Pack</button>
+<p class="flav-text text-1">Applecot Relish</p><button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/products/applecot-relish', '_blank')"" >+ 6 Pack</button>
 </div>
 
 
 
 <div><img 
+onclick="window.open('https://www.drinkdonchico.com/products/watermelon-sorbet', '_blank')"
 src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807943/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vac2f3.png" 
 alt="Watermelon Sorbet" 
 class="can"
@@ -1169,7 +1175,8 @@ data-darker-color="#3a8a41"
 data-btn="Buy Watermelon Sorbet"
 data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png"
 />
-<p class="flav-text text-2">Watermelon Sorbet</p><button class="soda-btn" >+ 6 Pack</button>
+<p class="flav-text text-2">Watermelon Sorbet</p><button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/products/watermelon-sorbet', '_blank')"
+>+ 6 Pack</button>
 </div>
 
 
@@ -1217,11 +1224,17 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
 
   <!-- Flavor Buttons -->
   <div class="flavor-buttons">
-  <button class="flavor-btn orange soda-btn" data-index="2" >APPLECOT RELISH</button>
-  <button class="flavor-btn soda-btn lemon" data-index="0" >WATERMELON SORBET</button>
-    <button class="flavor-btn mango soda-btn" data-index="1" >STRAWBERRY CREAM</button>
+  <button class="flavor-btn orange soda-btn" data-index="2" onclick="window.open('https://www.drinkdonchico.com/products/applecot-relish', '_blank')"
+  >APPLECOT RELISH</button>
+  <button class="flavor-btn mango soda-btn" data-index="1" onclick="window.open('https://www.drinkdonchico.com/products/watermelon-sorbet', '_blank')"
+  >WATERMELON SORBET</button>
+
+  <button class="flavor-btn soda-btn lemon" data-index="0" onclick="window.open('https://www.drinkdonchico.com/products/strawberry-cream', '_blank')"
+  >STRAWBERRY CREAM</button>
   </div>
 </section>
+
+
 
 
 
@@ -1230,6 +1243,7 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
   
 
     <div class="model">
+    
     
     </div>
   `;
@@ -1258,55 +1272,43 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
     );
   }
 
-  function updateFruitIndex(direction, progress) {
-    // Handle initial scroll
-    if (currentFruitIndex === -1) {
-      currentFruitIndex = 0;
-      lastDirection = direction;
-    }
+  // function updateFruitIndex(direction, progress) {
+  //   // Handle initial scroll
+  //   if (currentFruitIndex === -1) {
+  //     currentFruitIndex = 0;
+  //     lastDirection = direction;
+  //   }
 
-    // Direction changed? Set repeat flag, and don't move yet
-    else if (direction !== lastDirection) {
-      shouldRepeat = true;
-      lastDirection = direction;
-    }
+  //   // Direction changed? Set repeat flag, and don't move yet
+  //   else if (direction !== lastDirection) {
+  //     shouldRepeat = true;
+  //     lastDirection = direction;
+  //   }
 
-    // If we just repeated, now proceed with the actual move
-    else if (shouldRepeat) {
-      shouldRepeat = false;
+  //   // If we just repeated, now proceed with the actual move
+  //   else if (shouldRepeat) {
+  //     shouldRepeat = false;
 
-      if (direction === "down" && currentFruitIndex < fruits.length - 1) {
-        currentFruitIndex += 1;
-      } else if (direction === "up" && currentFruitIndex > 0) {
-        currentFruitIndex -= 1;
-      }
-    }
+  //     if (direction === "down" && currentFruitIndex < fruits.length - 1) {
+  //       currentFruitIndex += 1;
+  //     } else if (direction === "up" && currentFruitIndex > 0) {
+  //       currentFruitIndex -= 1;
+  //     }
+  //   }
 
-    // Normal move when direction is steady
-    else if (direction === "down" && currentFruitIndex < fruits.length - 1) {
-      currentFruitIndex += 1;
-    } else if (direction === "up" && currentFruitIndex > 0) {
-      currentFruitIndex -= 1;
-    }
+  //   // Normal move when direction is steady
+  //   else if (direction === "down" && currentFruitIndex < fruits.length - 1) {
+  //     currentFruitIndex += 1;
+  //   } else if (direction === "up" && currentFruitIndex > 0) {
+  //     currentFruitIndex -= 1;
+  //   }
 
-    showFruit(currentFruitIndex);
-    const fruitEl = fruits[currentFruitIndex];
-    gsap.fromTo(
-      fruitEl,
-      { scale: 1 },
-      {
-        scale: 1.2,
-        duration: 0.2,
-        yoyo: true,
-        repeat: 1,
-        ease: "back.out(1.7)",
-      }
-    );
-  }
+  //   showFruit(currentFruitIndex);
+  // }
 
   // ✅ Setup ScrollTrigger after fruitEl is defined
 
-  setupScrollAnimations(updateFruitIndex);
+  setupScrollAnimations(() => {});
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1484,6 +1486,44 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   ticker();
   pictureCollage();
+
+  // ✅ Create and append footer
+  const footer = document.createElement("footer");
+  footer.className = "donchico-footer";
+  footer.innerHTML = `
+  <div class="footer-content">
+    <div class="footer-column">
+      <h3>The World of Don Chico’s</h3>
+      <ul>
+        <li><a href="https://www.drinkdonchico.com/collections/all" target="_blank" rel="noopener noreferrer">Shop Don Chico's</a></li>
+        <li><a href="https://www.drinkdonchico.com/pages/our-story" target="_blank" rel="noopener noreferrer">About Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <h3>Legal</h3>
+      <ul>
+        <li><a href="https://www.drinkdonchico.com/policies/terms-of-service" target="_blank" rel="noopener noreferrer">Terms & Conditions</a></li>
+        <li><a href="https://www.drinkdonchico.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li>
+        <li><a href="https://www.drinkdonchico.com/policies/shipping-policy" target="_blank" rel="noopener noreferrer">Shipping</a></li>
+        <li><a href="https://www.drinkdonchico.com/policies/refund-policy" target="_blank" rel="noopener noreferrer">Returns & Refunds</a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <h3>Say Hola!</h3>
+      <ul>
+        <li><a href="https://www.drinkdonchico.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact Us</a></li>
+        <li><a href="https://www.instagram.com/drinkdonchico/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-socials">
+    <a href="https://www.facebook.com/drinkdonchico" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+    <a href="https://www.instagram.com/drinkdonchico/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+  </div>
+`;
+
+  app.appendChild(footer);
+
   // scrollableTicker(gsap, ScrollTrigger);
 });
 
@@ -1516,7 +1556,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Create image
   const image = document.createElement("img");
   image.src =
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751557233/IMG_6889-removebg-preview_jsgrpz.png";
+    "https://res.cloudinary.com/do7dxrdey/image/upload/v1752496082/IMG_7339_1_z1aot3.png";
   image.alt = "Extra image";
   image.style.height = "60vh";
   image.style.paddingBottom = "5vh";
@@ -1524,13 +1564,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Create paragraph
   const paragraph = document.createElement("p");
-  paragraph.textContent = "Our Assorted Pack"; // Change as needed
+  paragraph.textContent = "Don’s Assorted Pack of 6"; // Change as needed
   paragraph.classList.add("assorted"); // Add your desired class(es)
 
   // Create button
   const button = document.createElement("button");
   button.textContent = "+ 6 Pack";
   button.classList.add("soda-btn");
+
+  // ✅ Add click event
+  button.addEventListener("click", () => {
+    window.open(
+      "https://www.drinkdonchico.com/products/don-chicos-sodas-with-benefit-assorted-pack-of-6",
+      "_blank"
+    );
+  });
+
+  // ✅ Add click event
+  image.addEventListener("click", () => {
+    window.open(
+      "https://www.drinkdonchico.com/products/don-chicos-sodas-with-benefit-assorted-pack-of-6",
+      "_blank"
+    );
+  });
 
   // Append elements to wrapper
   wrapper.appendChild(image);
@@ -1539,20 +1595,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Append wrapper to container
   container.appendChild(wrapper);
+
+  console.log(
+    "%c👋 Website crafted with love by Vedant Dubey\n📧 Contact: vedant.db99@gmail.com",
+    "color: #fff; background: #ff4d4d; padding: 8px 16px; font-size: 14px; font-family: monospace; border-radius: 4px;"
+  );
 });
 
-let lastScrollTop = 0;
+let hasScrolledOnce = false;
 
 window.addEventListener("scroll", () => {
   const scrollTop = window.scrollY;
-  const scrollDown = scrollTop > lastScrollTop;
+  const scrollHeight = document.body.scrollHeight;
+  const clientHeight = window.innerHeight;
+  const scrollBottom = scrollTop + clientHeight;
 
-  window.parent.postMessage(
-    {
-      type: scrollDown ? "hideHeader" : "showHeader",
-    },
-    "*"
-  );
+  if (!hasScrolledOnce && scrollTop > 10) {
+    hasScrolledOnce = true;
+    parent.postMessage({ type: "expandIframe" }, "*");
+  }
 
-  lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Avoid negative
+  if (scrollBottom >= scrollHeight - 10) {
+    parent.postMessage({ type: "showBottom" }, "*");
+  }
+
+  if (scrollTop <= 10) {
+    parent.postMessage({ type: "showHeader" }, "*");
+  }
 });

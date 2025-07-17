@@ -68,7 +68,6 @@ loader.load(
   "https://res.cloudinary.com/do7dxrdey/image/upload/v1745911017/Can_250_Red_gasg9y.glb",
   function (gltf) {
     model = gltf.scene;
-    console.log("I got loaded");
 
     // Compute bounding box for centering
     const box = new THREE.Box3().setFromObject(model);

@@ -73,7 +73,6 @@ const recipe = () => {
       document
         .querySelectorAll(".recipe-image")
         .forEach((img) => img.classList.remove("border-dotted-red"));
-      console.log("hey");
     });
     recipeButton.removeEventListener("mouseleave", () =>
       document
