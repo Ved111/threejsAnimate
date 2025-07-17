@@ -221,13 +221,11 @@ const pictureCollage = () => {
     thread.classList.add("border-black");
     spotify.classList.add("border-black");
 
-    const igTitle = document.createElement("i");
-    const spotifyTitle = document.createElement("i");
-    const threadTitle = document.createElement("img");
-
+    // --- Flavor Switch Text ---
     flavorSwitch.textContent = "Follow us here";
 
-    threadTitle.textContent = "thread";
+    // --- Instagram Icon ---
+    const igTitle = document.createElement("i");
     igTitle.classList.add(
       "fab",
       "fa-instagram",
@@ -238,17 +236,32 @@ const pictureCollage = () => {
       "rem-2",
       "instagram-gradient"
     );
-    // Twitter/X image icon
+    igTitle.style.cursor = "pointer";
+    igTitle.title = "Instagram";
+    igTitle.addEventListener("click", () => {
+      window.open("https://www.instagram.com/drinkdonchico", "_blank");
+    });
+
+    // --- Twitter/X Image Icon ---
+    const threadTitle = document.createElement("img");
     threadTitle.src =
       "https://res.cloudinary.com/do7dxrdey/image/upload/v1752705953/sl_z_072523_61700_05-removebg-preview_qe4kfn.png";
     threadTitle.alt = "Twitter X";
     threadTitle.style.width = "32px";
     threadTitle.style.height = "32px";
+    threadTitle.style.cursor = "pointer";
+    threadTitle.title = "Twitter/X";
     threadTitle.classList.add(
       "d-flex",
       "align-items-center",
       "justify-content-center"
     );
+    threadTitle.addEventListener("click", () => {
+      window.open("https://x.com/drinkdonchico", "_blank");
+    });
+
+    // --- Spotify Icon ---
+    const spotifyTitle = document.createElement("i");
     spotifyTitle.classList.add(
       "fab",
       "fa-spotify",
@@ -260,17 +273,28 @@ const pictureCollage = () => {
       "color-spotify",
       "rounded-circle"
     );
+    spotifyTitle.style.cursor = "pointer";
+    spotifyTitle.title = "Spotify";
+    spotifyTitle.addEventListener("click", () => {
+      window.open(
+        "https://open.spotify.com/user/31fukgdu5oi4vaswkmvcatpfgqoq?si=mz-FA0myTDqqVNS-kgsSAg",
+        "_blank"
+      );
+    });
 
+    // --- Append Icons to Their Containers ---
     ig.append(igTitle);
     thread.append(threadTitle);
     spotify.append(spotifyTitle);
 
+    // --- Append All Sections to Wrapper ---
     wrapperDiv.append(flavorSwitch);
     wrapperDiv.append(ig);
     wrapperDiv.append(thread);
     wrapperDiv.append(spotify);
     collageContainer.append(wrapperDiv);
   }
+
   const collageContainer = document.createElement("div");
   collageContainer.classList.add("collage-container");
   collageContainer.classList.add("bg-red-circular-gradient");
