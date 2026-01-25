@@ -7,7 +7,7 @@ const pictureCollage = () => {
 
   const pictues = [
     {
-      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702184/IMG_7516_1_abjhzq.jpg",
+      url: "https://donchico.s3.eu-north-1.amazonaws.com/IMG_7516_1_abjhzq.jpg",
       properties: [
         {
           element: "button",
@@ -32,7 +32,7 @@ const pictureCollage = () => {
       customFn: createDiv,
     },
     {
-      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702169/image_1_ydnyqy.png",
+      url: "https://donchico.s3.eu-north-1.amazonaws.com/image_1_ydnyqy.png",
       properties: [
         {
           element: "button",
@@ -54,7 +54,7 @@ const pictureCollage = () => {
       ],
     },
     {
-      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702354/IMG_7630_1_vl9vv1.jpg",
+      url: "https://donchico.s3.eu-north-1.amazonaws.com/IMG_7630_1_vl9vv1.jpg",
       properties: [
         {
           element: "button",
@@ -76,7 +76,7 @@ const pictureCollage = () => {
       ],
     },
     {
-      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702468/IMG_7626_1_wxubd7.jpg",
+      url: "https://donchico.s3.eu-north-1.amazonaws.com/IMG_7626_1_wxubd7.jpg",
       properties: [
         {
           element: "button",
@@ -97,7 +97,7 @@ const pictureCollage = () => {
       ],
     },
     {
-      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702840/Screenshot_2025-07-17_at_3.23.36_AM_umlhzf.png",
+      url: "https://donchico.s3.eu-north-1.amazonaws.com/Screenshot_2025-07-17_at_3.23.36_AM_umlhzf.png",
       properties: [
         {
           element: "button",
@@ -116,20 +116,20 @@ const pictureCollage = () => {
       ],
     },
     {
-      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702940/IMG_7629_1_v4l6wv.jpg",
+      url: "https://donchico.s3.eu-north-1.amazonaws.com/IMG_7629_1_v4l6wv.jpg",
       properties: [
         {
           element: "button",
           props: {
             textContent: "FAQ'S",
-            redirectUrl: "https://www.drinkdonchico.com/pages/why-prebiotic",
+            redirectUrl: "https://www.drinkdonchico.com/pages/faqs",
           },
           classes: ["collage-btn", "collage-text"],
         },
       ],
     },
     {
-      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702593/IMG_7627_1_ldmvdx.jpg",
+      url: "https://donchico.s3.eu-north-1.amazonaws.com/IMG_7627_1_ldmvdx.jpg",
       properties: [
         {
           element: "button",
@@ -146,7 +146,7 @@ const pictureCollage = () => {
       ],
     },
     {
-      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752702697/IMG_7628_1_vmpy4t.jpg",
+      url: "https://donchico.s3.eu-north-1.amazonaws.com/IMG_7628_1_vmpy4t.jpg",
       properties: [
         {
           element: "button",
@@ -170,7 +170,7 @@ const pictureCollage = () => {
       ],
     },
     {
-      url: "https://res.cloudinary.com/do7dxrdey/image/upload/v1752703085/IMG_7631_2_eul96x.jpg",
+      url: "https://donchico.s3.eu-north-1.amazonaws.com/IMG_7631_2_eul96x.jpg",
       properties: [
         {
           element: "button",
@@ -245,7 +245,7 @@ const pictureCollage = () => {
     // --- Twitter/X Image Icon ---
     const threadTitle = document.createElement("img");
     threadTitle.src =
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1752705953/sl_z_072523_61700_05-removebg-preview_qe4kfn.png";
+      "https://donchico.s3.eu-north-1.amazonaws.com/sl_z_072523_61700_05-removebg-preview_qe4kfn.png";
     threadTitle.alt = "Twitter X";
     threadTitle.style.width = "32px";
     threadTitle.style.height = "32px";
@@ -311,7 +311,7 @@ const pictureCollage = () => {
     wrapperDiv.style.width = "100%";
     wrapperDiv.style.position = "relative";
     wrapperDiv.style.gridArea = `img${index + 1}`;
-    wrapperDiv.classList.add(`collage-${index + 1}`);
+    wrapperDiv.classList.add(`collage-item`);
 
     // ✅ Add image
     const img = document.createElement("img");

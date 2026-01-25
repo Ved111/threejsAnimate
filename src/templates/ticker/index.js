@@ -1,28 +1,23 @@
 const tickerItems = [
   {
     text: "No Artificial Flavouring",
-    image:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1751716586/4_4_5_xum6vz.png",
+    image: "https://donchico.s3.eu-north-1.amazonaws.com/4_4_5_xum6vz.png",
   },
   {
     text: "High in Fibre",
-    image:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1751716584/4_4_4_n5sq12.png",
+    image: "https://donchico.s3.eu-north-1.amazonaws.com/4_4_4_n5sq12.png",
   },
   {
     text: "No Artificial Colouring",
-    image:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1751716584/4_4_2_fz9ec8.png",
+    image: "https://donchico.s3.eu-north-1.amazonaws.com/4_4_2_fz9ec8.png",
   },
   {
     text: "No Artificial Flavouring ",
-    image:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1751716584/4_4_3_tsshnd.png",
+    image: "https://donchico.s3.eu-north-1.amazonaws.com/4_4_3_tsshnd.png",
   },
   {
     text: "Low Sugar",
-    image:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1751716583/4_4_1_tcbjow.png",
+    image: "https://donchico.s3.eu-north-1.amazonaws.com/4_4_1_tcbjow.png",
   },
 ];
 

@@ -20,8 +20,8 @@
 
 @font-face {
   font-family: "Ohno Blazeface";
-  src: url("./fonts/OhnoBlazeface-12Point.woff2") format("woff2"),
-    url("./fonts/OhnoBlazeface-12Point.woff") format("woff");
+  src: url("../fonts/OhnoBlazeface-12Point.woff2") format("woff2"),
+    url("../fonts/OhnoBlazeface-12Point.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -113,7 +113,7 @@
   background-size: cover; /* 🔑 Makes image cover the full area */
   background-position: center; /* Keeps the image centered */
   background-repeat: no-repeat;
-  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1749909424/bubble_uv2ezj.webp");
+  background-image: url("https://donchico.s3.eu-north-1.amazonaws.com/bubble_uv2ezj.webp");
 }
 
 .fruit-zone {
@@ -245,7 +245,6 @@ p {
   background-repeat: no-repeat;
   background-position: center;
 
-  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1749068655/all3.6_1_1_1_1_dw2fyx.png");
 }
 
 section {
@@ -276,7 +275,7 @@ section {
   gap: 1em;
   z-index: 8;
   text-align: center;
-  background: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1751632170/WhatsApp_Image_2025-07-04_at_5.40.12_PM_a1wuwe.jpg");
+  background: url("https://donchico.s3.eu-north-1.amazonaws.co/WhatsApp_Image_2025-07-04_at_5.40.12_PM_a1wuwe.jpg");
 }
 
 .hero-section {
@@ -556,28 +555,27 @@ section {
 .soda-btn {
   position: relative;
   padding: 0.5rem 1.5rem;
-  background-color: #ffe7d7 ;
+  background-color: #ffe7d7;
   color: #9f0404;
-  font-family: "ActiveOne", serif;
-  border: none;
+  font-family: "Ohno Blazeface", serif;
   border-radius: 50px;
-  font-size: 23px;
+  font-size: 19px;
   font-weight: bold;
   cursor: pointer;
-
-  /* 3D-style shadow */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.6),
-    inset 2px 2px 5px rgba(0, 0, 0, 0.05);
-
+  /* Right and bottom border-like shadow + 3D shadow using #921d14 */
+  box-shadow: 3px 3px 0 0 #921d14, /* Border-like shadow on right and bottom */
+             3px 3px 4px #921d14; /* 3D shadow for depth */
   transform-style: preserve-3d;
   transition: all 0.3s ease;
   overflow: hidden;
 }
 
 .soda-btn:hover {
-  background-color: #9f0404;
+  background-color: #921d14;
   color: #ffe7d7;
+  /* Right and bottom border-like shadow + 3D shadow using #ffe7d7 */
+  box-shadow: 3px 3px 0 0 #ffe7d7, /* Border-like shadow on right and bottom */
+             3px 3px 4px #ffe7d7; /* 3D shadow for depth */
   transform: translateY(-2px) scale(1.02);
 }
 
@@ -605,6 +603,91 @@ section {
   top: 40%;
   left: 60%;
   animation-delay: 1.5s;
+}
+
+@keyframes bubble {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.2);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+}
+
+.custom-footer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* so footer doesn't block scrolling */
+  margin-top: 10vh;
+  z-index: 1000000;
+}
+
+.footer-element-1,
+.footer-element-2,
+.footer-element-3 {
+  position: absolute;
+  width: clamp(60px, 12vw, 120px); /* smaller on desktop */
+  height: auto;
+  object-fit: contain;
+  z-index: 1000000;
+
+}
+
+
+@media (max-width: 1000px) {
+  .custom-footer {
+    bottom: 10px;
+    right: 10px;
+    gap: 5px;
+    margin-top: 20vh;
+
+  }
+
+  .footer-element-1,
+  .footer-element-2,
+  .footer-element-3 {
+    width: clamp(60px, 24vw, 120px); /* shrink back on tablet/desktop */
+  }
+
+
+}
+
+.donchico-footer {
+  position: relative;
+  z-index: 10;
+}
+
+.custom-border-section {
+  position: relative;
+}
+
+
+/* Ensure the bubble animation keyframe exists */
+@keyframes bubble {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.2);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
 }
 
 @keyframes bubble {
@@ -745,7 +828,7 @@ section {
   background-position: center 40%;
   background-repeat: no-repeat;
   pointer-events: none;
-  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/5_4_xo3edi.png");
+  background-image: url("https://donchico.s3.eu-north-1.amazonaws.com/5_4_xo3edi.png");
 }
 
 .podium-class {
@@ -853,13 +936,13 @@ section {
   background-size: cover;
   background-repeat: repeat-y;
   background-position: center;
-  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/5_4_xo3edi.png");
+  background-image: url("https://donchico.s3.eu-north-1.amazonaws.com/5_4_xo3edi.png");
 }
 
 .can-hero-section.superimposed {
   position: fixed;
   z-index: 11;
-  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/5_4_xo3edi.png");
+  background-image: url("https://donchico.s3.eu-north-1.amazonaws.com/5_4_xo3edi.png");
 
   top: 0;
   left: 0;
@@ -884,10 +967,11 @@ section {
 }
 
 .flav-text {
-  color: #b60909;
-  font-size: 18px;
+  color: #ffe7d7;
+  font-size: 24px;
   font-family: "ActiveOne", serif; /* Custom OTF Font */
   padding: 10px 0;
+  margin: 1rem 0;
 }
 
 .can {
@@ -959,23 +1043,26 @@ section {
 }
 
 .review-section {
-  padding: 5rem 2rem;
+  padding: 5rem 0;
+  height: unset;
+  width: unset;
   background-color: white;
   overflow: hidden;
   position: relative;
   z-index: 10;
+  background: radial-gradient(circle at 50% 50%, #9f0404 0%, #540404 100%);
+
 }
 
 .review-heading {
   font-size: 2.5rem;
   text-align: center;
   margin-bottom: 3rem;
-  color: #111827;
+  color: white;
   font-weight: bold;
 }
 
 .carousel {
-  overflow: hidden;
   width: 100%;
 }
 
@@ -991,20 +1078,18 @@ section {
   border-radius: 1.5rem;
   overflow: hidden;
   color: white;
-  height: 400px;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   cursor: pointer;
   background-size: cover;
   background-position: center;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  background-color: #ffe7d7;
 }
 
 .review-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
   z-index: 1;
 }
 
@@ -1019,7 +1104,8 @@ section {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: space-between; /* spread vertically */
+  align-items: flex-start;        /* align left */
   height: 100%;
 }
 
@@ -1116,7 +1202,7 @@ section {
 
 .intro-screen {
   position: fixed;
-  background-image: url("https://res.cloudinary.com/do7dxrdey/image/upload/v1749067031/IMG_2126_1_tesfjm.png");
+  background-image: url("https://donchico.s3.eu-north-1.amazonaws.com/IMG_2126_1_tesfjm.png");
   inset: 0;
   background-size: cover;
   background-position: center;
@@ -1675,7 +1761,7 @@ body.no-scroll {
   }
 
   .review-section {
-    padding: 3rem 1rem;
+    padding: 3rem 0;
   }
 
   .review-heading {
@@ -1743,7 +1829,7 @@ body.no-scroll {
   position: absolute;
   bottom: 0%;
   width: 100vw;
-  background-image: url('https://res.cloudinary.com/do7dxrdey/image/upload/v1751632170/WhatsApp_Image_2025-07-04_at_5.40.12_PM_a1wuwe.jpg');
+  background-image: url('https://donchico.s3.eu-north-1.amazonaws.com/WhatsApp_Image_2025-07-04_at_5.40.12_PM_a1wuwe.jpg');
 }
 
 
@@ -1884,6 +1970,11 @@ body.no-scroll {
   text-transform: capitalize;
 }
 
+.collage-item {
+  border: 3px solid #9f0404;
+  border-radius: 15px;
+}
+
 .collage-container img {
   width: 100%;
   height: 100%;
@@ -1898,6 +1989,7 @@ body.no-scroll {
   overflow: hidden;
   gap: 2rem;
   position: relative;
+  background-color: #ffe7d7;
 }
 
 .ticker-content {
@@ -1927,7 +2019,7 @@ body.no-scroll {
 }
 
 .ticker-item span {
-  color: white;
+  color: #9f0404;
   font-family: "Roboto", sans-serif; /* Google Font */
 }
 
@@ -1972,6 +2064,14 @@ body.no-scroll {
   transform: translate(-50%, -50%);
 }
 
+.collage-btn:hover {
+  background-color: #921d14;
+  color: #ffe7d7;
+  /* Right and bottom border-like shadow + 3D shadow using #ffe7d7 */
+  box-shadow: 3px 3px 0 0 #ffe7d7, /* Border-like shadow on right and bottom */
+             3px 3px 4px #ffe7d7; /* 3D shadow for depth */
+}
+
 .collage-btn-2 {
   display: none;
   align-items: center;
@@ -1988,6 +2088,15 @@ body.no-scroll {
   transform: translate(-50%, -50%);
   width: max-content;
 }
+
+.collage-btn-2:hover {
+  background-color: #921d14;
+  color: #ffe7d7;
+  /* Right and bottom border-like shadow + 3D shadow using #ffe7d7 */
+  box-shadow: 3px 3px 0 0 #ffe7d7, /* Border-like shadow on right and bottom */
+             3px 3px 4px #ffe7d7; /* 3D shadow for depth */
+}
+
 
 .collage-secondary-grid {
   display: grid;
@@ -2137,6 +2246,7 @@ body.no-scroll {
 
   .fruit-label-text {
     display: block !important; /* ✅ Show label text */
+    font-size: 40px;
   }
 
   .fruit-para {
@@ -2204,4 +2314,206 @@ body.no-scroll {
     flex: 1 1 100%;
     margin: 10px 0;
   }
+}
+
+.product-reviews {
+  padding: 36px 0;
+  margin: 0 auto;
+  background: radial-gradient(circle at 50% 50%, #9f0404, #540404);
+  z-index: 10;
+}
+
+.reviews-heading {
+  font-family: "Ohno Blazeface", serif;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 24px;
+  color: #000;
+}
+
+.slider-wrapper {
+  position: relative;
+}
+
+.reviews-section {
+  height: unset;
+  width: unset;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr); /* Doubled for cloned items */
+  gap: 16px;
+  overflow-x: hidden; /* Changed to hidden for seamless looping */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.review-item {
+  scroll-snap-align: start;
+  min-width: 200px;
+}
+
+.review-box {
+  text-align: center;
+  background-color: #ffe7d7;
+  border: 2px solid #ff0000;
+  border-radius: 8px;
+  padding: 16px;
+  height: 100%;
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  cursor: pointer; /* makes it feel interactive */
+}
+
+
+
+.review-text {
+  font-size: 1rem;
+  margin-bottom: 12px;
+  color: #000;
+}
+
+.reviewer-name {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.review-rating {
+  margin-top: 8px;
+}
+
+.rating-text {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.rating-star {
+  display: inline-block !important;
+  width: 100px;
+  height: 20px;
+  background: url('https://donchico.s3.eu-north-1.amazonaws.com/icon-star-empty_tadz9m.svg') repeat-x;
+  background-size: 20px 20px;
+  position: relative;
+}
+
+.rating-star::before {
+  content: '';
+  display: block !important;
+  width: calc(var(--rating) * 20px + var(--rating-decimal) * 20px);
+  height: 20px;
+  background: url('https://donchico.s3.eu-north-1.amazonaws.com/icon-star-filled_qlrlyt.svg') repeat-x;
+  background-size: 20px 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.rating-star.no-svg {
+  font-size: 18px;
+  line-height: 20px;
+  color: #ccc;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.rating-star.no-svg::before {
+  content: '★★★★★';
+  display: block;
+  width: calc(var(--rating) * 20px + var(--rating-decimal) * 20px);
+  color: #f5c518;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.slider-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+  display: none;
+}
+
+.slider-prev {
+  left: -40px;
+}
+
+.slider-next {
+  right: -40px;
+}
+
+@media screen and (max-width: 749px) {
+  .reviews-grid {
+    grid-template-columns: repeat(12, minmax(200px, 1fr));
+    padding-bottom: 16px;
+  }
+  .review-item {
+    min-width: 80%;
+  }
+  .slider-nav {
+    display: block;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .slider-nav {
+    display: block;
+  }
+}
+
+
+.socials-section {
+  padding: 5rem 2rem;
+  background-color: #f9fafb;
+  text-align: center;
+}
+
+.socials-heading {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  font-weight: bold;
+  color: #111827;
+}
+
+.socials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.social-card {
+  display: block;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.social-card-image {
+  width: 100%;
+  height: 250px;
+  background-size: cover;
+  background-position: center;
+}
+
+.social-card-caption {
+  padding: 1rem;
+  font-size: 0.9rem;
 }

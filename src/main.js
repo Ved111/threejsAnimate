@@ -6,12 +6,13 @@ import "./style.css";
 import { openCanAudio } from "./openCanAudio";
 import { carouselGesture } from "./carouselGesture";
 import { generateBubble } from "./generateBubble";
-import recipe from "./templates/recipes";
 import { flavors } from "./utils";
 import pictureCollage from "./templates/pictureCollage";
+import reviewSection from "./templates/reviews/index.js";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 RectAreaLightUniformsLib.init();
 import ticker from "./templates/ticker";
+import socialsSection from "./templates/socials/index.js";
 
 function getModelScreenHeightInPixels(model, camera, renderer) {
   const box = new THREE.Box3().setFromObject(model);
@@ -51,7 +52,6 @@ function applyModelHeightToImages(model, camera, renderer) {
     });
   }
 }
-import scrollableTicker from "./templates/scrollableTicker";
 
 // Smooth Scrolling Setup
 const lenis = new Lenis();
@@ -81,10 +81,113 @@ let didSwapRecently = false;
 
 let canIsCentered = false; // global flag outside ScrollTrigger
 
-// Ensure DOM is ready before initializing Three.js
-window.addEventListener("DOMContentLoaded", () => {
-  initThreeJS();
-});
+// Footer Animation
+function initFooterAnimation() {
+  const footerElements = [
+    document.querySelector(".footer-element-1"),
+    document.querySelector(".footer-element-2"),
+    document.querySelector(".footer-element-3"),
+  ].filter(Boolean);
+
+  if (footerElements.length !== 3) {
+    console.warn("❌ Some footer elements are missing");
+    return;
+  }
+
+  const customFooter = document.querySelector(".custom-footer");
+
+  // Get line positions based on screen size
+  function getLinePositions() {
+    if (window.innerWidth < 768) {
+      // mobile: tighter spread
+      return [
+        { x: -100, y: 0 }, // left
+        { x: 0, y: 0 }, // center
+        { x: 100, y: 0 }, // right
+      ];
+    } else if (window.innerWidth < 1280) {
+      // tablet / small desktop: medium spread
+      return [
+        { x: -300, y: 0 },
+        { x: 0, y: 0 },
+        { x: 300, y: 0 },
+      ];
+    } else {
+      // large desktop: widest spread
+      return [
+        { x: -380, y: 0 },
+        { x: 0, y: 0 },
+        { x: 380, y: 0 },
+      ];
+    }
+  }
+
+  let linePositions = getLinePositions();
+
+  // Always start hidden at center
+  gsap.set(footerElements, { x: 0, y: 0, opacity: 0 });
+  gsap.set(customFooter, { opacity: 0, display: "none" });
+
+  // Create enter + leave timeline
+  function animateIn() {
+    gsap.set(customFooter, { display: "flex" });
+    gsap
+      .timeline()
+      .to(customFooter, { opacity: 1, duration: 0.3 })
+      .to(
+        footerElements,
+        {
+          opacity: 1,
+          duration: 0.4,
+          x: (i) => linePositions[i].x,
+          y: (i) => linePositions[i].y,
+          ease: "power3.out",
+          stagger: 0.1,
+        },
+        "<"
+      );
+  }
+
+  function animateOut() {
+    gsap
+      .timeline()
+      .to(footerElements, {
+        x: 0,
+        y: 0,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power3.in",
+        stagger: 0.1,
+      })
+      .to(
+        customFooter,
+        {
+          opacity: 0,
+          duration: 0.3,
+          onComplete: () => {
+            gsap.set(customFooter, { display: "none" });
+          },
+        },
+        "-=0.2"
+      );
+  }
+
+  // ScrollTrigger
+  ScrollTrigger.create({
+    trigger: ".custom-border-section",
+    start: "top top",
+    end: "bottom-=200 bottom", // 🔥 start fading out 100px before section ends
+    onEnter: animateIn,
+    onLeave: animateOut,
+    onEnterBack: animateIn,
+    onLeaveBack: animateOut,
+  });
+
+  // Update positions on resize
+  window.addEventListener("resize", () => {
+    linePositions = getLinePositions();
+  });
+}
 
 function replaceInitialCanWithGLB(key, scene, hex) {
   if (!modelLoaded || !glbModelCache[key]) return;
@@ -125,7 +228,7 @@ function replaceInitialCanWithGLB(key, scene, hex) {
       }
 
       child.material = newMat;
-      child.castShadow = true;
+      child.castShadow = false;
       child.receiveShadow = true;
       child.geometry.computeVertexNormals();
     }
@@ -140,10 +243,10 @@ function replaceInitialCanWithGLB(key, scene, hex) {
 }
 
 const backgroundImages = [
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png",
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png",
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/3_1_hajus7.png",
-  "https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png",
+  "https://donchico.s3.eu-north-1.amazonaws.com/2_1_qc6ltq.png",
+  "https://donchico.s3.eu-north-1.amazonaws.com/2_1_qc6ltq.png",
+  "https://donchico.s3.eu-north-1.amazonaws.com/3_1_hajus7.png",
+  "https://donchico.s3.eu-north-1.amazonaws.com/4_3_byfiaa.png",
 ];
 
 let currentBgIndex = -1;
@@ -160,6 +263,11 @@ function updateBackgroundImage(index) {
   }
 }
 
+const isLowEnd =
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  ) && window.innerWidth < 768;
+
 let scene = null;
 
 function fadeOutIntro() {
@@ -175,44 +283,7 @@ function fadeOutIntro() {
 const glbModelCache = {};
 
 function initThreeJS() {
-  const ASSET_URLS = [
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067031/IMG_2126_1_tesfjm.png",
-
-    // 🌈 Hero Section Cans
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751262477/Screenshot_2025-06-30_at_11.16.55_AM-removebg-preview_1_lsivbz.png",
-
-    // 🍍 Logo and Flavors
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750412492/11_1_cukhbe.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750412499/37_1_vb6ngi.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1744617469/25_1_y9hpks.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751272545/Screenshot_2025-06-30_at_2.04.26_PM-removebg-preview_1_fb01a6.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751272786/Screenshot_2025-06-30_at_2.08.52_PM-removebg-preview_fh0akn.png",
-
-    // 💨 Bubbles
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751273819/Screenshot_2025-06-30_at_2.23.57_PM-removebg-preview_1_yz6e5n.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751273811/Screenshot_2025-06-30_at_2.24.02_PM-removebg-preview_1_ttdgew.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751273802/Screenshot_2025-06-30_at_2.24.06_PM-removebg-preview_1_q46g4b.png",
-
-    // 🍎 Fruit Sections
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749059138/Adobe_Express_-_file_1_pccfnh.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751033116/Don_Chicos_Website_1_-removebg-preview_eoaxqi.webp",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1751033228/Don_Chicos_Website_2_-removebg-preview_hss1cg.webp",
-
-    // 🥤 Can Hero Section
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.53.54_PM-removebg-preview_awbuwn.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.01_PM-removebg-preview_cgebmi.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750249660/Screenshot_2025-06-18_at_5.54.07_PM-removebg-preview_kyeuox.png",
-
-    // 📱 Mobile UI Cans
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749979554/IMG_4588_1_1_qhx10y.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749067023/Adobe_Express_-_file_3_1_syhwrv.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749066942/Adobe_Express_-_file_4_1_druku2.png",
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1749066841/Adobe_Express_-_file_2_1_aci4ev.png",
-
-    // 🔊 Audio
-    "https://res.cloudinary.com/do7dxrdey/video/upload/v1745594133/soda-can-opening-169337_aekjbs.mp3",
-  ];
+  const ASSET_URLS = [];
 
   preloadBackgroundImages(backgroundImages);
 
@@ -233,7 +304,6 @@ function initThreeJS() {
         media.onloadeddata = resolve;
         media.onerror = reject;
       } else {
-        // fallback: just resolve
         resolve();
       }
     });
@@ -244,11 +314,8 @@ function initThreeJS() {
   if (!isMobile) {
     preloadAssetsPromise = Promise.allSettled(
       ASSET_URLS.map(preloadAsset)
-    ).then(() => {
-      console.log("✅ Asset preload completed (errors ignored)");
-    });
+    ).then(() => {});
   } else {
-    console.log("📱 Skipping preload on mobile");
     preloadAssetsPromise = Promise.resolve();
   }
 
@@ -271,54 +338,28 @@ function initThreeJS() {
   renderer.setClearColor(0xffffff, 0);
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  renderer.setClearColor(0xffffff, 0); // Fully transparent background
-  renderer.setSize(window.innerWidth, window.innerHeight);
-
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = false;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.physicallyCorrectLights = true;
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.4;
 
-  // const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-  // scene.add(ambientLight);
-
-  // // Top light
-  // const topLight = new THREE.DirectionalLight(0xffffff, 2);
-  // topLight.position.set(0, 10, 0);
-  // scene.add(topLight);
-
-  // Front light
-  // const frontLight = new THREE.DirectionalLight(0xffffff, 2);
-  // frontLight.position.set(0, 0, 10);
-  // scene.add(frontLight);
-
-  // // Back light
-  // const backLight = new THREE.DirectionalLight(0xffffff, 2);
-  // backLight.position.set(0, 0, -10);
-  // scene.add(backLight);
-
-  // Clear existing lights
   scene.clear();
 
-  // Add new top key light
   const keyLight2 = new THREE.DirectionalLight(0xffffff, 4.5);
   keyLight2.position.set(-2, 5, 5);
   keyLight2.castShadow = false;
   scene.add(keyLight2);
 
-  // Add top highlight light
   const topHighlight = new THREE.DirectionalLight(0xffffff, 4.0);
   topHighlight.position.set(0, 10, 10);
   scene.add(topHighlight);
 
-  // Front light
   const frontLight = new THREE.DirectionalLight(0xffffff, 0.2);
   frontLight.position.set(2, 0, 2);
   scene.add(frontLight);
 
-  // Add very soft ambient light to lift shadows slightly
   const ambientLight = new THREE.AmbientLight(0xffffff, 5);
   scene.add(ambientLight);
 
@@ -338,12 +379,10 @@ function initThreeJS() {
   const loader = new GLTFLoader();
   const modelURLs = {
     initial:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1750236870/DCcanWithENGRAVEDlogo_2_ecjm5i_dobnwk.glb",
-    center:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747977846/appleCOT_tibxq0.glb",
-    left: "https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751806981/starberry_yeswvi_1_kfxrr1.glb",
-    right:
-      "https://res.cloudinary.com/do7dxrdey/image/upload/v1747923870/2.44_u6yamm.glb",
+      "https://donchico.s3.eu-north-1.amazonaws.com/DCcanWithENGRAVEDlogo_2_ecjm5i_dobnwk.glb",
+    center: "https://donchico.s3.eu-north-1.amazonaws.com/appleCOT_tibxq0.glb",
+    left: "https://res.cloudinary.com/dt5lkw0vz/image/upload/starberry_yeswvi_1_kfxrr1.glb",
+    right: "https://donchico.s3.eu-north-1.amazonaws.com/2.44_u6yamm.glb",
   };
 
   const loadModelPromises = Object.entries(modelURLs).map(([key, url]) => {
@@ -375,10 +414,10 @@ function initThreeJS() {
               });
               newMat.clearcoat = 0.8;
               newMat.clearcoatRoughness = 0.1;
-              newMat.transparent = false; // Fully opaque
-              newMat.opacity = 1; // Full visibility
-              newMat.alphaTest = 0.0; // Disable alpha cutoff
-              newMat.side = THREE.FrontSide; // Optional: use FrontSide for better performance
+              newMat.transparent = false;
+              newMat.opacity = 1;
+              newMat.alphaTest = 0.0;
+              newMat.side = THREE.FrontSide;
               newMat.depthWrite = true;
               newMat.needsUpdate = true;
               if (newMat.map) {
@@ -388,16 +427,15 @@ function initThreeJS() {
               }
 
               child.material = newMat;
-              child.castShadow = true;
+              child.castShadow = false;
               child.receiveShadow = true;
               child.geometry.computeVertexNormals();
             }
           });
 
           resolve({ key, model, size });
-          glbModelCache[key] = model; // ✅ Add this line
+          glbModelCache[key] = model;
         },
-
         undefined
       );
     });
@@ -405,25 +443,20 @@ function initThreeJS() {
 
   let fadeOutTriggered = false;
 
-  // Track when model loading completes
   let modelLoadComplete = false;
 
-  // Start timer
   const startTime = performance.now();
 
-  // Kick off loading
-  Promise.all([preloadAsset, Promise.all(loadModelPromises)])
+  Promise.all([preloadAssetsPromise, Promise.all(loadModelPromises)])
     .then(([_, models]) => {
       const endTime = performance.now();
       const loadTime = endTime - startTime;
 
-      // If it took longer than 4 seconds and model already resolved, trigger fallback
       if (loadTime > 4000 && !fadeOutTriggered && modelLoadComplete) {
         fadeOutIntro();
         fadeOutTriggered = true;
       }
 
-      // Continue normal model setup
       let maxWidth = 0;
       models.forEach(({ key, model, size }) => {
         if (key === "left") {
@@ -453,7 +486,6 @@ function initThreeJS() {
       applyModelHeightToImages(centerCan, camera, renderer);
       modelLoaded = true;
 
-      // If fadeOutIntro hasn't run yet (and shouldn't be deferred), run it now
       if (!fadeOutTriggered) {
         fadeOutIntro();
         fadeOutTriggered = true;
@@ -473,7 +505,6 @@ function initThreeJS() {
       console.error("🚨 Failed to load models or assets:", err);
     });
 
-  // Separate tracker: when loadModelPromises completes
   Promise.all(loadModelPromises)
     .then(() => {
       modelLoadComplete = true;
@@ -483,7 +514,11 @@ function initThreeJS() {
     });
 
   function animate() {
-    requestAnimationFrame(animate);
+    if (isLowEnd) {
+      setTimeout(() => requestAnimationFrame(animate), 1000 / 30);
+    } else {
+      requestAnimationFrame(animate);
+    }
     renderer.shadowMap.enabled = false;
     renderer.physicallyCorrectLights = true;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -499,7 +534,7 @@ let isSwapping = false;
 function resetSwapState() {
   lastXMovement = 0;
   didSwapRecently = false;
-  hasCollided = false; // if you're using it
+  hasCollided = false;
 }
 
 function setupScrollAnimations(updateFruitCallback) {
@@ -537,8 +572,6 @@ function setupScrollAnimations(updateFruitCallback) {
       initialCan.position.x = xMovement;
     }
 
-    // ✅ Only update background if not near the beginning (range 0)
-
     if (progress > 0.1) {
       updateBackgroundImage(newRange % 4);
       updateFruitCallback(direction, progress);
@@ -560,13 +593,11 @@ function setupScrollAnimations(updateFruitCallback) {
 
       const t = self.progress;
 
-      // Hide when reversed fully
       if (t === 0) {
         initialCan.visible = false;
         return;
       }
 
-      // Central can moves left at normal scroll pace
       const centerX = gsap.utils.interpolate(0, isMobile ? -0.9 : -2, t);
       initialCan.position.x = centerX;
 
@@ -579,13 +610,12 @@ function setupScrollAnimations(updateFruitCallback) {
 
       updateBackgroundImage(0);
       replaceInitialCanWithGLB(
-        "https://res.cloudinary.com/do7dxrdey/image/upload/v1749915409/DCcanWithENGRAVEDlogo_2_ecjm5i.glb",
+        "https://donchico.s3.eu-north-1.amazonaws.com/DCcanWithENGRAVEDlogo_2_ecjm5i.glb",
         scene
       );
 
       const baseY = isMobile ? -0.7 : -1;
 
-      // ✅ Make sure this happens next frame after visibility is already set
       requestAnimationFrame(() => {
         initialCan.position.set(isMobile ? -0.9 : -2, baseY, 0);
       });
@@ -599,9 +629,8 @@ function setupScrollAnimations(updateFruitCallback) {
 
       updateBackgroundImage(0);
 
-      replaceInitialCanWithGLB("initial", scene); // 👈 This is your function
+      replaceInitialCanWithGLB("initial", scene);
     },
-
     onLeaveBack: () => {
       const centerImg = document.querySelector(".can[key='center']");
       if (centerImg) centerImg.style.opacity = 1;
@@ -634,12 +663,10 @@ function setupScrollAnimations(updateFruitCallback) {
       const maxX = isMobile ? 0.7 : 2;
       const rangeX = maxX - minX;
 
-      // 🌀 Y rotation
       const segmentStart = Math.floor(progress / 0.25) * 0.25;
       const localT = (progress - segmentStart) / 0.25;
       initialCan.rotation.y = gsap.utils.interpolate(0, Math.PI * 2, localT);
 
-      // 📍 Position logic
       function getLocalT(p, start, end) {
         return (p - start) / (end - start);
       }
@@ -655,15 +682,14 @@ function setupScrollAnimations(updateFruitCallback) {
         const t = getLocalT(progress, 0.5, 0.75);
         xMovement = minX + rangeX * t;
       } else if (progress < 0.92) {
-        const t = getLocalT(progress, 0.75, 0.92); // 🔥 shorter range = faster
+        const t = getLocalT(progress, 0.75, 0.92);
         xMovement = gsap.utils.interpolate(maxX, 0, t);
       } else {
-        xMovement = 0; // ✅ stay at center after 0.9
+        xMovement = 0;
       }
 
       initialCan.position.x = xMovement;
 
-      // 📝 Text animation
       const textIndices = [0, 1, 2];
 
       textIndices.forEach((index) => {
@@ -681,12 +707,10 @@ function setupScrollAnimations(updateFruitCallback) {
         const directionIn = index % 2 === 0 ? -screenWidth : screenWidth;
 
         if (progress >= enterStart && progress < enterEnd) {
-          // Animate in from left or right
           const t = (progress - enterStart) / 0.25;
           x = gsap.utils.interpolate(directionIn, 0, t);
           opacity = gsap.utils.interpolate(0, 1, t);
         } else if (progress >= enterEnd) {
-          // Stay in center
           x = 0;
           opacity = 1;
         }
@@ -701,7 +725,6 @@ function setupScrollAnimations(updateFruitCallback) {
         });
       });
 
-      // 🔁 Swap detection
       const threshold = Math.abs(rangeX) * 0.1;
 
       const reachedLeft =
@@ -718,7 +741,6 @@ function setupScrollAnimations(updateFruitCallback) {
         direction,
         updateFruitCallback
       );
-      //           updateFruitCallback(direction, progress);
 
       if ((reachedLeft || reachedRight) && !didSwapRecently) {
         didSwapRecently = true;
@@ -753,8 +775,8 @@ function setupScrollAnimations(updateFruitCallback) {
 
   ScrollTrigger.create({
     trigger: ".can-hero-section",
-    start: "top top", // Section top reaches top of viewport
-    end: "bottom bottom", // Section bottom reaches bottom of viewport
+    start: "top top",
+    end: "bottom bottom",
     scrub: true,
     onEnter: () => {
       if (modelLoaded) {
@@ -804,64 +826,57 @@ function setupScrollAnimations(updateFruitCallback) {
     onUpdate: (self) => {
       if (!modelLoaded) return;
 
-      // ⛔️ HIDE initialCan during this section
       if (initialCan) {
         initialCan.visible = false;
-        initialCan.position.x = -10; // or any offscreen value
+        initialCan.position.x = -10;
         centerCan.position.x = 0;
         centerCan.visible = true;
       }
 
-      const t = self.progress; // from 0 to 1
+      const t = self.progress;
       const easedT = gsap.utils.interpolate(
         0,
         1,
         gsap.parseEase("power2.inOut")(t)
       );
 
-      // ✴️ Thrust starts after 30% scroll
       const dropStart = 0.9;
       let dropT = 0;
-      const rotateEnd = dropStart; // Rotation finishes just before thrust starts
+      const rotateEnd = dropStart;
 
-      // ✴️ Rotation Phase (0 to 0.9): Spin can and wrap it back to 0
-      const totalSpins = 1.5; // 1.5 full spins → 3π radians
+      const totalSpins = 1.5;
       let rotationY = 0;
       if (t < rotateEnd) {
-        const rotateT = t / rotateEnd; // normalize 0–0.9 to 0–1
+        const rotateT = t / rotateEnd;
         const easedRotateT = gsap.parseEase("power3.inOut")(rotateT);
         rotationY = (Math.PI * 2 * totalSpins * easedRotateT) % (Math.PI * 2);
         centerCan.rotation.set(0, rotationY, 0);
       } else {
-        // ✴️ After rotateEnd, just reset to 0 rotation
         centerCan.rotation.set(0, 0, 0);
       }
 
       if (t > dropStart) {
-        const normalizedT = (t - dropStart) / (1 - dropStart); // maps 0.3–1 → 0–1
-        const fastT = Math.min(normalizedT * 2, 1); // double speed
+        const normalizedT = (t - dropStart) / (1 - dropStart);
+        const fastT = Math.min(normalizedT * 2, 1);
         dropT = gsap.parseEase("power4.in")(fastT);
       }
 
-      // Thrust down: Y = -0.05 → -1
       if (isMobile) {
         centerCan.position.y = gsap.utils.interpolate(-0.7, -0.8, dropT);
       } else centerCan.position.y = gsap.utils.interpolate(-1, -1.1, dropT);
 
-      // Start moving side cans earlier
       const appearStart = 0.7;
       let earlyT = 0;
       if (t > appearStart) {
         leftCan.visible = true;
         rightCan.visible = true;
-        const localT = (t - appearStart) / (1 - appearStart); // normalize from 0.1–1 → 0–1
+        const localT = (t - appearStart) / (1 - appearStart);
         earlyT = gsap.parseEase("power3.out")(Math.min(localT, 1));
       } else {
-        // Hide cans before appearStart
         leftCan.visible = false;
         rightCan.visible = false;
       }
-      // Animate all rotations from (0, 0, 0) to (0, 2, 0)
+
       const targetRotationY = gsap.utils.interpolate(
         centerCan.rotation.y,
         0,
@@ -879,10 +894,9 @@ function setupScrollAnimations(updateFruitCallback) {
       rightCan.rotation.set(0, -0.32, 0);
     },
     onLeaveBack: () => {
-      // Reset positions when scrolling back up
       if (leftCan && rightCan) {
-        leftCan.position.set(-7, isMobile ? -0.7 : -1, 0); // Reset X-position
-        rightCan.position.set(7, isMobile ? -0.7 : -1, 0); // Reset X-position
+        leftCan.position.set(-7, isMobile ? -0.7 : -1, 0);
+        rightCan.position.set(7, isMobile ? -0.7 : -1, 0);
         centerCan.position.set(0, isMobile ? -0.7 : -1, 0);
         leftCan.rotation.set(0, 0, 0);
         centerCan.rotation.set(0, 0, 0);
@@ -891,7 +905,6 @@ function setupScrollAnimations(updateFruitCallback) {
         leftCan.visible = true;
         rightCan.visible = true;
 
-        // ✅ Restore initialCan position & visibility
         initialCan.position.set(0, isMobile ? -0.7 : -1, 0);
         initialCan.visible = true;
       }
@@ -901,18 +914,16 @@ function setupScrollAnimations(updateFruitCallback) {
   if (isMobile) {
     ScrollTrigger.create({
       trigger: ".poppy-section",
-      start: "top 1%", // Begin right after your current one ends
+      start: "top 1%",
       end: () => {
         const section = document.querySelector(".poppy-section");
-        return `+=${section.offsetHeight * 0.2}`; // 20% of its height
+        return `+=${section.offsetHeight * 0.2}`;
       },
       scrub: true,
       onUpdate: (self) => {
         const t = self.progress;
 
         if (leftCan && rightCan && centerCan) {
-          // Slide leftCan left
-
           if (isMobile) {
             leftCan.position.y = -0.7;
             rightCan.position.y = -0.7;
@@ -920,7 +931,6 @@ function setupScrollAnimations(updateFruitCallback) {
             leftCan.position.y = -1;
             rightCan.position.y = -1;
           }
-          // Hide centerCan once the poppy-section is 20% scrolled past
           if (t > 0.2) {
             centerCan.visible = false;
           } else {
@@ -928,14 +938,8 @@ function setupScrollAnimations(updateFruitCallback) {
           }
         }
       },
-      onLeave: () => {
-        // Fully hide when done
-        // leftCan.visible = false;
-        // rightCan.visible = false;
-        // centerCan.visible = false;
-      },
+      onLeave: () => {},
       onEnterBack: () => {
-        // Restore visibility and opacity
         leftCan.visible = true;
         rightCan.visible = true;
         centerCan.visible = true;
@@ -945,8 +949,8 @@ function setupScrollAnimations(updateFruitCallback) {
 
   ScrollTrigger.create({
     trigger: ".poppy-section",
-    start: "top top", // 🔥 Triggers when the top of .poppy-section hits the top of viewport
-    end: "top top-=1", // Ends 1px after leaving
+    start: "top top",
+    end: "top top-=1",
     onLeave: () => {
       if (!isMobile) {
         centerCan.visible = false;
@@ -964,289 +968,228 @@ function setupScrollAnimations(updateFruitCallback) {
   });
 }
 
-gsap.ticker.lagSmoothing(500, 33); // smooths FPS drops
+gsap.ticker.lagSmoothing(500, 33);
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelector("#app").innerHTML = `
-
-  <div class="intro-screen">
-  <div class="logo-container">
-    <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1744179914/donchicoredlogo_uzs2if.png" class="main-logo shimmer" />
-  <div class="flavors-row">
-    <div class="flavor-circle">
-      <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750412492/11_1_cukhbe.png" class="flavor-img shimmer" />
+    <div class="intro-screen">
+      <div class="logo-container">
+        <img src="https://donchico.s3.eu-north-1.amazonaws.com/donchicoredlogo_uzs2if.png" class="main-logo shimmer" />
+        <div class="flavors-row">
+          <div class="flavor-circle">
+            <img src="https://donchico.s3.eu-north-1.amazonaws.com/11_1_cukhbe.png" class="flavor-img shimmer" />
+          </div>
+          <div class="flavor-circle">
+            <img src="https://donchico.s3.eu-north-1.amazonaws.com/37_1_vb6ngi.png" class="flavor-img shimmer" />
+          </div>
+          <div class="flavor-circle">
+            <img src="https://donchico.s3.eu-north-1.amazonaws.com/2_2_1_lapjn0.png" class="flavor-img shimmer" />
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="flavor-circle">
-      <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1750412499/37_1_vb6ngi.png" class="flavor-img shimmer" />
-    </div>
-    <div class="flavor-circle">
-      <img src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751635300/2_2_1_lapjn0.png" class="flavor-img shimmer" />
-    </div>
-</div>
+    <section class="don-landing">
+      <div class="hero-content">
+        <div class="og-container">
+          <div class="logo-container-2">
+            <img
+              class="main-logo-2"
+              src="https://donchico.s3.eu-north-1.amazonaws.com/Screenshot_2025-06-30_at_2.04.26_PM-removebg-preview_1_fb01a6.png"
+              alt="Main Logo"
+            />
+          </div>
+          <div class="badges">
+            <img
+              class="badges-img"
+              src="https://donchico.s3.eu-north-1.amazonaws.com/6_1_3_ydfa44.png"
+              alt="Badge 1"
+            />
+            <img
+              class="badges-img"
+              src="https://donchico.s3.eu-north-1.amazonaws.com/6_1_1_erur0t.png"
+              alt="Badge 2"
+            />
+            <img
+              class="badges-img"
+              src="https://donchico.s3.eu-north-1.amazonaws.com/6_1_2_xgycog.png"
+              alt="Badge 3"
+            />
+          </div>
+        </div>
+        <p class="hero-desc">
+          The fizzy world of soda had surrendered to the ordinary- Until Don Chico stepped in.
+          A legend. A rebel. A mastermind of flavour.
+        </p>
+        <button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/collections/all', '_blank')">
+          Shop Now
+        </button>
+      </div>
+      <div class="bubble-wrapper">
+        <img class="bubble-1" src="https://donchico.s3.eu-north-1.amazonaws.com/Screenshot_2025-06-30_at_2.23.57_PM-removebg-preview_1_yz6e5n.png" />
+        <img class="bubble-2" src="https://donchico.s3.eu-north-1.amazonaws.com/Screenshot_2025-06-30_at_2.24.02_PM-removebg-preview_1_ttdgew.png" />
+        <img class="bubble-3" src="https://donchico.s3.eu-north-1.amazonaws.com/Screenshot_2025-06-30_at_2.24.06_PM-removebg-preview_1_q46g4b.png" />
+      </div>
+    </section>
+    <section class="hero">
+      <div class="can-group-hero">
+        <img class="can " key='left' src='https://donchico.s3.eu-north-1.amazonaws.com/Screenshot_2025-07-06_at_6.33.09_PM-removebg-preview_uw2zo2.png' />
+        <img class="can " key='center' src='https://donchico.s3.eu-north-1.amazonaws.com/Screenshot_2025-07-06_at_6.33.09_PM-removebg-preview_uw2zo2.png' />
+        <img class="can " key='right' src='https://donchico.s3.eu-north-1.amazonaws.com/Screenshot_2025-07-06_at_6.33.09_PM-removebg-preview_uw2zo2.png' />
+      </div>
+    </section>
+    <section class="custom-border-section">
+      <div class="background-image-layer">
+        <img id="bg-image" src="https://donchico.s3.eu-north-1.amazonaws.com/2_1_qc6ltq.png" alt="" />
+      </div>
+      <div class="fruit-container">
+        <div class="fruit-zone fruit-1-img">
+          <img
+            class="fruit-img fruit-1"
+            src="https://donchico.s3.eu-north-1.amazonaws.com/2_2_1_lapjn0.png"
+          />
+          <div class="fruit-text text-0">
+            <p class="fruit-label-text">Watermelon Sorbet</p>
+            <p class="fruit-para">
+              It’s a chilled rebellion against boring.
+              A summer stunner with a minty twist.
+            </p>
+          </div>
+        </div>
+        <div class="fruit-zone fruit-2-img">
+          <img
+            class="fruit-img fruit-2"
+            src="https://donchico.s3.eu-north-1.amazonaws.com/Don_Chicos_Website_1_-removebg-preview_eoaxqi.webp"
+          />
+          <div class="fruit-text text-1">
+            <p class="fruit-label-text">Strawberry Cream</p>
+            <p class="fruit-para">
+              The strawberry-vanilla soda you wish you grew up with, finally done right.
+            </p>
+          </div>
+        </div>
+        <div class="fruit-zone fruit-3-img">
+          <img
+            class="fruit-img fruit-3"
+            src="https://donchico.s3.eu-north-1.amazonaws.com/Don_Chicos_Website_2_-removebg-preview_hss1cg.webp"
+          />
+          <div class="fruit-text text-2">
+            <p class="fruit-label-text">AppleCot Relish</p>
+            <p class="fruit-para">Half apple, half apricot, fully addictive.</p>
+          </div>
+        </div>
+      </div>
 
+      <div class="custom-footer">
+    <img class="footer-element-1" src="https://donchico.s3.eu-north-1.amazonaws.com/6_1_3_ydfa44.png" alt="Footer Image 1" />
+    <img class="footer-element-2" src="https://donchico.s3.eu-north-1.amazonaws.com/6_1_2_xgycog.png" alt="Footer Image 2" />
+    <img class="footer-element-3" src="https://donchico.s3.eu-north-1.amazonaws.com/6_1_1_erur0t.png" alt="Footer Image 3" />
   </div>
-</div>
-<section class="don-landing">
-
-<div class="hero-content">
-<div class="og-container">
-  <div class="logo-container-2">
-    <img
-      class="main-logo-2"
-      src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751272545/Screenshot_2025-06-30_at_2.04.26_PM-removebg-preview_1_fb01a6.png"
-      alt="Main Logo"
-    />
-  </div>
-  <div class="badges">
-    <img
-      class="badges-img"
-      src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751634605/6_1_3_ydfa44.png"
-      alt="Badge 1"
-    />
-    <img
-      class="badges-img"
-      src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751634604/6_1_1_erur0t.png"
-      alt="Badge 2"
-    />
-    <img
-      class="badges-img"
-      src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751634604/6_1_2_xgycog.png"
-      alt="Badge 3"
-    />
-  </div>
-</div>
-
-
-
-    <p class="hero-desc">
-    The fizzy world of soda had surrendered to the ordinary- Until Don Chico stepped in. 
-    A legend. A rebel. A mastermind of flavour.    </p>
-
-    <button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/collections/all', '_blank')">
-    Shop Now 
-  </button>
-  
-  </div>
-
-  <div class="bubble-wrapper">
-  <img class="bubble-1" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751273819/Screenshot_2025-06-30_at_2.23.57_PM-removebg-preview_1_yz6e5n.png" />
-  <img class="bubble-2" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751273811/Screenshot_2025-06-30_at_2.24.02_PM-removebg-preview_1_ttdgew.png" />
-  <img class="bubble-3" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751273802/Screenshot_2025-06-30_at_2.24.06_PM-removebg-preview_1_q46g4b.png" />
-</div>
-
-
-</section>
-<section class="hero">
-<div class="can-group-hero">
-<img class="can " key='left' src='https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807053/Screenshot_2025-07-06_at_6.33.09_PM-removebg-preview_uw2zo2.png' />
-<img class="can " key='center' src='https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807053/Screenshot_2025-07-06_at_6.33.09_PM-removebg-preview_uw2zo2.png' />
-<img class="can " key='right' src='https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807053/Screenshot_2025-07-06_at_6.33.09_PM-removebg-preview_uw2zo2.png' />
-</div>
-
-
-</section>
-  
-
-  <section class="custom-border-section">
-  
-  <div class="background-image-layer">
-  <img id="bg-image" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png" alt="" />
-</div>
-
-
-<div class="fruit-container">
-<div class="fruit-zone fruit-1-img">
-  <img
-    class="fruit-img fruit-1"
-    src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751635300/2_2_1_lapjn0.png"
-
-  />
-  <div class="fruit-text text-0">
-    <p class="fruit-label-text">Watermelon Sorbet</p>
-    <p class="fruit-para">
-       It’s a chilled rebellion against boring.
-      A summer stunner with a minty twist.
-    </p>
-  </div>
-</div>
-
-
-
-
-<div class="fruit-zone fruit-2-img">
-  <img
-    class="fruit-img fruit-2"
-    src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033116/Don_Chicos_Website_1_-removebg-preview_eoaxqi.webp"
-  />
-  <div class="fruit-text text-1">
-    <p class="fruit-label-text">Strawberry Cream</p>
-    <p class="fruit-para">
-      The strawberry-vanilla soda you wish you grew up with, finally done right.
-    </p>
-  </div>
-</div>
-
-
- <div class="fruit-zone fruit-3-img">
-  <img
-    class="fruit-img fruit-3"
-    src="https://res.cloudinary.com/do7dxrdey/image/upload/v1751033228/Don_Chicos_Website_2_-removebg-preview_hss1cg.webp"
-
-  />
-  <div class="fruit-text text-2">
-    <p class="fruit-label-text">AppleCot Relish</p>
-    <p class="fruit-para">Half apple, half apricot, fully addictive.</p>
-  </div>
-</div>
-
-</div>
-</div>
-
-
-
-
-  
-
-   <!-- Right Border -->
- 
-  </section>
-
-
-
-
-
-<section class="poppy-section" id="poppy-section">
-
-
-
-</section>
-
-
-<div id="dom-explosion-container"></div>
-<section class="can-hero-section">
-<div class="can-text">
-
-</div>
-  <div class="can-group">
-  <div> <img 
-  onclick="window.open('https://www.drinkdonchico.com/products/strawberry-cream', '_blank')"
-  src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808316/Screenshot_2025-07-06_at_6.52.44_PM__2_-removebg-preview_m5alhr.png" 
-  alt="Strawberry Cream" 
-  class="can can-left" 
-  data-flavor="Strawberry Cream" 
-  data-color="#ee6876" 
-  data-darker-color="#c06a23"
-  data-text="Berry bold and bubbly. Strawberry Cream brings the sweet punch you crave."
-  data-btn="Buy Strawberry Cream"
-  data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/3_1_hajus7.png"
-/>
-<p class="flav-text text-0">Strawberry Cream</p><button class="soda-btn"  onclick="window.open('https://www.drinkdonchico.com/products/strawberry-cream', '_blank')"
-
->+ 6 Pack</button>
-</div>
- 
-<div>  <img 
-onclick="window.open('https://www.drinkdonchico.com/products/applecot-relish', '_blank')"
-src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808426/Screenshot_2025-07-06_at_6.46.44_PM-removebg-preview_dbjqac.png" 
-alt="Applecot Relish" 
-class="can can-right"
-data-flavor="Applecot Relish" 
-data-color="#F4812C" 
-data-darker-color="#d0485c"
-
-data-text="Cool, calm, and delicious. Applecot Relish's got that mellow magic."
-data-btn="Buy Applecot Relish"
-data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/4_3_byfiaa.png"
-/>
-<p class="flav-text text-1">Applecot Relish</p><button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/products/applecot-relish', '_blank')"" >+ 6 Pack</button>
-</div>
-
-
-
-<div><img 
-onclick="window.open('https://www.drinkdonchico.com/products/watermelon-sorbet', '_blank')"
-src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807943/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vac2f3.png" 
-alt="Watermelon Sorbet" 
-class="can"
-data-flavor="Watermelon Sorbet" 
-data-color="#4BAB55" 
-data-darker-color="#3a8a41"
-  data-text="Zesty, juicy, and refreshingly wild. Watermelon Sorbet is here to wake you up."
-data-btn="Buy Watermelon Sorbet"
-data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc6ltq.png"
-/>
-<p class="flav-text text-2">Watermelon Sorbet</p><button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/products/watermelon-sorbet', '_blank')"
->+ 6 Pack</button>
-</div>
-
-
-
-  </div>
-
-
- 
-</section>
-
-
-<section class="mobile-can-ui">
-  <!-- Top Bar -->
-  <div class="top-bar">
-  <img class="brand" src="https://res.cloudinary.com/do7dxrdey/image/upload/v1749979554/IMG_4588_1_1_qhx10y.png"/>
-   
- 
-  </div>
-
-  <!-- Center Can Display -->
-  <div class="can-display">
-    <button class="nav-arrow left">&#10094;</button>
-
-    <img class="can-bg right"       src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807943/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vac2f3.png"
-    id="right-bg-can"  alt="Right Can" />
-    <img class="can-bg left" id="left-bg-can"
-    src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808316/Screenshot_2025-07-06_at_6.52.44_PM__2_-removebg-preview_m5alhr.png"
-
-     alt="Left Can" />
-
-
-    <img
-    id="main-can"
-      class="main-can"
-      src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808426/Screenshot_2025-07-06_at_6.46.44_PM-removebg-preview_dbjqac.png"
-      alt="Watermelon Sorbet"
-    />
-
-
-    <button class="nav-arrow right">&#10095;</button>
-  </div>
-
-  <!-- Nutrition Facts -->
-
-
-  <!-- Flavor Buttons -->
-  <div class="flavor-buttons">
-  <button class="flavor-btn orange soda-btn" data-index="2" onclick="window.open('https://www.drinkdonchico.com/products/applecot-relish', '_blank')"
-  >APPLECOT RELISH</button>
-  <button class="flavor-btn mango soda-btn" data-index="1" onclick="window.open('https://www.drinkdonchico.com/products/watermelon-sorbet', '_blank')"
-  >WATERMELON SORBET</button>
-
-  <button class="flavor-btn soda-btn lemon" data-index="0" onclick="window.open('https://www.drinkdonchico.com/products/strawberry-cream', '_blank')"
-  >STRAWBERRY CREAM</button>
-  </div>
-</section>
-
-
-
-
-
-
-
-  
-
-    <div class="model">
-    
-    
-    </div>
+    </section>
+    <section class="poppy-section" id="poppy-section"></section>
+    <div id="dom-explosion-container"></div>
+    <section class="can-hero-section">
+      <div class="can-text"></div>
+      <div class="can-group">
+        <div>
+          <img
+            onclick="window.open('https://www.drinkdonchico.com/products/strawberry-cream', '_blank')"
+            src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808316/Screenshot_2025-07-06_at_6.52.44_PM__2_-removebg-preview_m5alhr.png"
+            alt="Strawberry Cream"
+            class="can can-left"
+            data-flavor="Strawberry Cream"
+            data-color="#ee6876"
+            data-darker-color="#c06a23"
+            data-text="Berry bold and bubbly. Strawberry Cream brings the sweet punch you crave."
+            data-btn="Buy Strawberry Cream"
+            data-bgimg="https://donchico.s3.eu-north-1.amazonaws.com/3_1_hajus7.png"
+          />
+          <p class="flav-text text-0">Strawberry Cream</p>
+          <button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/products/strawberry-cream', '_blank')">
+            + 6 Pack
+          </button>
+        </div>
+        <div>
+          <img
+            onclick="window.open('https://www.drinkdonchico.com/products/applecot-relish', '_blank')"
+            src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808426/Screenshot_2025-07-06_at_6.46.44_PM-removebg-preview_dbjqac.png"
+            alt="Applecot Relish"
+            class="can can-right"
+            data-flavor="Applecot Relish"
+            data-color="#F4812C"
+            data-darker-color="#d0485c"
+            data-text="Cool, calm, and delicious. Applecot Relish's got that mellow magic."
+            data-btn="Buy Applecot Relish"
+            data-bgimg="https://donchico.s3.eu-north-1.amazonaws.com/4_3_byfiaa.png"
+          />
+          <p class="flav-text text-1">Applecot Relish</p>
+          <button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/products/applecot-relish', '_blank')">
+            + 6 Pack
+          </button>
+        </div>
+        <div>
+          <img
+            onclick="window.open('https://www.drinkdonchico.com/products/watermelon-sorbet', '_blank')"
+            src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807943/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vac2f3.png"
+            alt="Watermelon Sorbet"
+            class="can"
+            data-flavor="Watermelon Sorbet"
+            data-color="#4BAB55"
+            data-darker-color="#3a8a41"
+            data-text="Zesty, juicy, and refreshingly wild. Watermelon Sorbet is here to wake you up."
+            data-btn="Buy Watermelon Sorbet"
+            data-bgimg="https://donchico.s3.eu-north-1.amazonaws.com/2_1_qc6ltq.png"
+          />
+          <p class="flav-text text-2">Watermelon Sorbet</p>
+          <button class="soda-btn" onclick="window.open('https://www.drinkdonchico.com/products/watermelon-sorbet', '_blank')">
+            + 6 Pack
+          </button>
+        </div>
+      </div>
+    </section>
+    <section class="mobile-can-ui">
+      <div class="top-bar">
+        <img class="brand" src="https://donchico.s3.eu-north-1.amazonaws.com/IMG_4588_1_1_qhx10y.png"/>
+      </div>
+      <div class="can-display">
+        <button class="nav-arrow left">&#10094;</button>
+        <img
+          class="can-bg right"
+          src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751807943/Screenshot_2025-07-06_at_6.46.49_PM-removebg-preview_vac2f3.png"
+          id="right-bg-can"
+          alt="Right Can"
+        />
+        <img
+          class="can-bg left"
+          id="left-bg-can"
+          src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808316/Screenshot_2025-07-06_at_6.52.44_PM__2_-removebg-preview_m5alhr.png"
+          alt="Left Can"
+        />
+        <img
+          id="main-can"
+          class="main-can"
+          src="https://res.cloudinary.com/dt5lkw0vz/image/upload/v1751808426/Screenshot_2025-07-06_at_6.46.44_PM-removebg-preview_dbjqac.png"
+          alt="Watermelon Sorbet"
+        />
+        <button class="nav-arrow right">&#10095;</button>
+      </div>
+      <div class="flavor-buttons">
+        <button class="flavor-btn orange soda-btn" data-index="2" onclick="window.open('https://www.drinkdonchico.com/products/applecot-relish', '_blank')">
+          APPLECOT RELISH
+        </button>
+        <button class="flavor-btn mango soda-btn" data-index="1" onclick="window.open('https://www.drinkdonchico.com/products/watermelon-sorbet', '_blank')">
+          WATERMELON SORBET
+        </button>
+        <button class="flavor-btn soda-btn lemon" data-index="0" onclick="window.open('https://www.drinkdonchico.com/products/strawberry-cream', '_blank')">
+          STRAWBERRY CREAM
+        </button>
+      </div>
+    </section>
+    <div class="model"></div>
   `;
+
+  // Initialize Three.js and footer animation after DOM is set
+  initThreeJS();
+  initFooterAnimation();
 
   const fruits = [
     document.querySelector(".fruit-1"),
@@ -1255,10 +1198,9 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
   ];
 
   let currentFruitIndex = -1;
-  let lastDirection = 1; // 1 = down, -1 = up
+  let lastDirection = 1;
 
   function showFruit(index) {
-    // Optional animation
     gsap.fromTo(
       fruits[index],
       { scale: 1 },
@@ -1271,42 +1213,6 @@ data-bgimg="https://res.cloudinary.com/do7dxrdey/image/upload/v1751214072/2_1_qc
       }
     );
   }
-
-  // function updateFruitIndex(direction, progress) {
-  //   // Handle initial scroll
-  //   if (currentFruitIndex === -1) {
-  //     currentFruitIndex = 0;
-  //     lastDirection = direction;
-  //   }
-
-  //   // Direction changed? Set repeat flag, and don't move yet
-  //   else if (direction !== lastDirection) {
-  //     shouldRepeat = true;
-  //     lastDirection = direction;
-  //   }
-
-  //   // If we just repeated, now proceed with the actual move
-  //   else if (shouldRepeat) {
-  //     shouldRepeat = false;
-
-  //     if (direction === "down" && currentFruitIndex < fruits.length - 1) {
-  //       currentFruitIndex += 1;
-  //     } else if (direction === "up" && currentFruitIndex > 0) {
-  //       currentFruitIndex -= 1;
-  //     }
-  //   }
-
-  //   // Normal move when direction is steady
-  //   else if (direction === "down" && currentFruitIndex < fruits.length - 1) {
-  //     currentFruitIndex += 1;
-  //   } else if (direction === "up" && currentFruitIndex > 0) {
-  //     currentFruitIndex -= 1;
-  //   }
-
-  //   showFruit(currentFruitIndex);
-  // }
-
-  // ✅ Setup ScrollTrigger after fruitEl is defined
 
   setupScrollAnimations(() => {});
 });
@@ -1334,7 +1240,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateMainCan(index) {
     currentIndex.value = index;
 
-    // Smooth fade animation
     mainCan.classList.add("fade-out");
     setTimeout(() => {
       mainCan.src = flavors[index].src;
@@ -1344,11 +1249,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(() => mainCan.classList.remove("fade-in"), 300);
 
-    // Update background cans
     leftBgCan.src = flavors[(index - 1 + flavors.length) % flavors.length].src;
     rightBgCan.src = flavors[(index + 1) % flavors.length].src;
 
-    // 👇 Set mobile background
     const mobileUI = document.querySelector(".mobile-can-ui");
     mobileUI.style.background = `url(${
       flavors[currentIndex.value].bg
@@ -1372,7 +1275,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Initialize
   updateMainCan(currentIndex.value);
 });
 
@@ -1388,33 +1290,31 @@ document.addEventListener("DOMContentLoaded", () => {
     title: "Pop. Sip. Repeat.",
     desc: "Three bold flavors, zero regrets. Which one will you choose?",
     buttons: `
-    <button class="soda-btn" style="background: linear-gradient(145deg, #ee6876, #d0485c);">Buy Strawberry Cream</button>
-    <button class="soda-btn" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">Buy Watermelon Sorbet</button>
-    <button class="soda-btn" style="background: linear-gradient(145deg, #F4812C, #c06a23);">Buy Applecot Relish</button>
-  `,
+      <button class="soda-btn" style="background: linear-gradient(145deg, #ee6876, #d0485c);">Buy Strawberry Cream</button>
+      <button class="soda-btn" style="background: linear-gradient(145deg, #4BAB55, #3a8a41);">Buy Watermelon Sorbet</button>
+      <button class="soda-btn" style="background: linear-gradient(145deg, #F4812C, #c06a23);">Buy Applecot Relish</button>
+    `,
   };
 
   cans.forEach((can) => {
     can.addEventListener("mouseenter", () => {
-      const color = can.dataset.color; // e.g., "#ee6876"
+      const color = can.dataset.color;
       const darkerColor = can.dataset.darkerColor;
       const flavor = can.dataset.flavor;
       const text = can.dataset.text;
       const btnText = can.dataset.btn;
 
-      const bgImg = can.dataset.bgimg; // ✅ this was missing!
+      const bgImg = can.dataset.bgimg;
       section.style.backgroundImage = `url(${bgImg})`;
       title.textContent = flavor;
       desc.textContent = text;
 
-      // ✅ Safely inject button with background color
       btnRow.innerHTML = `
-    <button class="soda-btn" style="background: linear-gradient(145deg, ${color}, ${darkerColor});">
-      ${btnText}
-    </button>
-  `;
+        <button class="soda-btn" style="background: linear-gradient(145deg, ${color}, ${darkerColor});">
+          ${btnText}
+        </button>
+      `;
 
-      // Enlarge the hovered can
       can.classList.add("hovered");
     });
 
@@ -1423,20 +1323,19 @@ document.addEventListener("DOMContentLoaded", () => {
       desc.textContent = defaultState.desc;
       btnRow.innerHTML = defaultState.buttons;
 
-      // Remove enlarge class from all cans
       cans.forEach((c) => c.classList.remove("hovered"));
     });
   });
 
   ScrollTrigger.create({
     trigger: ".can-hero-section",
-    start: "top bottom", // when .can-hero-section hits the bottom of viewport
-    end: "top top", // until it reaches top of viewport
+    start: "top bottom",
+    end: "top top",
     onEnter: () => {
       requestAnimationFrame(() => {
         const poppy = document.querySelector(".poppy-section");
         poppy.style.position = "absolute";
-        poppy.style.top = "-100vh"; // Push it above viewport
+        poppy.style.top = "-100vh";
         poppy.style.left = "0";
         poppy.style.width = "100%";
         poppy.style.zIndex = "-1";
@@ -1444,15 +1343,14 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     onLeaveBack: () => {
       const poppy = document.querySelector(".poppy-section");
-
-      poppy.style.position = "relative"; // restore layout
+      poppy.style.position = "relative";
       poppy.style.top = "0";
     },
   });
 });
 
 let lastBubbleTime = 0;
-const bubbleInterval = 150; // Minimum ms between bubbles (adjust as needed)
+const bubbleInterval = 150;
 
 document.addEventListener("mousemove", (e) => {
   const now = Date.now();
@@ -1461,8 +1359,7 @@ document.addEventListener("mousemove", (e) => {
 
   const bubble = document.createElement("img");
   bubble.src =
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1750159941/de7b6738e9c3be8feb23abc4b1116b8d-removebg-preview_1_h5zpws.png";
-  // 🔁 Replace with your actual image
+    "https://donchico.s3.eu-north-1.amazonaws.com/de7b6738e9c3be8feb23abc4b1116b8d-removebg-preview_1_h5zpws.png";
   bubble.className = "cursor-bubble";
   bubble.style.left = `${e.clientX}px`;
   bubble.style.top = `${e.clientY}px`;
@@ -1486,45 +1383,44 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   ticker();
   pictureCollage();
+  reviewSection();
+  socialsSection();
 
-  // ✅ Create and append footer
   const footer = document.createElement("footer");
   footer.className = "donchico-footer";
   footer.innerHTML = `
-  <div class="footer-content">
-    <div class="footer-column">
-      <h3>The World of Don Chico’s</h3>
-      <ul>
-        <li><a href="https://www.drinkdonchico.com/collections/all" target="_blank" rel="noopener noreferrer">Shop Don Chico's</a></li>
-        <li><a href="https://www.drinkdonchico.com/pages/our-story" target="_blank" rel="noopener noreferrer">About Us</a></li>
-      </ul>
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>The World of Don Chico’s</h3>
+        <ul>
+          <li><a href="https://www.drinkdonchico.com/collections/all" target="_blank" rel="noopener noreferrer">Shop Don Chico's</a></li>
+          <li><a href="https://www.drinkdonchico.com/pages/our-story" target="_blank" rel="noopener noreferrer">About Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="https://www.drinkdonchico.com/policies/terms-of-service" target="_blank" rel="noopener noreferrer">Terms & Conditions</a></li>
+          <li><a href="https://www.drinkdonchico.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li>
+          <li><a href="https://www.drinkdonchico.com/policies/shipping-policy" target="_blank" rel="noopener noreferrer">Shipping</a></li>
+          <li><a href="https://www.drinkdonchico.com/policies/refund-policy" target="_blank" rel="noopener noreferrer">Returns & Refunds</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3>Say Hola!</h3>
+        <ul>
+          <li><a href="https://www.drinkdonchico.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact Us</a></li>
+          <li><a href="https://www.instagram.com/drinkdonchico/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="footer-column">
-      <h3>Legal</h3>
-      <ul>
-        <li><a href="https://www.drinkdonchico.com/policies/terms-of-service" target="_blank" rel="noopener noreferrer">Terms & Conditions</a></li>
-        <li><a href="https://www.drinkdonchico.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li>
-        <li><a href="https://www.drinkdonchico.com/policies/shipping-policy" target="_blank" rel="noopener noreferrer">Shipping</a></li>
-        <li><a href="https://www.drinkdonchico.com/policies/refund-policy" target="_blank" rel="noopener noreferrer">Returns & Refunds</a></li>
-      </ul>
+    <div class="footer-socials">
+      <a href="https://www.facebook.com/drinkdonchico" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.instagram.com/drinkdonchico/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
     </div>
-    <div class="footer-column">
-      <h3>Say Hola!</h3>
-      <ul>
-        <li><a href="https://www.drinkdonchico.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact Us</a></li>
-        <li><a href="https://www.instagram.com/drinkdonchico/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-socials">
-    <a href="https://www.facebook.com/drinkdonchico" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
-    <a href="https://www.instagram.com/drinkdonchico/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
-  </div>
-`;
+  `;
 
-  app.appendChild(footer);
-
-  // scrollableTicker(gsap, ScrollTrigger);
+  document.querySelector("#app").appendChild(footer);
 });
 
 const backgroundImageCache = {};
@@ -1540,7 +1436,6 @@ function preloadBackgroundImages(urls) {
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector(".ticker-main-container");
 
-  // Create wrapper div
   const wrapper = document.createElement("div");
   wrapper.style.top = "20px";
   wrapper.style.left = "20px";
@@ -1553,26 +1448,22 @@ document.addEventListener("DOMContentLoaded", () => {
   wrapper.style.alignItems = "center";
   wrapper.style.justifyContent = "center";
 
-  // Create image
   const image = document.createElement("img");
   image.src =
-    "https://res.cloudinary.com/do7dxrdey/image/upload/v1752496082/IMG_7339_1_z1aot3.png";
+    "https://donchico.s3.eu-north-1.amazonaws.com/IMG_7339_1_z1aot3.png";
   image.alt = "Extra image";
   image.style.height = "60vh";
   image.style.paddingBottom = "5vh";
   image.classList.add("assorted-class");
 
-  // Create paragraph
   const paragraph = document.createElement("p");
-  paragraph.textContent = "Don’s Assorted Pack of 6"; // Change as needed
-  paragraph.classList.add("assorted"); // Add your desired class(es)
+  paragraph.textContent = "Don’s Assorted Pack of 6";
+  paragraph.classList.add("assorted");
 
-  // Create button
   const button = document.createElement("button");
   button.textContent = "+ 6 Pack";
   button.classList.add("soda-btn");
 
-  // ✅ Add click event
   button.addEventListener("click", () => {
     window.open(
       "https://www.drinkdonchico.com/products/don-chicos-sodas-with-benefit-assorted-pack-of-6",
@@ -1580,7 +1471,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
-  // ✅ Add click event
   image.addEventListener("click", () => {
     window.open(
       "https://www.drinkdonchico.com/products/don-chicos-sodas-with-benefit-assorted-pack-of-6",
@@ -1588,12 +1478,10 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
-  // Append elements to wrapper
   wrapper.appendChild(image);
-  wrapper.appendChild(paragraph); // 👈 insert paragraph between image and button
+  wrapper.appendChild(paragraph);
   wrapper.appendChild(button);
 
-  // Append wrapper to container
   container.appendChild(wrapper);
 
   console.log(
